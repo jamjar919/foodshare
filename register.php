@@ -2,31 +2,23 @@
 session_start();
 require 'functions.php';
 // Check if we are already logged in
-var_dump($_SESSION);
 if (isLoggedIn($_SESSION)) {
     // We are logged in, go to members page
     // header("Location: members.php");
     echo "Automatically logged in via session";
     header("Location: index.php");
 }
-// Did we submit the form? If we did, check if it's correct and generate a new login token
-if (isset($_POST["username"]) && isset($_POST["password"])) {
-    $uid = getUid($_POST["username"]);
-    $token = generateLoginToken($_POST["username"], $_POST["password"]);
-    if ($token) { 
-        $_SESSION["uid"] = $uid;
-        $_SESSION["token"] = $token;
-        echo "Session set";
-    } else {
-        // Login was incorrect!
-        $error = 'Your username or password was incorrect.';
+if (isset($_POST["submitted"])) {
+    $possibleErrors = registerBasicUser($_POST["username"], $_POST["email"], $_POST["password"], $_POST["confirmpassword"]);
+    if ($possibleErrors === true) {
+        // We registered successfully!
     }
 }
 ?>
 <!doctype html>
 <html>
     <head>
-        <title>Login</title>
+        <title>Register</title>
     </head>
     <body>
         <?php
@@ -37,8 +29,13 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
         <form class="login-form" action="#" method="POST">
             <label for="username">Username:</label>
             <input type="text" name="username"><br>
+            <label for="username">Email:</label>
+            <input type="email" name="email"><br>
             <label for="password">Password:</label>
             <input type="password" name="password"><br>
+            <label for="password">Confirm Password:</label>
+            <input type="password" name="confimpassword"><br>
+            <input type="hidden" name="submitted" value="1">
             <input type="submit" value="Login">
         </form>
     </body>
