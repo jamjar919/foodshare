@@ -43,7 +43,7 @@ nav {
   width: 100%;
   padding: 10px 0;
   background: #296B13;
-  box-shadow: 0px 1px 10px 0px #636931!important;
+  box-shadow: 0px 1px 10px 0px #636931;
 }
 
 ul li{
@@ -51,12 +51,12 @@ ul li{
   list-style: none;
 }
 
-nav a {
+nav > a {
   font-weight: 500;
   padding: 15px 10px;
 }
 
-nav a, nav a:visited {
+nav > a, nav > a:visited {
   color: #fff;
 }
 
@@ -65,7 +65,7 @@ header a{
 }
 
 a {
-  text-decoration: none !important;
+  text-decoration: none;
   color: #fff;
 }
 
@@ -185,4 +185,16 @@ footer {
   color: white;
   border-color: #00cc44;
   background-color: #00cc44;
+}
+
+.loginform-bottom {
+  display: flex;
+  flex-direction: row;
+}
+
+.loginform-bottom-element {
+  flex: 1 1;
+  margin: 10px 10px;
+  display: flex;
+  padding: auto;
 }
