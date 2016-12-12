@@ -23,8 +23,6 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     }
 }
 ?>
-
-
 <!doctype html>
 <html>
     <head>
@@ -87,6 +85,11 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 		
     </head>
     <body>
+ <?php
+            if (isset($error)) {
+                echo $error;
+            }
+        ?>
 
 		<div class="container">
 		<h2>HomePage</h2>
@@ -128,9 +131,5 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 			</div>
 		
 		</div>
-		
-		
-		
-	
     </body>
 </html>

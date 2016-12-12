@@ -57,7 +57,7 @@
     <header class="header">
         <h1><strong><a href="HTML/foodshare_guest.html">FoodShare</a></strong></h1>
     </header>
- 
+
 
     <!-- Carousel -->
     <div class="container">

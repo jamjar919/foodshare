@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors',1);  error_reporting(E_ALL);
-
+define("DOMAIN", "http://52.212.171.81/");
 require 'db.php';
 require 'lib/password.php'; // Password hashing library
 
@@ -64,18 +64,19 @@ function checkLoginToken($uid, $token) {
     $stmt = $db->prepare("SELECT * FROM auth WHERE uid = :uid");
     $stmt->bindValue(":uid", $uid, PDO::PARAM_INT);
     $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (($result["authkey"] == $token) && ($result["uid"] == $uid)) {
-        // Token is valid, is it expired?
-        if (time() < $result["expiry"]) {
-            // Token is still in date and everything is valid, sweet.
-            return true;
-        } else {
-            // The key is correct, but out of date. We should delete it from the records
-            $stmt = $db->prepare("DELETE FROM table WHERE aid=:aid");
-            $stmt->bindValue(":aid", $result["aid"], PDO::PARAM_INT);
-            $stmt->execute();
-            return false;
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach($results as $result) {
+        if (($result["authkey"] == $token) && ($result["uid"] == $uid)) {
+            // Token is valid, is it expired?
+            if (time() < $result["expiry"]) {
+                // Token is still in date and everything is valid, sweet.
+                return true;
+            } else {
+                // The key is correct, but out of date. We should delete it from the records
+                $delstmt = $db->prepare("DELETE FROM table WHERE aid=:aid");
+                $delstmt->bindValue(":aid", $result["aid"], PDO::PARAM_INT);
+                $delstmt->execute();
+            }
         }
     }
     return false;
@@ -125,4 +126,76 @@ function generateLoginToken($username, $password) {
 **/
 function makeNewToken() {
     return md5((string)rand(0,100000));
+}
+
+/**
+* Register a user with the database
+*
+* @param $username The desired username
+* @param $email The email address of the user
+* @param $password The password of the user (plaintext)
+* @param $confirmpassword The confimation password of the user
+* @param $name The real name of the user
+* @param $postcode The postcode of the users location
+*
+* @returns Array $errors An array of strings containing any errors encounted during the process, or true on success
+**/
+function registerBasicUser($username, $email, $password, $confirmpassword) {
+    try {
+        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8mb4', DBUSER, DBPASS);
+    } catch(PDOEXCEPTION $e) {
+        $errors[] = "There was a database error, please try again later.";
+        return $errors;
+    }
+    // Are all fields filled in?
+    if (empty($username) || empty($password) || empty($email) || empty($confirmpassword)) {
+        $errors[] = "All fields must not be empty.";
+    }
+    // Is the email valid?
+    if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+        $errors[] = "Please enter a valid email address.";
+    }
+    // Is the password correct? 
+    if ($password !== $confirmpassword) {
+        $errors[] = "Passwords do not match";
+    }
+    // Has the username or email been taken?
+    try {
+        $stmt = $db->prepare('SELECT * FROM user WHERE email = :email');
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $errors[] = "That email address has already been registered";
+        }
+        $stmt = $db->prepare('SELECT * FROM user WHERE username = :username');
+        $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+        $stmt->execute();
+        if ($stmt->rowCount() > 0) {
+            $errors[] = "That username has already been taken";
+        }
+    } catch(PDOEXCEPTION $e) {
+        $errors[] = "There was a database error, please try again later.";
+        return $errors;
+    }
+    if (!empty($errors)) {
+        return $errors;
+    }
+    // We are free from errors! Insert into the DB! 
+    try {
+        // Get hashed password
+        $hash = password_hash($password);
+        $key = makeNewToken();
+        $stmt = $db->prepare("INSERT INTO `user` (`uid`, `username`, `email`, `password`, `name`, `postcode`, `verified`, `confirm_email_key`) VALUES (NULL, :username, :email, :hash, NULL, NULL, 0, :key);");
+        $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+        $stmt->bindValue(':hash', $hash, PDO::PARAM_STR);
+        $stmt->bindValue(':key', $key, PDO::PARAM_STR);
+        $stmt->execute();
+    } catch(PDOEXCEPTION $e) {
+        $errors[] = "There was a database error, please try again later.";
+        return $errors;
+    }
+    // Send confirmation email
+    mail($email, "Confirmation of FoodShare signup", "Hey! \n \n You (or an imposter) signed up to foodShare under this email address. If you recieved this email in error, ignore this message. Else, click the link below: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
+    return true;
 }
