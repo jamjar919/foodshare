@@ -8,7 +8,6 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     if ($token) {
         $_SESSION["uid"] = $uid;
         $_SESSION["token"] = $token;
-        echo "Session set";
         header("Location: index.php");
     } else {
         // Login was incorrect!
