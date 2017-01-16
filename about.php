@@ -62,7 +62,7 @@
             </div>
 
                 <div class="row">
-                     <div class="col-xs-8 col-sm-8 text">
+                     <div class="col-xs-12 col-sm-12 text">
                          <br>
                          <br>
                          <p>
@@ -80,6 +80,6 @@
                 </div>
             </div>
         </div>
-<?php 
+<?php
 include "footer.php";
 ?>
