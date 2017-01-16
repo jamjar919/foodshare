@@ -1,6 +1,9 @@
 <?php
         session_start();
         require "functions.php";
+		if (isLoggedIn($_SESSION)) {
+			include 'members/index.php';
+		} else {
         include "header.php";
         include "nav.php";
     ?>
@@ -29,5 +32,6 @@
         </div>
       </div>
 <?php
-    include "footer.php";
+		include "footer.php";
+	}
 ?>
