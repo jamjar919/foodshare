@@ -1,6 +1,6 @@
 <?php
 ini_set('display_errors',1);  error_reporting(E_ALL);
-define("DOMAIN", "http://52.212.171.81/");
+define("DOMAIN", "http://community.dur.ac.uk/cs.seg01/foodshare/");
 require 'db.php';
 require 'lib/password.php'; // Password hashing library
 
