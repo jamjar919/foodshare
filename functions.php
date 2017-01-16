@@ -60,7 +60,7 @@ function isLoggedIn($s) {
 * @return boolean True if the token is valid, False if the token is valid, or does not match the UID supplied
 **/
 function checkLoginToken($uid, $token) {
-    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8mb4', DBUSER, DBPASS);
+    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
     $stmt = $db->prepare("SELECT * FROM auth WHERE uid = :uid");
     $stmt->bindValue(":uid", $uid, PDO::PARAM_INT);
     $stmt->execute();
@@ -91,7 +91,7 @@ function checkLoginToken($uid, $token) {
 * @return string The valid login token. Returns false if the data was invalid.
 */
 function generateLoginToken($username, $password) {
-    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8mb4', DBUSER, DBPASS);
+    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
     if (empty($username) || empty($password)) {
         return false;
     }
@@ -142,7 +142,7 @@ function makeNewToken() {
 **/
 function registerBasicUser($username, $email, $password, $confirmpassword) {
     try {
-        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8mb4', DBUSER, DBPASS);
+        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
     } catch(PDOEXCEPTION $e) {
         $errors[] = "There was a database error, please try again later.";
         return $errors;
