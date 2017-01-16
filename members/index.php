@@ -1,5 +1,4 @@
 <?php
-        require "functions.php";
         include "/members/members_header.php";
         include "/members/members_nav.php";
     ?>
