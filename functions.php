@@ -13,7 +13,7 @@ require 'lib/password.php'; // Password hashing library
 **/
 function getUid($username) {
     try {
-        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8mb4', DBUSER, DBPASS);
+        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
         $stmt = $db->prepare("SELECT * FROM user WHERE username = :name");
         $stmt->bindValue(":name", $username, PDO::PARAM_INT);
         $stmt->execute();
