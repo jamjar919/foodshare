@@ -1,7 +1,7 @@
 <?php
-        require "../functions.php";
-        include "members_header.php";
-        include "members_nav.php";
+        require "functions.php";
+        include "/members/members_header.php";
+        include "/members/members_nav.php";
     ?>
 
 <div class="row">
