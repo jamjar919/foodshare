@@ -54,7 +54,6 @@ function setMap(pos = null, zoom = 14) {
     if (pos == null) {
         pos = getInitialPosition();        
     }
-    console.log("Scrolling to: "+pos);
     mymap.setView(pos, zoom);
 }
 
@@ -70,19 +69,24 @@ function geocode(position, callback) {
     });
 }
 
+function popupDetails(food) {
+    return '<h3>'+food["name"]+'</h3><p>'+food["description"]+'</p><button class="btn btn-primary btn-sm" onClick="function(){loadFullFood('+food["id"]+')}">More</button>';
+}
+
 function putFoodOnMap(positionString, callback) {
     geocode(positionString, function(pos) {
-        console.log("asdfs");
-        $.get( "api/locations.php", {position:pos}).done(function(data) {
+        $.get( "api/food.php", {position:pos}).done(function(data) {
             data = JSON.parse(data)["food"];
             for (var i = 0; i < data.length; i++) {
-                var marker = L.marker([data[i]["latitude"], data[i]["longitude"]]).addTo(mymap);
+                L.marker([data[i]["latitude"], data[i]["longitude"]])
+                .addTo(mymap)
+                .bindPopup(popupDetails(data[i]));
             }
         });
         callback(pos);
     })
     
-}
+} 
 
 LOADID = "loader";
 function startLoad() {
