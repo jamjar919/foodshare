@@ -70,7 +70,7 @@ function geocode(position, callback) {
 }
 
 function popupDetails(food) {
-    return '<h3>'+food["name"]+'</h3><p>'+food["description"]+'</p><button class="btn btn-primary btn-sm" onClick="function(){loadFullFood('+food["id"]+')}">More</button>';
+    return '<div class="food-popup"><h3>'+food["name"]+'</h3><p>'+food["description"]+'</p><button class="btn btn-primary btn-sm" onClick="function(){loadFullFood('+food["id"]+')}">More</button></div>';
 }
 
 function putFoodOnMap(positionString, callback) {
@@ -112,6 +112,12 @@ $("#searchbutton").click(function() {
         setMap(pos);
         scrollToMap();
     });
+});
+
+$("#searchbox").keypress(function(e) {
+    if(e.which == 13) {
+        $("#searchbutton").trigger("click");
+    }
 });
 
 $( "#bottom-tab" ).click(function() {

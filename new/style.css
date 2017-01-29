@@ -58,7 +58,20 @@ h1,h2,h3,h4,h5,h6 {
     background-color: #FFF;
     display: none;
 }
-
+.food-display-panel {
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+.food-display-panel-highlight {
+    display: flex;
+}
+.food-display-panel-highlight .card-block {
+    display: flex;
+    flex-direction: column;
+}
+.food-display-panel-related .card {
+    margin-bottom: 1em;
+}
 .loadingOverlay {
     position: fixed;
     background-image: url("img/spinner.gif");
