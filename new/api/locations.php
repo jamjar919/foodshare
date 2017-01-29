@@ -17,5 +17,6 @@ echo json_encode(array(
             "longitude" => 54.76985,
             "latitude" => -1.569843
         )
-    ) 
+    ),
+    "get" => $_GET
 ));

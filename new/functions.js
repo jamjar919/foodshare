@@ -72,7 +72,12 @@ function geocode(position, callback) {
 
 function putFoodOnMap(positionString, callback) {
     geocode(positionString, function(pos) {
-        console.log(pos);
+        console.log("asdfs");
+        $.get( "api/locations.php", {position:[1,2]}).done(function(data) {
+            console.log(data);
+        }).error(function(error){
+            console.log("Could not plot food: "+error);
+        });
         callback(pos);
     })
     
