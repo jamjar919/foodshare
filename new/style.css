@@ -1,0 +1,72 @@
+ @import url('https://fonts.googleapis.com/css?family=Lobster|Raleway');
+
+body {
+    font-family: 'Raleway', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    background-color: #FFF;
+    color: #2b3e50;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Lobster', 'Garamond',serif;
+}
+
+#front-page {
+    color: #ebebeb;
+    background-color: #2b3e50;
+    z-index: 5;
+}
+
+.mainpage-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
+}
+
+.searchbox-container {
+    margin: auto;
+    width: 50vw;
+    height: 30vh;
+    max-width: 560px;
+}
+
+.logo {
+    font-size: 8em;
+    text-align: center;
+}
+
+.logo h1 {
+    font-size: 6rem;
+    margin: 0 0 0.25em 0 ;
+    padding: 0;
+}
+
+#bottom-tab, #top-tab {
+    width: 100px;
+    margin: 0 auto;
+    letter-spacing: -0.75em;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+#top-tab {
+    display: none;
+}
+
+#map {
+    height: 100vh;
+    background-color: #FFF;
+    display: none;
+}
+
+.loadingOverlay {
+    position: fixed;
+    background-image: url("img/spinner.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
