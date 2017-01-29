@@ -73,10 +73,11 @@ function geocode(position, callback) {
 function putFoodOnMap(positionString, callback) {
     geocode(positionString, function(pos) {
         console.log("asdfs");
-        $.get( "api/locations.php", {position:[1,2]}).done(function(data) {
-            console.log(data);
-        }).error(function(error){
-            console.log("Could not plot food: "+error);
+        $.get( "api/locations.php", {position:pos}).done(function(data) {
+            data = JSON.parse(data)["food"];
+            for (var i = 0; i < data.length; i++) {
+                var marker = L.marker([data[i]["latitude"], data[i]["longitude"]]).addTo(mymap);
+            }
         });
         callback(pos);
     })
