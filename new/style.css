@@ -10,6 +10,22 @@ h1,h2,h3,h4,h5,h6 {
     font-family: 'Lobster', 'Garamond',serif;
 }
 
+.signin-register-links {
+    text-align: right;
+    margin-top: 1em;
+}
+
+.signin-register-links a {
+    color: #FFF;
+    text-decoration: none;
+    padding: 0.5em;
+    font-size: 1.25em;
+}
+
+.signin-register-links a:hover {
+    text-decoration: underline;
+}
+
 #front-page {
     color: #ebebeb;
     background-color: #2b3e50;
@@ -56,21 +72,32 @@ h1,h2,h3,h4,h5,h6 {
 #map {
     height: 100vh;
     background-color: #FFF;
-    display: none;
+    display: block;
+}
+.card .row {
+    width: 100%;
+    margin: 0;
 }
 .food-display-panel {
     margin-top: 3em;
     margin-bottom: 3em;
 }
-.food-display-panel-highlight {
-    display: flex;
-}
 .food-display-panel-highlight .card-block {
     display: flex;
     flex-direction: column;
 }
+.food-display-panel-highlight .card-img-top {
+    width: 100% !important;
+}
 .food-display-panel-related .card {
     margin-bottom: 1em;
+}
+.card-side-image {
+    background-position: center;
+    background-size: cover;
+    border-top-right-radius: calc(.25rem - 1px);
+    border-bottom-right-radius: calc(.25rem - 1px);
+    box-sizing: border-box;
 }
 .loadingOverlay {
     position: fixed;

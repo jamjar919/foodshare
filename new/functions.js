@@ -6,6 +6,8 @@ if (navigator.geolocation){
         function(position){
             initialPosition = [position.coords.latitude,position.coords.longitude];
             console.log("Got initial position as: "+initialPosition);
+            setMap(initialPosition);
+            loadFood(initialPosition);
         },
         function(error){
             // If we don't find the initial position just go L O N D O N
@@ -27,15 +29,15 @@ function scrollToSearch() {
     $("#top-tab").hide();
     $( "#front-page" ).slideDown( 1000, function() {
         stopLoad();
-        $("#map").hide();
+        //$("#map").hide();
     });
 }
 
 function scrollToMap() {
     startLoad();
     $( "#front-page" ).slideUp( 1000, function() {
+        //$("#map").show();
         $("#top-tab").slideDown(1000);
-        $("#map").show();
         mymap.invalidateSize();
         stopLoad();
     });
@@ -73,19 +75,16 @@ function popupDetails(food) {
     return '<div class="food-popup"><h3>'+food["name"]+'</h3><p>'+food["description"]+'</p><button class="btn btn-primary btn-sm" onClick="function(){loadFullFood('+food["id"]+')}">More</button></div>';
 }
 
-function putFoodOnMap(positionString, callback) {
-    geocode(positionString, function(pos) {
-        $.get( "api/food.php", {position:pos}).done(function(data) {
-            data = JSON.parse(data)["food"];
-            for (var i = 0; i < data.length; i++) {
-                L.marker([data[i]["latitude"], data[i]["longitude"]])
-                .addTo(mymap)
-                .bindPopup(popupDetails(data[i]));
-            }
-        });
-        callback(pos);
-    })
-    
+function loadFood(pos, callback = function(){}) {
+    $.get( "api/food.php", {position:pos}).done(function(data) {
+        data = JSON.parse(data)["food"];
+        for (var i = 0; i < data.length; i++) {
+            L.marker([data[i]["latitude"], data[i]["longitude"]])
+            .addTo(mymap)
+            .bindPopup(popupDetails(data[i]));
+        }
+    });
+    callback();
 } 
 
 LOADID = "loader";
@@ -99,8 +98,17 @@ function stopLoad() {
     $("#"+LOADID).hide();
 }
 
+
+function mapOnClick(clickEvent) {
+    var pos = clickEvent.latlng;
+    loadFood(pos, function() {
+        console.log("Loaded food at "+e.latlng);
+    });
+};
+
 $(document).ready(function() {
     initMap();
+    mymap.on('click', mapOnClick);
 });
 
 /*
@@ -108,9 +116,11 @@ $(document).ready(function() {
  */
 
 $("#searchbutton").click(function() {
-    putFoodOnMap($("#searchbox").val(), function(pos) {
-        setMap(pos);
-        scrollToMap();
+    geocode($("#searchbox").val(), function(pos) {
+        loadFood(pos, function() {
+            setMap(pos);
+            scrollToMap();
+        });
     });
 });
 

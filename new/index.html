@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Foodshare</title>
+        <title>FlavourTown</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'>
         </script>
@@ -15,6 +15,9 @@
     </head>
     <body>
         <div class="container mainpage-container" id="front-page">
+            <div class="signin-register-links">
+                <a href="#">Sign in</a> <a href="#">Register</a>
+            </div>
             <div class="searchbox-container">
                 <div class="logo">
                     <h1>FlavourTown</h1>
@@ -66,11 +69,12 @@
             <span class="glyphicon glyphicon-menu-hamburger"></span>
             <span class="glyphicon glyphicon-menu-hamburger"></span>
         </div>
-        <div id="map" style="display:none;">
+        <div id="map">
         </div>
         <div class="food-display-panel container">
             <div class="row">
                 <div class="food-display-panel-highlight col-md-6">
+                <h2 id="selected-item-header">Selected item</h2>
                     <div class="card">
                         <img class="card-img-top" src="http://lorempixel.com/400/300/food/" alt="Card image cap">
                         <div class="card-block">
@@ -81,6 +85,7 @@
                     </div>
                 </div>
                 <div class="food-display-panel-related col-md-6">
+                    <h2 id="related-food-header">Related</h2>
                     <div class="card">
                         <div class="row">
                             <div class="col-md-6">
@@ -90,10 +95,7 @@
                                     <a href="#" class="btn btn-primary">Read More</a>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card-img-bottom">
-                                    <img class="card-img-top" src="http://lorempixel.com/260/200/food/" alt="Card image cap">
-                                </div>
+                            <div class="col-md-6 card-side-image" style="background-image: url('http://lorempixel.com/260/200/food/')">
                             </div>
                         </div>
                     </div>
@@ -106,10 +108,7 @@
                                     <a href="#" class="btn btn-primary">Read More</a>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card-img-bottom">
-                                    <img class="card-img-top" src="http://lorempixel.com/260/200/food/" alt="Card image cap">
-                                </div>
+                            <div class="col-md-6 card-side-image" style="background-image: url('http://lorempixel.com/260/200/food/')">
                             </div>
                         </div>
                     </div>
@@ -122,10 +121,7 @@
                                     <a href="#" class="btn btn-primary">Read More</a>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card-img-bottom">
-                                    <img class="card-img-top" src="http://lorempixel.com/260/200/food/" alt="Card image cap">
-                                </div>
+                            <div class="col-md-6 card-side-image" style="background-image: url('http://lorempixel.com/260/200/food/')">
                             </div>
                         </div>
                     </div>
