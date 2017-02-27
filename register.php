@@ -3,46 +3,35 @@
     require "functions.php";
     // Check if we are already logged in
     if (isLoggedIn($_SESSION)) {
-        // We are logged in, go to members page
-        // header("Location: members.php");
         header("Location: index.php");
     }
     if (isset($_POST["submitted"])) {
-        $possibleErrors = registerBasicUser($_POST["username"], $_POST["email"], $_POST["password"], $_POST["confirmpassword"]);
-        if ($possibleErrors === true) {
+        $errors = registerBasicUser($_POST["username"], $_POST["email"], $_POST["password"], $_POST["confirmpassword"]);
+        if ($errors === true) {
             // We registered successfully!
+        } else {
+            var_dump($errors);
         }
     }
 ?>
-<?php
-    include "header.php";
-    include "nav.php";
-?>
-    <div class="col-sm-12 col-md-12">
-        <div class="thumbnail">
-            <div class="form">
-            <h3>Welcome to FoodShare!</h3><p>
+<div class="col-sm-12 col-md-12">
+    <form action="#" method="POST">
+        <div class="form">
+            <h3>Welcome to FoodShare!</h3>
             <div class="form-group">
-                <input type="text" placeholder="Email" class="form-control" id="usr">
+                <input type="text" placeholder="Username" class="form-control" name="username">
             </div>
             <div class="form-group">
-                <input type="password" placeholder="Password" class="form-control" id="pwd">
+                <input type="text" placeholder="Email" class="form-control" name="email">
             </div>
             <div class="form-group">
-                <input type="password" placeholder="Re-enter Password" class="form-control" id="pwd">
+                <input type="password" placeholder="Password" class="form-control" name="password">
             </div>
             <div class="form-group">
-                <input type="text" placeholder="Country" class="form-control" id="pwd">
+                <input type="password" placeholder="Re-enter Password" class="form-control" name="confirmpassword">
             </div>
-            <div class="form-group">
-                <input type="text" placeholder="City" class="form-control" id="pwd">
-            </div>
-            </p><a href="#" class="btn btn-default" role="button">Sign Up and Log In</a>
-            </div>
+            <input type="hidden" name="submitted" value="1">
+            <input type="submit" class="btn btn-default" value="Sign Up">
         </div>
-        </div>
-    </div>
-    </div>
-<?php
-    include "footer.php";
-?>
+    </form>
+</div>

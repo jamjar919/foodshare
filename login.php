@@ -16,3 +16,17 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
     }
 }
 ?>
+<div class="col-sm-12 col-md-12">
+    <form action="#" method="POST">
+        <div class="form">
+            <h3>Login</h3>
+            <div class="form-group">
+                <input type="text" placeholder="Username" class="form-control" name="username">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" class="form-control" name="password">
+            </div>
+            <input type="submit" class="btn btn-default" value="Sign Up">
+        </div>
+    </form>
+</div>
