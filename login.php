@@ -26,7 +26,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
             <div class="form-group">
                 <input type="password" placeholder="Password" class="form-control" name="password">
             </div>
-            <input type="submit" class="btn btn-default" value="Sign Up">
+            <input type="submit" class="btn btn-default" value="Login">
         </div>
     </form>
 </div>

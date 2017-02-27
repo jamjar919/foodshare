@@ -183,7 +183,7 @@ function registerBasicUser($username, $email, $password, $confirmpassword) {
     // We are free from errors! Insert into the DB! 
     try {
         // Get hashed password
-        $hash = password_hash($password);
+        $hash = password_hash($password, PASSWORD_BCRYPT);
         $key = makeNewToken();
         $stmt = $db->prepare("INSERT INTO `user` (`uid`, `username`, `email`, `password`, `name`, `postcode`, `verified`, `confirm_email_key`) VALUES (NULL, :username, :email, :hash, NULL, NULL, 0, :key);");
         $stmt->bindValue(':username', $username, PDO::PARAM_STR);
