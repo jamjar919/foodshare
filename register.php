@@ -8,7 +8,9 @@
     if (isset($_POST["submitted"])) {
         $errors = registerBasicUser($_POST["username"], $_POST["email"], $_POST["password"], $_POST["confirmpassword"]);
         if ($errors === true) {
-            // We registered successfully!
+            ?>
+            You've been registered successfully! Check your email for your login link.
+            <?php
         } else {
             var_dump($errors);
         }
