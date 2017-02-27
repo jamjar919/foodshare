@@ -10,13 +10,9 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
         $_SESSION["token"] = $token;
         header("Location: index.php");
     } else {
-        // Login was incorrect!
-        //include "header.php";
-        include "nav.php";
         ?>
         Your username or password was incorrect.
         <?php
-        include "footer.php";
     }
 }
 ?>
