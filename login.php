@@ -1,21 +1,28 @@
 <?php
-session_start();
-require "functions.php";
+require_once "class/User.class.php";
+require_once "class/UserTools.class.php";
+$errors = array();
+
+// Check we aren't already logged in via cookie
+if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
+	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
+	if ($user->isLoggedIn()) {
+		header("Location: feed.php");	
+	}
+}
+
 // Did we submit the form? If we did, check if it's correct and generate a new login token
 if (isset($_POST["username"]) && isset($_POST["password"])) {
-    $uid = getUid($_POST["username"]);
-    $token = generateLoginToken($_POST["username"], $_POST["password"]);
-    if ($token) {
-        $_SESSION["uid"] = $uid;
-        $_SESSION["token"] = $token;
-        header("Location: index.php");
-    } else {
-        ?>
-        Your username or password was incorrect.
-        <?php
-    }
+	$user = new User($_POST["username"]);
+	$user->login($_POST["password"]);
+	if ($user->isLoggedIn()) {
+		header("Location: feed.php");	
+	} else {
+		$errors[] = "Incorrect username or password";
+	}
 }
 ?>
+<?php UserTools::printErrors($errors); ?>
 <div class="col-sm-12 col-md-12">
     <form action="#" method="POST">
         <div class="form">

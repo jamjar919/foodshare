@@ -1,5 +1,6 @@
 <?php
 session_start();
-session_destroy();
+setcookie("username");
+setcookie("token");
 header("Location: login.php");
 ?>

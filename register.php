@@ -1,21 +1,30 @@
 <?php
-    session_start();
-    require "functions.php";
-    // Check if we are already logged in
-    if (isLoggedIn($_SESSION)) {
-        header("Location: index.php");
-    }
-    if (isset($_POST["submitted"])) {
-        $errors = registerBasicUser($_POST["username"], $_POST["email"], $_POST["password"], $_POST["confirmpassword"]);
-        if ($errors === true) {
-            ?>
-            You've been registered successfully! Check your email for your login link.
-            <?php
-        } else {
-            var_dump($errors);
-        }
-    }
+require_once "class/User.class.php";
+require_once "class/UserTools.class.php";
+$errors = array();
+
+if (isset($_POST["submitted"])) {
+	// We submitted form - now we try and register 
+	$register_success = UserTools::registerBasicUser(
+		$_POST["username"],
+		$_POST["email"],
+		$_POST["password"],
+		$_POST["confirmpassword"]
+	);
+	if ($register_success === true) {
+		$user = new User($_POST["username"]);
+		$user->login($_POST["password"]);
+		if ($user->isLoggedIn()) {
+			header("Location: feed.php");	
+		} else {
+			echo "Incorrect username or password";
+		}
+	} else {
+		$errors = $register_success;
+	}
+}
 ?>
+<?php UserTools::printErrors($errors); ?>
 <div class="col-sm-12 col-md-12">
     <form action="#" method="POST">
         <div class="form">
