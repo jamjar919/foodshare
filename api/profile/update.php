@@ -1,10 +1,36 @@
 <?php
 header("Content-Type: application/json");
+require_once "../../class/User.class.php";
+require_once "../../class/UserTools.class.php";
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+function update_profile() {
+	$response = array();
+	if (!isset($_POST["token"]) && !isset($_POST["username"])) {
+		$response["error"] = "Username or token not supplied.";
+		return $response;
+	}
+	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
+	if (!($user->isLoggedIn())) {
+		$response["error"] = "Username and auth token supplied are invalid.";
+	}
+	// User is valid, let's check our parameters and do the update_profile
 	if (isset($_POST["location"])) {
+		
+	}
+	if (isset($_POST["postcode"])) {
+		return $_POST;
+	}
+	if (isset($_POST["email"])) {
+		
+	}
+	if (isset($_POST["profilepicture"])) {
+		
+	}
+	if (isset($_POST["password"])) {
 		
 	}
 }
 
-echo json_encode($_POST);
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+	echo json_encode(update_profile());
+}
