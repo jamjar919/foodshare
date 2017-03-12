@@ -48,6 +48,17 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
  * ORDER BY tag_count DESC
  */
 
+
+/**
+ * Return json object containing food items sorted and filtered based on the user's search
+ *
+ * @param string $query Keywords entered by user
+ * @param array $location Central location
+ * @param int $distance Max distance from the central location to food items
+ * @param string $sort Sort type
+ * @param int $num Number of food items displayed per page
+ * @param int $offset Page offset
+ */
 function get_food_listing($query, $location, $distance, $sort, $num, $offset)
 {
     $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
@@ -104,12 +115,13 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
             //need to include search by tags some how rather than just name and description
             try {
 
-                $stmt = $db->prepare("SELECT * ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+f.longitude, f.user_username, f.claimer_username, ( 3959 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
-  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food 
-  INNER JOIN tag_list ON tag_list.id = food.tag_list_id
+  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
+  INNER JOIN tag_list ON tag_list.id = f.tag_list_id
  INNER JOIN tag t ON t.id = tag_list.tag_id
- WHERE MATCH(food.name, food.description, t.name) 
+ WHERE MATCH(f.name, f.description, t.name) 
   AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance  
  LIMIT :offset , :num;");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
@@ -130,13 +142,14 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
         //time
         case 'dt':
             try {
-                $stmt = $db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+f.longitude, f.user_username, f.claimer_username,  ( 3959 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
-+ sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food 
-INNER JOIN tag_list ON tag_list.id = food.tag_list_id
++ sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
+INNER JOIN tag_list ON tag_list.id = f.tag_list_id
  INNER JOIN tag t ON t.id = tag_list.tag_id
- WHERE MATCH(food.name, food.description, t.name) 
-  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY food.time DESC LIMIT :offset , :num;");
+ WHERE MATCH(f.name, f.description, t.name) 
+  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY f.time DESC LIMIT :offset , :num;");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
@@ -154,13 +167,14 @@ INNER JOIN tag_list ON tag_list.id = food.tag_list_id
             break;
         case 'exp':
             try {
-                $stmt = $db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+f.longitude, f.user_username, f.claimer_username,  ( 3959 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food  
- INNER JOIN tag_list ON tag_list.id = food.tag_list_id
+ + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f  
+ INNER JOIN tag_list ON tag_list.id = f.tag_list_id
  INNER JOIN tag t ON t.id = tag_list.tag_id
- WHERE MATCH(food.name, food.description, t.name) 
-  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY food.expiry DESC LIMIT :offset , :num;");
+ WHERE MATCH(f.name, f.description, t.name) 
+  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY f.expiry DESC LIMIT :offset , :num;");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
