@@ -1,16 +1,36 @@
 <?php
 //TODO database connection file required
+require '../db.php';
 header('Content-Type: application/json');
 
-if (isset($_GET['submit'])) {
-    $query = $_GET['q'];
-    $location = $_GET['location'];
-    $distance = $_GET['distance'];
-    $sort = $_GET['sort'];
-    $num = $_GET['num'];
-    $offset = $_GET['offset'];
-    get_food_listing($query, $location, $distance, $sort, $num, $offset);
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    if (!isset($_GET['location'])) {
+        echo json_encode(array("error" => "Location not defined"));
+} else {
+        //TODO predefine undefined parameters
+        //make location required parameter
+        $query = $_GET['q'];
+        if(!isset($_GET['q'])) {
+            $query = "";
+        }
+        echo $query;
+        $sort = $_GET['sort'];
+        if(!isset($_GET['sort'])) {
+            $sort = "bm";
+        }
+        $location = $_GET['location'];
+        $distance = $_GET['distance'];
+        if(!isset($_GET['distance'])) {
+            $distance = 10000000;
+        }
+
+
+        $num = (int)$_GET['num'];
+        $offset = (int)$_GET['offset'];
+        get_food_listing($query, $location, $distance, $sort, $num, $offset);
+    }
 }
+
 
 //TODO include use of tags in best match search
 //check if item tags for each item in the searched tags then order them by the most matches and then sort
@@ -28,27 +48,41 @@ if (isset($_GET['submit'])) {
  * ORDER BY tag_count DESC
  */
 
+
+/**
+ * Return json object containing food items sorted and filtered based on the user's search
+ *
+ * @param string $query Keywords entered by user
+ * @param array $location Central location
+ * @param int $distance Max distance from the central location to food items
+ * @param string $sort Sort type
+ * @param int $num Number of food items displayed per page
+ * @param int $offset Page offset
+ */
 function get_food_listing($query, $location, $distance, $sort, $num, $offset)
 {
+    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+    $words = strtolower($query);
     switch ($sort) {
         //alphabetical
         case 'az':
             try {
-                $stmt = $this->db->prepare("SELECT *, COUNT(*) AS tag_count, ( 3959 * acos( cos( radians(:center_lat) ) 
-                * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance  
- ORDER BY `name` ASC LIMIT :offset , :num;");
+                echo $num . "\n";
+                $stmt = $db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
+ + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance   
+ ORDER BY `name` ASC LIMIT :offset, :num");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
                 $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
-                $stmt->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt->bindParam(':num', $num, PDO::PARAM_INT);
                 $stmt->execute();
-                $results = $stmt->fetchAll();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
                     "food" => $results
                 );
-                echo json_decode($food);
+                echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
@@ -56,7 +90,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
         //location
         case 'loc':
             try {
-                $stmt = $this->db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
                 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance
  ORDER BY distance ASC
@@ -67,11 +101,11 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
                 $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
                 $stmt->bindValue(":num", $num, PDO::PARAM_INT);
                 $stmt->execute();
-                $results = $stmt->fetchAll();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
                     "food" => $results
                 );
-                echo json_decode($food);
+                echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
@@ -80,23 +114,27 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
         case 'bm':
             //need to include search by tags some how rather than just name and description
             try {
-                $stmt = $this->db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+
+                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+f.longitude, f.user_username, f.claimer_username, ( 3959 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
-  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance 
-  WHERE MATCH(`name`, desciption) AGAINST (':query' IN BOOLEAN MODE)
+  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
+  INNER JOIN tag_list ON tag_list.id = f.tag_list_id
+ INNER JOIN tag t ON t.id = tag_list.tag_id
+ WHERE MATCH(f.name, f.description, t.name) 
+  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance  
  LIMIT :offset , :num;");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
                 $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
                 $stmt->bindValue(":num", $num, PDO::PARAM_INT);
-                $stmt->bindValue(":query", $query, PDO::PARAM_STR);
                 $stmt->execute();
-                $results = $stmt->fetchAll();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
                     "food" => $results
                 );
-                echo json_decode($food);
+                echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
@@ -104,44 +142,50 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
         //time
         case 'dt':
             try {
-                $stmt = $this->db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+f.longitude, f.user_username, f.claimer_username,  ( 3959 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
-+ sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance 
- WHERE MATCH(`name`, desciption) AGAINST (':query' IN BOOLEAN MODE) ORDER BY `datetime` DESC LIMIT :offset , :num;");
++ sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
+INNER JOIN tag_list ON tag_list.id = f.tag_list_id
+ INNER JOIN tag t ON t.id = tag_list.tag_id
+ WHERE MATCH(f.name, f.description, t.name) 
+  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY f.time DESC LIMIT :offset , :num;");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
                 $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
                 $stmt->bindValue(":num", $num, PDO::PARAM_INT);
-                $stmt->bindValue(":query", $query, PDO::PARAM_STR);
                 $stmt->execute();
-                $results = $stmt->fetchAll();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
                     "food" => $results
                 );
-                echo json_decode($food);
+                echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
             break;
         case 'exp':
             try {
-                $stmt = $this->db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+f.longitude, f.user_username, f.claimer_username,  ( 3959 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance 
- WHERE MATCH(`name`, desciption) AGAINST (':query' IN BOOLEAN MODE) ORDER BY `expiry` DESC LIMIT :offset , :num;");
+ + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f  
+ INNER JOIN tag_list ON tag_list.id = f.tag_list_id
+ INNER JOIN tag t ON t.id = tag_list.tag_id
+ WHERE MATCH(f.name, f.description, t.name) 
+  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY f.expiry DESC LIMIT :offset , :num;");
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
                 $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
                 $stmt->bindValue(":num", $num, PDO::PARAM_INT);
-                $stmt->bindValue(":query", $query, PDO::PARAM_STR);
                 $stmt->execute();
-                $results = $stmt->fetchAll();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
                     "food" => $results
                 );
-                echo json_decode($food);
+                echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
@@ -151,7 +195,7 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
 
 
 
-
+/*
 
 echo json_encode(array(
     "food" => array(
@@ -185,3 +229,4 @@ echo json_encode(array(
     ),
     "get" => $_GET
 ));
+*/
