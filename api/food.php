@@ -1,6 +1,7 @@
 <?php
 //TODO database connection file required
-require '../db.php';
+define('__ROOT__',dirname(__FILE__));
+require __ROOT__.'/db.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == "GET") {

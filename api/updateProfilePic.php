@@ -1,4 +1,5 @@
 <?php
+define('__ROOT__',dirname(dirname(__FILE__)));
 //TODO database connection file required
 header('Content-Type: application/json');
 
