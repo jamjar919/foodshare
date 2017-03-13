@@ -14,7 +14,6 @@ Password: <input type="password" name="password" id="password"> <a onClick="chan
 			console.log(result);
 			$("#message").html = 'Success: ' + result
 		}).catch(function(error) {
-			console.log("we errored for some reason");
 			console.log(error);
 			$("#message").html = 'Error: ' + error
 		})		

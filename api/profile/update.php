@@ -1,8 +1,7 @@
 <?php
 header("Content-Type: application/json");
-define('__ROOT__',dirname(dirname(dirname(__FILE__))));
-require_once __ROOT__."/class/User.class.php";
-require_once __ROOT__."/class/UserTools.class.php";
+require_once "../../class/User.class.php";
+require_once "../../class/UserTools.class.php";
 
 function update_profile() {
 	$response = array();

@@ -1,8 +1,7 @@
 <?php
 
-define('__ROOT__',dirname(dirname(__FILE__)));
-require_once __ROOT__.'/db.php';
-require_once __ROOT__.'/lib/password.php'; // Password hashing library
+require 'db.php';
+require 'lib/password.php'; // Password hashing library
 
 class User
 {
