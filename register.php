@@ -1,6 +1,7 @@
 <?php
-require_once "class/User.class.php";
-require_once "class/UserTools.class.php";
+define('__ROOT__',dirname(__FILE__));
+require_once __ROOT__."/class/User.class.php";
+require_once __ROOT__."/class/UserTools.class.php";
 $errors = array();
 
 if (isset($_POST["submitted"])) {

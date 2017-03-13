@@ -1,6 +1,8 @@
 <?php
+define('__ROOT__',dirname(__FILE__));
+require_once __ROOT__."/class/User.class.php";
+require_once __ROOT__."/class/UserTools.class.php";
 if (isset($_GET["username"]) && isset($_GET["key"])) {
-	require_once "class/UserTools.class.php";
 	if (UserTools::validateUserEmail($_GET["username"],$_GET["key"])) {
 		echo "Successfully validated email.";
 	} else {
