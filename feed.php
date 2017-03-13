@@ -5,7 +5,7 @@ require_once "class/UserTools.class.php";
 $loggedIn = false;
 if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
-	if ( ! ($user->isLoggedIn())) {
+	if ($user->isLoggedIn()) {
 		$loggedIn = true;
 	}
 }
