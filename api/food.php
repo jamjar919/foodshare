@@ -13,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         if(!isset($_GET['q'])) {
             $query = "";
         }
-        echo $query;
         $sort = $_GET['sort'];
         if(!isset($_GET['sort'])) {
             $sort = "bm";
@@ -21,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         $location = $_GET['location'];
         $distance = $_GET['distance'];
         if(!isset($_GET['distance'])) {
-            $distance = 10000000;
+            $distance = 20;
         }
 
 
@@ -67,8 +66,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
         //alphabetical
         case 'az':
             try {
-                echo $num . "\n";
-                $stmt = $db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT *, ( 6371 * acos( cos( radians(:center_lat) ) * 
                 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance   
  ORDER BY `name` ASC LIMIT :offset, :num");
@@ -90,7 +88,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
         //location
         case 'loc':
             try {
-                $stmt = $db->prepare("SELECT *, ( 3959 * acos( cos( radians(:center_lat) ) * 
+                $stmt = $db->prepare("SELECT *, ( 6371 * acos( cos( radians(:center_lat) ) * 
                 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance
  ORDER BY distance ASC
@@ -116,7 +114,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
             try {
 
                 $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
-f.longitude, f.user_username, f.claimer_username, ( 3959 * acos( cos( radians(:center_lat) ) * 
+f.longitude, f.user_username, f.claimer_username, ( 6371 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
   + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
   INNER JOIN tag_list ON tag_list.id = f.tag_list_id
@@ -143,7 +141,7 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
         case 'dt':
             try {
                 $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
-f.longitude, f.user_username, f.claimer_username,  ( 3959 * acos( cos( radians(:center_lat) ) * 
+f.longitude, f.user_username, f.claimer_username,  ( 6371 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
 + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
 INNER JOIN tag_list ON tag_list.id = f.tag_list_id
@@ -168,7 +166,7 @@ INNER JOIN tag_list ON tag_list.id = f.tag_list_id
         case 'exp':
             try {
                 $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
-f.longitude, f.user_username, f.claimer_username,  ( 3959 * acos( cos( radians(:center_lat) ) * 
+f.longitude, f.user_username, f.claimer_username,  ( 6371 * acos( cos( radians(:center_lat) ) * 
 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f  
  INNER JOIN tag_list ON tag_list.id = f.tag_list_id
