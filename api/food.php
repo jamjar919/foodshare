@@ -65,7 +65,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
     $words = strtolower($query);
     switch ($sort) {
         //alphabetical
-        case 'az':
+        case 'Alphabetical':
             try {
                 $stmt = $db->prepare("SELECT *, ( 6371 * acos( cos( radians(:center_lat) ) * 
                 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
@@ -87,7 +87,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
             }
             break;
         //location
-        case 'loc':
+        case 'Closest':
             try {
                 $stmt = $db->prepare("SELECT *, ( 6371 * acos( cos( radians(:center_lat) ) * 
                 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
@@ -110,7 +110,7 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
             }
             break;
         //best match
-        case 'bm':
+        case 'Best match':
             //need to include search by tags some how rather than just name and description
             try {
 
@@ -139,7 +139,7 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
             }
             break;
         //time
-        case 'dt':
+        case 'Most recent':
             try {
                 $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
 f.longitude, f.user_username, f.claimer_username,  ( 6371 * acos( cos( radians(:center_lat) ) * 
@@ -164,7 +164,7 @@ INNER JOIN tag_list ON tag_list.id = f.tag_list_id
                 echo $e->getMessage();
             }
             break;
-        case 'exp':
+        case 'Expiry':
             try {
                 $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
 f.longitude, f.user_username, f.claimer_username,  ( 6371 * acos( cos( radians(:center_lat) ) * 
