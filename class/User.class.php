@@ -52,11 +52,11 @@ class User
 	*/
 	public function generateLoginToken($password) {
 		$username = $this->username;
-		$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 		if (empty($username) || empty($password)) {
 			return false;
 		}
 		try {
+                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 			$stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
 			$stmt->bindValue(":username", $username, PDO::PARAM_STR);
 			$stmt->execute();

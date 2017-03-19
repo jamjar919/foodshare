@@ -6,7 +6,7 @@ require_once __ROOT__.'/lib/password.php'; // Password hashing library
 define("DOMAIN", "http://community.dur.ac.uk/cs.seg01/foodshare/");
 class UserTools {
 	
-	function printErrors($errors) {
+	public static function printErrors($errors) {
 		if (gettype($errors) == "array") {
 			foreach($errors as $error) {
 				?>
@@ -40,7 +40,7 @@ class UserTools {
 	* 
 	* @returns Array $errors An array of strings containing any errors encounted during the process, or true on success
 	**/
-	function registerBasicUser($username, $email, $password, $confirmpassword) {
+	public static function registerBasicUser($username, $email, $password, $confirmpassword) {
 		try {
 			$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 		} catch(PDOEXCEPTION $e) {
