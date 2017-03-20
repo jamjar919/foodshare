@@ -20,14 +20,21 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         }
         $location = $_GET['location'];
         $distance = $_GET['distance'];
-        if(!isset($_GET['distance'])) {
-            $distance = 20;
-        }
 
+        $expiry = $_GET['expiry'];
+        if($expiry != "Any time") {
+            $expiry[0] = date("Y-m-d", strtotime(str_replace('/', '-', $expiry[0])));
+            $expiry[1] = date("Y-m-d", strtotime(str_replace('/', '-', $expiry[1])));
+        }
+        $time = $_GET['time'];
+        if($time != "Any time") {
+            $time[0] = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $time[0])));
+            $time[1] = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $time[1])));
+        }
 
         $num = (int)$_GET['num'];
         $offset = (int)$_GET['offset'];
-        get_food_listing($query, $location, $distance, $sort, $num, $offset);
+        getFoodListing($query, $location, $distance, $expiry, $time, $sort, $num, $offset);
     }
 }
 
@@ -55,22 +62,42 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
  * @param string $query Keywords entered by user
  * @param array $location Central location
  * @param int $distance Max distance from the central location to food items
+ * @param array $expiry expiry range
+ * @param array $time time posted range
  * @param string $sort Sort type
  * @param int $num Number of food items displayed per page
  * @param int $offset Page offset
  */
-function get_food_listing($query, $location, $distance, $sort, $num, $offset)
+function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $offset)
 {
     $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-    $words = strtolower($query);
+    $words = strtolower($q);
+
+    $query = "SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
+ f.longitude, f.user_username, f.claimer_username, f.tag_list_id, ( 6371 * acos( cos( radians(:center_lat) ) * 
+                cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
+ + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f ";
+    //check if expiry date and time is empty for any time filter
+    if (!$words == "" or $sort == "Best match") {
+        $query .= "INNER JOIN tag_list ON tag_list.id = f.tag_list_id
+        INNER JOIN tag t ON t.id = tag_list.tag_id
+        WHERE MATCH(f.name, f.description, t.name) 
+        AGAINST ('$words' IN BOOLEAN MODE) ";
+    }
+
+    if(!$expiry == "Any time") {
+        $query .= "AND f.expiry BETWEEN '$expiry[0]' AND '$expiry[1]'";
+    }
+    if(!$time == "Any time") {
+        $query .= "AND f.time BETWEEN '$time[0]' AND '$time[1]'";
+    }
+    $query .= "HAVING distance < :distance ";
     switch ($sort) {
         //alphabetical
         case 'Alphabetical':
             try {
-                $stmt = $db->prepare("SELECT *, ( 6371 * acos( cos( radians(:center_lat) ) * 
-                cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance   
- ORDER BY `name` ASC LIMIT :offset, :num");
+                $query .= "ORDER BY `name` ASC LIMIT :offset, :num";
+                $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
@@ -89,11 +116,8 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
         //location
         case 'Closest':
             try {
-                $stmt = $db->prepare("SELECT *, ( 6371 * acos( cos( radians(:center_lat) ) * 
-                cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food HAVING distance < :distance
- ORDER BY distance ASC
- LIMIT :offset , :num;");
+                $query .= "ORDER BY distance ASC LIMIT :offset , :num;";
+                $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
@@ -113,16 +137,9 @@ function get_food_listing($query, $location, $distance, $sort, $num, $offset)
         case 'Best match':
             //need to include search by tags some how rather than just name and description
             try {
+                $query .= "LIMIT :offset, :num;";
 
-                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
-f.longitude, f.user_username, f.claimer_username, ( 6371 * acos( cos( radians(:center_lat) ) * 
-cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
-  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
-  INNER JOIN tag_list ON tag_list.id = f.tag_list_id
- INNER JOIN tag t ON t.id = tag_list.tag_id
- WHERE MATCH(f.name, f.description, t.name) 
-  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance  
- LIMIT :offset , :num;");
+                $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
@@ -141,14 +158,8 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
         //time
         case 'Most recent':
             try {
-                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
-f.longitude, f.user_username, f.claimer_username,  ( 6371 * acos( cos( radians(:center_lat) ) * 
-cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
-+ sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f
-INNER JOIN tag_list ON tag_list.id = f.tag_list_id
- INNER JOIN tag t ON t.id = tag_list.tag_id
- WHERE MATCH(f.name, f.description, t.name) 
-  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY f.time DESC LIMIT :offset , :num;");
+                $query .= "ORDER BY f.time DESC LIMIT :offset , :num;";
+                $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
@@ -166,14 +177,8 @@ INNER JOIN tag_list ON tag_list.id = f.tag_list_id
             break;
         case 'Expiry':
             try {
-                $stmt = $db->prepare("SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
-f.longitude, f.user_username, f.claimer_username,  ( 6371 * acos( cos( radians(:center_lat) ) * 
-cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f  
- INNER JOIN tag_list ON tag_list.id = f.tag_list_id
- INNER JOIN tag t ON t.id = tag_list.tag_id
- WHERE MATCH(f.name, f.description, t.name) 
-  AGAINST ('$words' IN BOOLEAN MODE) HAVING distance < :distance ORDER BY f.expiry DESC LIMIT :offset , :num;");
+                $query .= "ORDER BY f.expiry DESC LIMIT :offset , :num;";
+                $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
@@ -188,6 +193,7 @@ cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
+
             break;
     }
 }
