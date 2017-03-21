@@ -3,7 +3,6 @@ define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/lib/password.php'; // Password hashing library
 
-define("DOMAIN", "http://community.dur.ac.uk/cs.seg01/foodshare/");
 class UserTools {
 	
 	public static function printErrors($errors) {

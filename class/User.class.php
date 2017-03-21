@@ -172,7 +172,26 @@ class User
 	* Resend the verification email to the email address listed in the user profile, and generate new keys and that.
 	**/
 	private function reverifyEmail() {
-        
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            // Make a new verify token
+            $key = $this->makeNewToken();
+            $stmt = $db->prepare("UPDATE user SET confirm_email_key = :key WHERE username = :username");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->bindValue(":key", $key, PDO::PARAM_STR);
+            $stmt->execute();
+            // Get user email
+            $stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->execute();
+            $row = $stmt->fetch();
+            $email = $row["email"];
+            // Send confirmation mail
+            mail($email, "Email Change", "Hey! \n \n You changed your email to this new address. Click the link below to confirm that you own this email address: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&user=".$this->username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
+            return true;
+        } catch(PDOException $ex) {
+            return false;
+        }
 	}
 	
 	
@@ -189,6 +208,7 @@ class User
                     $stmt->bindValue(":email", $email, PDO::PARAM_STR);
                     $stmt->execute();
                     if ($stmt->rowCount()) {
+                        $this->reverifyMail();
                         return true;
                     }
                     return false;
