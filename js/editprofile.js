@@ -1,5 +1,10 @@
 var endpoint = "api/profile/update.php";
 
+/**
+* These functions all return promises
+* If you don't know what a primse is, you should git gud
+**/
+
 function changeProfilePicture(newProfilePicture) {
 }
 
@@ -14,7 +19,7 @@ function changePostcode(newPostcode) {
 			if (data.hasOwnProperty("error")) {
 				reject(data);
 			}
-			theLocation = [data.result.longitude, data.result.latitude];
+			theLocation = [data.result.latitude, data.result.longitude];
 			$.post(endpoint, {token: auth, username: user, postcode: newPostcode, location: theLocation})
 			.done(function(data) {
 				if (data.hasOwnProperty("error")) {
@@ -33,6 +38,9 @@ function changePostcode(newPostcode) {
 }
 
 function changeEmail(newEmail) {
+	return new Promise(function(resolve,reject) {
+	
+	});
 }
 
 function changePassword(newPassword) {

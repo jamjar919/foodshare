@@ -12,10 +12,13 @@ Password: <input type="password" name="password" id="password"> <a onClick="chan
 		changePostcode($(id).val())
 		.then(function(result) {
 			console.log(result);
-			$("#message").html = 'Success: ' + result
+			$("#message").html = 'Success: ' + result;
 		}).catch(function(error) {
-			console.log(error);
-			$("#message").html = 'Error: ' + error
+			if (error.hasOwnProperty('error')) {
+				alert(error.error);
+			} else {
+				console.log(error);
+			}
 		})		
 	}
 	$("#changePostcode").click(function () {
