@@ -50,6 +50,13 @@ function update_profile() {
 		}
 	}
 	if (isset($_POST["email"])) {
+            if($user->updateEmail($_POST["email"])) {
+                $response["email"]["message"] = "Successfully updated email. Please click the verification link in your email to proceed.";
+                $response["email"]["success"] = true;
+            } else {
+                $response["email"]["message"] = "Couldn't update the email address.";
+                $response["email"]["success"] = false;
+            }
 		
 	}
 	if (isset($_POST["profilepicture"])) {

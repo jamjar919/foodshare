@@ -56,7 +56,7 @@ class User
 			return false;
 		}
 		try {
-                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 			$stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
 			$stmt->bindValue(":username", $username, PDO::PARAM_STR);
 			$stmt->execute();
@@ -159,6 +159,27 @@ class User
 			}
 		}
 		return false;
+	}
+	
+    public function updateEmail($email) {
+        if ($this->isLoggedIn()) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                try {
+                    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                    $stmt = $db->prepare("UPDATE user SET verified = 0, email = :email WHERE username = :username");
+                    $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                    $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+                    $stmt->execute();
+                    if ($stmt->rowCount()) {
+                        return true;
+                    }
+                    return false;
+                } catch(PDOException $ex) {
+                    return false;
+                }
+            }
+        }
+        return false;
 	}
 	
 }

@@ -1,5 +1,5 @@
 var endpoint = "api/profile/update.php";
-
+// Note - you need the cookies library here.
 /**
 * These functions all return promises
 * If you don't know what a promise is, you should git gud
@@ -24,7 +24,7 @@ function changePostcode(newPostcode) {
 			$.post(endpoint, {token: auth, username: user, postcode: postcode, location: theLocation})
 			.done(function(data) {
 				if (data.hasOwnProperty("error")) {
-					reject(data);
+                                    reject(data);
 				}
 				resolve(data);
 			})
@@ -40,7 +40,18 @@ function changePostcode(newPostcode) {
 
 function changeEmail(newEmail) {
 	return new Promise(function(resolve,reject) {
-	
+            auth = Cookies.get('token');
+            user = Cookies.get('username');
+            $.post(endpoint, {token: auth, username: user, email: newEmail})
+                .done(function(data) {
+                        if (data.hasOwnProperty("error")) {
+                            reject(data);
+                        }
+                        resolve(data);
+                })
+                .fail(function(data) {
+                        reject(data);
+                });
 	});
 }
 
