@@ -91,8 +91,6 @@ $('#searchAdvanced').click(function(e){
     e.preventDefault();
     $("#dlDropDown").dropdown("toggle");
     geocode($("#loc").val(), function(pos) {
-        console.log("here");
-        console.log(pos);
         var expiry = $('#expiry').val();
         var time = $('#time').val();
         if(expiry != "Any time") {
@@ -176,6 +174,27 @@ function geocode(position, callback) {
     });
 }
 
-function tagSearch(q) {
+//autocomplete for searching keywords
+$(function() {
+    $( "#q1" ).autocomplete({
+        minLength: 3,
+        source: function( request, response ) {
 
-}
+            $.ajax({
+                url: "api/getTag.php",
+                dataType: "json",
+                data: {
+                    q: request.term
+                },
+                success: function( data ) {
+                    response(data.tags)
+                }
+
+            });
+
+
+        },
+
+    });
+});
+

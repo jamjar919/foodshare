@@ -1,15 +1,15 @@
 <?php
-//TODO database connection file required
+
 define('__ROOT__',dirname(__FILE__));
 require __ROOT__.'/db.php';
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    //make location required parameter
     if (!isset($_GET['location'])) {
         echo json_encode(array("error" => "Location not defined"));
 } else {
-        //TODO predefine undefined parameters
-        //make location required parameter
+
         $query = $_GET['q'];
         if(!isset($_GET['q'])) {
             $query = "";
@@ -37,24 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         getFoodListing($query, $location, $distance, $expiry, $time, $sort, $num, $offset);
     }
 }
-
-
-//TODO include use of tags in best match search
-//check if item tags for each item in the searched tags then order them by the most matches and then sort
-//the items with the same number of matches by the chosen sort method?
-//Do we want to have priority tags?
-//Search using keywords and tags?
-/*
- * SELECT *, COUNT(*) AS tag_count, group_concat(t.name) AS tags, ( 3959 * acos( cos( radians(:center_lat) ) *
- * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
- * + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food
- * INNER JOIN tag_list ON tag_list.food_id = food.id
- * INNER JOIN tag t ON t.id = tag_list.tag_id
- * WHERE t.name IN $tagList
- * HAVING distance < :distance
- * ORDER BY tag_count DESC
- */
-
 
 /**
  * Return json object containing food items sorted and filtered based on the user's search
