@@ -56,4 +56,18 @@ function changeEmail(newEmail) {
 }
 
 function changePassword(newPassword) {
+        return new Promise(function(resolve,reject) {
+            auth = Cookies.get('token');
+            user = Cookies.get('username');
+            $.post(endpoint, {token: auth, username: user, password: newPassword})
+                .done(function(data) {
+                        if (data.hasOwnProperty("error")) {
+                            reject(data);
+                        }
+                        resolve(data);
+                })
+                .fail(function(data) {
+                        reject(data);
+                });
+	});
 }

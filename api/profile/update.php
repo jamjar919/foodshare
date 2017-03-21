@@ -63,7 +63,13 @@ function update_profile() {
 		
 	}
 	if (isset($_POST["password"])) {
-		
+            if($user->updatePassword($_POST["password"])) {
+                $response["password"]["message"] = "Successfully updated password.";
+                $response["password"]["success"] = true;
+            } else {
+                $response["password"]["message"] = "Couldn't update the password.";
+                $response["password"]["success"] = false;
+            }
 	}
 	return $response;
 }

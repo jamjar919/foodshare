@@ -220,5 +220,56 @@ class User
         return false;
 	}
 	
+	/**
+	* Expires all login tokens for the user! This will effectively log them out everywhere.
+	**/
+	public function expireLoginTokens() {
+        if ($this->isLoggedIn()) {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("DELETE FROM auth WHERE username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                return true;
+            } catch(PDOException $ex) {
+                return false;
+            }
+        }
+        return false;
+	}
+	
+    /**
+    * Changes the user password. Returns FALSE on failure. Will also expire all user tokens!
+    **/
+	public function updatePassword($password) {
+        if ($this->isLoggedIn()) {
+            // Check for dumb cases
+            if (empty($password)) {
+                return false;
+            }
+            if (strlen($password) < 3) {
+                return false;
+            }
+            // Generate hash
+            $hash = password_hash($password, PASSWORD_BCRYPT);
+            // Actually change the pw
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("UPDATE user SET password = :pass WHERE username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->bindValue(":pass", $hash, PDO::PARAM_STR);
+                $stmt->execute();
+                if ($stmt->rowCount()) {
+                    $this->expireLoginTokens();
+                    return true;
+                }
+                return false;
+            } catch(PDOException $ex) {
+                return false;
+            }
+        }
+        return false;
+	}
+	
 }
 ?>
