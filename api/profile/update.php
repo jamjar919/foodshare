@@ -42,7 +42,7 @@ function update_profile() {
 	}
 	if (isset($_POST["postcode"])) {
 		if($user->updatePostcode($_POST["postcode"])) {
-			$response["postcode"]["message"] = "Successfully updates postcode";
+			$response["postcode"]["message"] = "Successfully updated postcode";
 			$response["postcode"]["success"] = true;
 		} else {
 			$response["postcode"]["message"] = "Couldn't update the postcode.";

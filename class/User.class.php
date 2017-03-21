@@ -120,7 +120,7 @@ class User
 	}
 	
 	public function updatePostcode($newPostcode) {
-		if ($this->isLoggedIn) {
+		if ($this->isLoggedIn()) {
 			try {
 				$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 				$stmt = $db->prepare("UPDATE user SET postcode = :postcode WHERE username = :username");
@@ -130,6 +130,7 @@ class User
 				if ($stmt->rowCount()) {
 					return true;
 				}
+				return false;
 			} catch(PDOException $ex) {
 				return false;
 			}
@@ -138,18 +139,20 @@ class User
 	}
 	
 	public function updateLocation($latitude, $longitude) {
-		if ($this->isLoggedIn) {
+		if ($this->isLoggedIn()) {
 			if (($latitude <= 90) && ($latitude >= -90) &&	($longitude <= 180) && ($longitude >= -180)
 			) {
 				try {
 					$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-					$stmt = $db->prepare("UPDATE user SET latitude = :lat AND longitude = :long WHERE username = :username");
+					$stmt = $db->prepare("UPDATE user SET latitude = :lat, longitude = :long WHERE username = :username");
+					$stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
 					$stmt->bindValue(":lat", $latitude, PDO::PARAM_STR); // Yes, I know they are decimals but PDO uses stringy magic 
 					$stmt->bindValue(":long", $longitude, PDO::PARAM_STR);
 					$stmt->execute();
 					if ($stmt->rowCount()) {
 						return true;
 					}
+                    return false;
 				} catch(PDOException $ex) {
 					return false;
 				}
