@@ -119,6 +119,9 @@ class User
 		return false;
 	}
 	
+	/**
+	* Updates the users postcode to the specified value. Returns FALSE on failure.
+	**/
 	public function updatePostcode($newPostcode) {
 		if ($this->isLoggedIn()) {
 			try {
@@ -138,6 +141,10 @@ class User
 		return false;
 	}
 	
+	
+	/**
+	* Updates the user location to the specified lat/long. Returns FALSE on failure.
+	**/
 	public function updateLocation($latitude, $longitude) {
 		if ($this->isLoggedIn()) {
 			if (($latitude <= 90) && ($latitude >= -90) &&	($longitude <= 180) && ($longitude >= -180)
@@ -161,6 +168,17 @@ class User
 		return false;
 	}
 	
+	/**
+	* Resend the verification email to the email address listed in the user profile, and generate new keys and that.
+	**/
+	private function reverifyEmail() {
+        
+	}
+	
+	
+	/**
+	* Update the listed email address. Returns FALSE on failure. Also triggers a verification update.
+	**/
     public function updateEmail($email) {
         if ($this->isLoggedIn()) {
             if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
