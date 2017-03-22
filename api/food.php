@@ -11,13 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 } else {
 
         $query = $_GET['q'];
-        if(!isset($_GET['q'])) {
-            $query = "";
-        }
         $sort = $_GET['sort'];
-        if(!isset($_GET['sort'])) {
-            $sort = "bm";
-        }
         $location = $_GET['location'];
         $distance = $_GET['distance'];
 
@@ -64,7 +58,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         $query .= "INNER JOIN tag_list ON tag_list.id = f.tag_list_id
         INNER JOIN tag t ON t.id = tag_list.tag_id
         WHERE MATCH(f.name, f.description, t.name) 
-        AGAINST ('$words' IN BOOLEAN MODE) ";
+        AGAINST ('$words' IN BOOLEAN MODE)";
     }
 
     if(!$expiry == "Any time") {
@@ -74,31 +68,14 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         $query .= "AND f.time BETWEEN '$time[0]' AND '$time[1]'";
     }
     $query .= "HAVING distance < :distance ";
+
+
     switch ($sort) {
         //alphabetical
         case 'Alphabetical':
             try {
                 $query .= "ORDER BY `name` ASC LIMIT :offset, :num";
-                $stmt = $db->prepare($query);
-                $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
-                $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
-                $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
-                $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
-                $stmt->bindParam(':num', $num, PDO::PARAM_INT);
-                $stmt->execute();
-                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                $food = array(
-                    "food" => $results
-                );
-                echo json_encode($food);
-            } catch (PDOException $e) {
-                echo $e->getMessage();
-            }
-            break;
-        //location
-        case 'Closest':
-            try {
-                $query .= "ORDER BY distance ASC LIMIT :offset , :num;";
+                $countQuery = str_replace("SELECT", "SELECT COUNT(*) AS resultsCount, ", $query);
                 $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
@@ -108,8 +85,51 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
-                    "food" => $results
+                    "food" => $results,
+                    "resultsCount" => ""
                 );
+
+                $stmt2 = $db->prepare($countQuery);
+                $stmt2->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
+                $stmt2->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
+                $stmt2->bindValue(":distance", $distance, PDO::PARAM_INT);
+                $stmt2->bindValue(":offset", $offset, PDO::PARAM_INT);
+                $stmt2->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt2->execute();
+                $resultsCount = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+                $food["resultsCount"] = $resultsCount[0]['resultsCount'];
+                echo json_encode($food);
+            } catch (PDOException $e) {
+                echo $e->getMessage();
+            }
+            break;
+        //location
+        case 'Closest':
+            try {
+                $query .= "ORDER BY distance ASC LIMIT :offset , :num;";
+                $countQuery = str_replace("SELECT", "SELECT COUNT(*) AS resultsCount, ", $query);
+                $stmt = $db->prepare($query);
+                $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
+                $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
+                $stmt->bindValue(":distance", $distance, PDO::PARAM_INT);
+                $stmt->bindValue(":offset", $offset, PDO::PARAM_INT);
+                $stmt->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt->execute();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $food = array(
+                    "food" => $results,
+                    "resultsCount" => ""
+                );
+
+                $stmt2 = $db->prepare($countQuery);
+                $stmt2->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
+                $stmt2->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
+                $stmt2->bindValue(":distance", $distance, PDO::PARAM_INT);
+                $stmt2->bindValue(":offset", $offset, PDO::PARAM_INT);
+                $stmt2->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt2->execute();
+                $resultsCount = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+                $food["resultsCount"] = $resultsCount[0]['resultsCount'];
                 echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
@@ -120,7 +140,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
             //need to include search by tags some how rather than just name and description
             try {
                 $query .= "LIMIT :offset, :num;";
-
+                $countQuery = str_replace("SELECT", "SELECT COUNT(*) AS resultsCount, ", $query);
                 $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
@@ -130,8 +150,19 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
-                    "food" => $results
+                    "food" => $results,
+                    "resultsCount" => ""
                 );
+
+                $stmt2 = $db->prepare($countQuery);
+                $stmt2->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
+                $stmt2->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
+                $stmt2->bindValue(":distance", $distance, PDO::PARAM_INT);
+                $stmt2->bindValue(":offset", $offset, PDO::PARAM_INT);
+                $stmt2->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt2->execute();
+                $resultsCount = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+                $food["resultsCount"] = $resultsCount[0]['resultsCount'];
                 echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
@@ -141,6 +172,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         case 'Most recent':
             try {
                 $query .= "ORDER BY f.time DESC LIMIT :offset , :num;";
+                $countQuery = str_replace("SELECT", "SELECT COUNT(*) AS resultsCount, ", $query);
                 $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
@@ -150,8 +182,19 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
-                    "food" => $results
+                    "food" => $results,
+                    "resultsCount" => ""
                 );
+
+                $stmt2 = $db->prepare($countQuery);
+                $stmt2->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
+                $stmt2->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
+                $stmt2->bindValue(":distance", $distance, PDO::PARAM_INT);
+                $stmt2->bindValue(":offset", $offset, PDO::PARAM_INT);
+                $stmt2->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt2->execute();
+                $resultsCount = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+                $food["resultsCount"] = $resultsCount[0]['resultsCount'];
                 echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();
@@ -160,6 +203,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         case 'Expiry':
             try {
                 $query .= "ORDER BY f.expiry DESC LIMIT :offset , :num;";
+                $countQuery = str_replace("SELECT", "SELECT COUNT(*) AS resultsCount, ", $query);
                 $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
@@ -169,8 +213,19 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $food = array(
-                    "food" => $results
+                    "food" => $results,
+                    "resultsCount" => ""
                 );
+
+                $stmt2 = $db->prepare($countQuery);
+                $stmt2->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
+                $stmt2->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
+                $stmt2->bindValue(":distance", $distance, PDO::PARAM_INT);
+                $stmt2->bindValue(":offset", $offset, PDO::PARAM_INT);
+                $stmt2->bindValue(":num", $num, PDO::PARAM_INT);
+                $stmt2->execute();
+                $resultsCount = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+                $food["resultsCount"] = $resultsCount[0]['resultsCount'];
                 echo json_encode($food);
             } catch (PDOException $e) {
                 echo $e->getMessage();

@@ -1,11 +1,27 @@
+var q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, isNext, isPrev, totalResults;
+window.storedLocation= [];
+window.radius = 20;
+window.expiry = "Any time";
+window.time = "Any time";
+window.sort = "Best match";
+window.resultsPerPage = 15;
+window.pageNumber = 0;
+window.totalResults = 0;
+
 $('document').ready(function() {
-    $("#radius").slider( {
+    $("#radius").bootstrapSlider( {
         formatter: function(value) {
             return 'Current value: ' + value;
         }
     });
     $("#radius").on("slide", function(slideEvt) {
         $("#radiusSliderVal").text(slideEvt.value);
+    });
+
+    $("#q1").keyup(function(event){
+        if(event.keyCode == 13){
+            $("#search").click();
+        }
     });
 });
 
@@ -24,7 +40,6 @@ today = yyyy + "-" + mm + "-" + dd;
 
 //daterangepicker for expiry date and time posted
 $(function() {
-
     $('input[name="daterange"]').daterangepicker({
         autoUpdateInput: false,
         locale: {
@@ -50,7 +65,6 @@ $(function() {
     $('input[name="daterange"]').on('cancel.daterangepicker', function() {
         $(this).val('Any time');
     });
-
 });
 
 $(function() {
@@ -82,45 +96,143 @@ $(function() {
     $('input[name="datetimerange"]').on('cancel.daterangepicker', function() {
         $(this).val('Any time');
     });
-
 });
-
 
 //submitting information in search
 $('#searchAdvanced').click(function(e){
     e.preventDefault();
     $("#dlDropDown").dropdown("toggle");
     geocode($("#loc").val(), function(pos) {
-        var expiry = $('#expiry').val();
-        var time = $('#time').val();
+        q = $('#q2').val();
+        storedLocation = pos;
+        radius = $('#radius').val();
+        expiry = $('#expiry').val();
+        time = $('#time').val();
+        sort = $('#sort').val();
+        resultsPerPage = $('#resultsPerPage').val();
+        pageNumber = 0;
         if(expiry != "Any time") {
             expiry = [expiry.slice(0, 10), expiry.slice(13,23)]
         }
         if(time != "Any time") {
             time = [time.slice(0, 16), time.slice(19,35)]
         }
-        search($('#q2').val(), pos,  $('#radius').val(), expiry, time, $('#sort').val(),
-            $('#resultsPerPage').val(), $('#pageNumber').val());
+
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+        //remove pagination
+        $('.pagination').html("");
     });
 
 });
 $('#search').click(function() {
-    var location = [54.7, -1.56];
-    var sort = "Best match";
-    var radius = 15;
-    var resultsPerPage = 20;
-    var pageNumber = 0;
-    search($('#q2').val(), location, radius, "Any time", "Any time", sort, resultsPerPage, pageNumber);
+    q = $('#q1').val();
+    storedLocation = [54.7, -1.56];
+    expiry = "Any time";
+    time = "Any time";
+    radius = 25;
+    sort = "Best match";
+    resultsPerPage = 1;
+    pageNumber = 0;
+
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+    //remove pagination
+    $('.pagination').html("");
 });
 
-function search(q, location, distance, expiry, time, sort, results, page) {
+
+//pagination links
+$('.pagination').on('click', '#next', function() {
+    pageNumber += 1;
+    offset = pageNumber * resultsPerPage;
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+});
+$('.pagination').on('click', '#link1', function() {
+    pageNumber = parseInt($("#link1 a").text()) -1;
+    offset = pageNumber * resultsPerPage;
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+});
+$('.pagination').on('click', '#link2', function() {
+    pageNumber = parseInt($("#link2 a").text()) -1;
+    offset = pageNumber * resultsPerPage;
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+});
+$('.pagination').on('click', '#link3', function() {
+    pageNumber = parseInt($("#link3 a").text()) -1;
+    offset = pageNumber * resultsPerPage;
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+});
+$('.pagination').on('click', '#prev', function() {
+    pageNumber -= 1;
+    offset = pageNumber * resultsPerPage;
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+});
+
+
+$('#next').click(function() {
+
+});
+
+$('#link1').click(function() {
+
+});
+$('#link2').click(function() {
+
+});
+$('#link3').click(function() {
+
+});
+
+
+$('#prev').click(function() {
+
+});
+
+function setPageLinks(page) {
+    $(".pagination li").removeClass("active");
+    $("#link1 a").text((page).toString());
+    $("#link2 a").text((page+1).toString());
+    $("#link3 a").text((page+2).toString());
+
+    $("#link2").addClass("active");
+}
+
+//dynamically add pagination links
+function addLinks() {
+    var totalLinks = Math.ceil(totalResults / resultsPerPage);
+    var paginationList = "";
+
+    if(totalLinks > 1) {
+        paginationList += '<li class="page-item" id="prev"><a class="page-link" href="#">Previous</a></li>';
+        if(totalLinks > 3) {
+            totalLinks = 3;
+        }
+        for(i = 0; i < totalLinks; i++) {
+            if(i == totalLinks -1) {
+                //keep track of final link
+                paginationList += '<li class="page-item active final" id="link' + (i+1) + '"><a class="page-link" href="#">'
+                    + (i+1) + '</a></li>';
+            }
+            else {
+                paginationList += '<li class="page-item active" id="link' + (i+1) + '"><a class="page-link" href="#">'
+                    + (i+1) + '</a></li>';
+            }
+        }
+        paginationList += '<li class="page-item" id="next"><a class="page-link" href="#">Next</a></li>';
+    }
+
+
+    $('.pagination').html(paginationList);
+}
+
+function search(q, location, distance, expiry, time, sort, results, page, firstSearch) {
     //bind id to json topic
     var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: results, offset: page};
-    console.log(parameters);
+    $('#results').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" ' +
+        'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
-        console.log(data);
         var i = 0;
         var foodInfo = $('<div></div>').addClass('food');
+
         if(data.food.length > 0) {
             $.each(data.food, function (key, element) {
                 var address = convertGeocode(element['latitude'], element['longitude']);
@@ -137,6 +249,29 @@ function search(q, location, distance, expiry, time, sort, results, page) {
 
                 i += 1;
             });
+            //only display the pagination links on initial search
+            if(firstSearch) {
+                totalResults = data.resultsCount;
+                addLinks();
+            }
+            $('#next').css("visibility", "visible");
+            if(pageNumber == 0) {
+                $('#prev').css("visibility", "hidden");
+                $(".pagination li").removeClass("active");
+                $('#link1').addClass('active');
+            }
+            else {
+                $('#prev').css("visibility", "visible");
+            }
+            if(pageNumber == Math.ceil(totalResults/resultsPerPage)-1) {
+                $(".pagination li").removeClass("active");
+                $('.final').addClass('active');
+                $('#next').css("visibility", "hidden");
+
+            }
+            else if(pageNumber > 0) {
+                setPageLinks(pageNumber)
+            }
         }
         else {
             foodInfo.append('<p style="text-align: center">No food found</p>');
@@ -153,7 +288,6 @@ function convertGeocode(latitude, longitude) {
             "key": "AIzaSyBSS0BvM51P-qtCBr0o8-Yw25VrPBh5qhg"
         };
         $.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&sensor=true").done(function (data) {
-            console.log(data);
             data = data["results"][0]["formatted_address"];
             resolve(data);
         }).fail(function (data) {
@@ -177,7 +311,7 @@ function geocode(position, callback) {
 //autocomplete for searching keywords
 $(function() {
     $( "#q1" ).autocomplete({
-        minLength: 3,
+
         source: function( request, response ) {
 
             $.ajax({
@@ -187,13 +321,14 @@ $(function() {
                     q: request.term
                 },
                 success: function( data ) {
-                    response(data.tags)
+                    return response(data.tags)
                 }
 
             });
 
 
         },
+        minLength: 3,
 
     });
 });
