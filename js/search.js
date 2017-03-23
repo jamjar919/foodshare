@@ -8,6 +8,9 @@ window.resultsPerPage = 15;
 window.pageNumber = 0;
 window.totalResults = 0;
 
+var mymap;
+var markers = [];
+
 $('document').ready(function() {
     $("#radius").bootstrapSlider( {
         formatter: function(value) {
@@ -23,6 +26,7 @@ $('document').ready(function() {
             $("#search").click();
         }
     });
+
 });
 
 var today = new Date();
@@ -131,7 +135,7 @@ $('#search').click(function() {
     time = "Any time";
     radius = 25;
     sort = "Best match";
-    resultsPerPage = 1;
+    resultsPerPage = 4;
     pageNumber = 0;
 
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
@@ -165,26 +169,6 @@ $('.pagination').on('click', '#prev', function() {
     pageNumber -= 1;
     offset = pageNumber * resultsPerPage;
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
-});
-
-
-$('#next').click(function() {
-
-});
-
-$('#link1').click(function() {
-
-});
-$('#link2').click(function() {
-
-});
-$('#link3').click(function() {
-
-});
-
-
-$('#prev').click(function() {
-
 });
 
 function setPageLinks(page) {
@@ -226,28 +210,44 @@ function addLinks() {
 
 function search(q, location, distance, expiry, time, sort, results, page, firstSearch) {
     //bind id to json topic
+    clearMarkers();
     var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: results, offset: page};
     $('#results').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" ' +
         'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
-        var i = 0;
         var foodInfo = $('<div></div>').addClass('food');
 
         if(data.food.length > 0) {
+            initMap(location);
             $.each(data.food, function (key, element) {
                 var address = convertGeocode(element['latitude'], element['longitude']);
+
                 var p = Promise.resolve(address);
                 p.then(function(address) {
                     foodInfo.append("<p>Name: " + element['name'] + "</p>" +
                         "<p>Description: " + element['description'] + "</p>" +
                         "<p>Expiry date: " + element['expiry'] + "</p>" +
-                        "<p>Submition date: " + element['time'] + "</p>" +
-                        "<p>Latitude: " + address + "</p>" +
+                        "<p>Submission date: " + element['time'] + "</p>" +
+                        "<p>Address: " + address + "</p>" +
                         "<br>"
                     );
-                });
+                    var myLatlng = new google.maps.LatLng(element['latitude'], element['longitude']);
 
-                i += 1;
+                    var infowindow = new google.maps.InfoWindow({
+                        content: popupDetails(element, address)
+                    });
+
+                    var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        map: mymap,
+                        title: element['name']
+                    });
+
+                    marker.addListener('click', function() {
+                        infowindow.open(mymap, marker);
+                    });
+                    markers.push(marker);
+                });
             });
             //only display the pagination links on initial search
             if(firstSearch) {
@@ -311,9 +311,7 @@ function geocode(position, callback) {
 //autocomplete for searching keywords
 $(function() {
     $( "#q1" ).autocomplete({
-
         source: function( request, response ) {
-
             $.ajax({
                 url: "api/getTag.php",
                 dataType: "json",
@@ -325,11 +323,73 @@ $(function() {
                 }
 
             });
-
-
         },
         minLength: 3,
 
     });
 });
 
+//map stuff
+
+function initMap(pos) {
+    var myLatlng = new google.maps.LatLng(pos[0], pos[1]);
+    mymap = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: myLatlng
+    });
+}
+
+function popupDetails(food, address) {
+    return '<div class="food-popup"><h3>'+food["name"]+'</h3>' +
+        '<p>'+food["description"]+'</p>' +
+        "<p>Expiry date: " + food['expiry'] + "</p>" +
+        "<p>Submission date: " + food['time'] + "</p>" +
+        "<p>Address: " + address + "</p>" +
+        '<button class="btn btn-primary btn-sm" onClick="function(){loadFullFood('+food["id"]+')}">More</button></div>';
+}
+
+google.maps.event.addListener(map, 'click', function(event) {
+    mapZoom = map.getZoom();
+    var pos = mymap.getCenter();
+    loadMapFood(q, pos, radius, expiry, time, sort, resultsPerPage, 0, function() {
+        console.log("Loaded food at "+e.latlng);
+    });
+
+});
+
+function loadMapFood(q, location, distance, expiry, time, sort, results, page) {
+    clearMarkers();
+    var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: results, offset: page};
+    $.getJSON("api/food.php", parameters, function(data) {
+        if(data.food.length > 0) {
+            mymap.on('click', mapOnClick);
+            $.each(data.food, function (key, element) {
+                var address = convertGeocode(element['latitude'], element['longitude']);
+
+                var p = Promise.resolve(address);
+                p.then(function(address) {
+                    var infowindow = new google.maps.InfoWindow({
+                        content: popupDetails(element, address)
+                    });
+
+                    var marker = new google.maps.Marker({
+                        position: {lat: element['latitude'], lng: element['longitude']},
+                        map: mymap,
+                        title: element['name']
+                    });
+
+                    marker.addListener('click', function() {
+                        infowindow.open(mymap, marker);
+                    });
+                    markers.push(marker);
+                });
+            });
+        }
+    });
+}
+function clearMarkers() {
+    for (var i=0; i<markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = [];
+}

@@ -25,11 +25,19 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0-rc.2/jquery-ui.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0-rc.2/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApspzkH9nU8Imd1KffUjhlEo0iMg9D9Sg"></script>
+
 
 
 
 
     <style>
+        #map {
+            height: 100vh;
+            background-color: #FFF;
+            display: block;
+        }
+
         #radius .slider-selection {
             background: #BABABA;
         }
@@ -89,7 +97,6 @@
 </head>
 <body>
 <div class="container">
-    <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <div class="input-group" id="adv-search">
@@ -144,10 +151,6 @@
                                             <label for="resultsPerPage">Results per page</label>
                                             <input class="form-control" type="text" value="15" id="resultsPerPage">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="pageNumber">Offset</label>
-                                            <input class="form-control" type="text" value="0" id="pageNumber">
-                                        </div>
                                         <button id="searchAdvanced" class="btn btn-primary">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                                     </form>
                                 </div>
@@ -158,13 +161,15 @@
                 </div>
             </div>
         </div>
+        <div id="map">
+
+        </div>
         <div id="results">
 
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination"></ul>
         </nav>
-    </div>
 </div>
 </body>
 <script src="js/search.js" type="application/javascript"></script>
