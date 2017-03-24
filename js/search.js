@@ -1,4 +1,4 @@
-var q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, isNext, isPrev, totalResults;
+var q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, totalResults;
 window.storedLocation= [];
 window.radius = 20;
 window.expiry = "Any time";
@@ -20,13 +20,11 @@ $('document').ready(function() {
     $("#radius").on("slide", function(slideEvt) {
         $("#radiusSliderVal").text(slideEvt.value);
     });
-
     $("#q1").keyup(function(event){
         if(event.keyCode == 13){
             $("#search").click();
         }
     });
-
 });
 
 var today = new Date();
@@ -41,8 +39,7 @@ if(mm < 10) {
 }
 today = yyyy + "-" + mm + "-" + dd;
 
-
-//daterangepicker for expiry date and time posted
+//daterangepicker setup for expiry date
 $(function() {
     $('input[name="daterange"]').daterangepicker({
         autoUpdateInput: false,
@@ -61,16 +58,15 @@ $(function() {
             e.stopPropagation(); // prevent clicks on datepicker from collapsing 'parent'
         });
     });
-
     $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
     });
-
     $('input[name="daterange"]').on('cancel.daterangepicker', function() {
         $(this).val('Any time');
     });
 });
 
+//datetimerange setup for time posted
 $(function() {
     $('input[name="datetimerange"]').daterangepicker({
         timePicker: true,
@@ -92,20 +88,19 @@ $(function() {
             e.stopPropagation(); // prevent clicks on datepicker from collapsing 'parent'
         });
     });
-
     $('input[name="datetimerange"]').on('apply.daterangepicker', function(ev, picker) {
         $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ' - ' + picker.endDate.format('DD/MM/YYYY HH:mm'));
     });
-
     $('input[name="datetimerange"]').on('cancel.daterangepicker', function() {
         $(this).val('Any time');
     });
 });
 
-//submitting information in search
+//advanced search
 $('#searchAdvanced').click(function(e){
     e.preventDefault();
     $("#dlDropDown").dropdown("toggle");
+    $('#map-container').html('');
     geocode($("#loc").val(), function(pos) {
         q = $('#q2').val();
         storedLocation = pos;
@@ -128,21 +123,24 @@ $('#searchAdvanced').click(function(e){
     });
 
 });
+//basic search
 $('#search').click(function() {
-    q = $('#q1').val();
-    storedLocation = [54.7, -1.56];
-    expiry = "Any time";
-    time = "Any time";
-    radius = 25;
-    sort = "Best match";
-    resultsPerPage = 4;
-    pageNumber = 0;
+    $('#map-container').html('');
+    geocode("durham", function(pos) {
+        q = $('#q1').val();
+        storedLocation = pos;
+        expiry = "Any time";
+        time = "Any time";
+        radius = 15;
+        sort = "Best match";
+        resultsPerPage = 4;
+        pageNumber = 0;
 
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
-    //remove pagination
-    $('.pagination').html("");
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+        //remove pagination
+        $('.pagination').html("");
+    });
 });
-
 
 //pagination links
 $('.pagination').on('click', '#next', function() {
@@ -171,6 +169,10 @@ $('.pagination').on('click', '#prev', function() {
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
 
+/**Update the pagination links
+ *
+ * @param page Page number
+ */
 function setPageLinks(page) {
     $(".pagination li").removeClass("active");
     $("#link1 a").text((page).toString());
@@ -182,6 +184,9 @@ function setPageLinks(page) {
 
 //dynamically add pagination links
 function addLinks() {
+    //make map button visible
+    $('#map-button').css('visibility', 'visible');
+
     var totalLinks = Math.ceil(totalResults / resultsPerPage);
     var paginationList = "";
 
@@ -208,8 +213,20 @@ function addLinks() {
     $('.pagination').html(paginationList);
 }
 
+/**Search for food items in db
+ *
+ * @param q Query
+ * @param location
+ * @param distance
+ * @param expiry Array Expiry date of food range
+ * @param time Array Time posted range
+ * @param sort Sort method
+ * @param results Number of results per page
+ * @param page Page number
+ * @param firstSearch Boolean
+ */
 function search(q, location, distance, expiry, time, sort, results, page, firstSearch) {
-    //bind id to json topic
+    //reset the markers list
     clearMarkers();
     var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: results, offset: page};
     $('#results').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" ' +
@@ -219,12 +236,12 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
 
         if(data.food.length > 0) {
             initMap(location);
+            setMapBounds(location, distance);
             $.each(data.food, function (key, element) {
                 var address = convertGeocode(element['latitude'], element['longitude']);
-
                 var p = Promise.resolve(address);
                 p.then(function(address) {
-                    foodInfo.append("<p>Name: " + element['name'] + "</p>" +
+                    foodInfo.append("<p id='" + element['id'] + "'>Name: " + element['name'] + "</p>" +
                         "<p>Description: " + element['description'] + "</p>" +
                         "<p>Expiry date: " + element['expiry'] + "</p>" +
                         "<p>Submission date: " + element['time'] + "</p>" +
@@ -232,7 +249,6 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                         "<br>"
                     );
                     var myLatlng = new google.maps.LatLng(element['latitude'], element['longitude']);
-
                     var infowindow = new google.maps.InfoWindow({
                         content: popupDetails(element, address)
                     });
@@ -244,6 +260,10 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                     });
 
                     marker.addListener('click', function() {
+                        if( prev_infowindow ) {
+                            prev_infowindow.close();
+                        }
+                        prev_infowindow = infowindow;
                         infowindow.open(mymap, marker);
                     });
                     markers.push(marker);
@@ -279,7 +299,12 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
         $('#results').html(foodInfo);
     });
 }
-
+/**Converts a geocode to the corresponding address
+ *
+ * @param latitude
+ * @param longitude
+ * @returns {Promise}
+ */
 function convertGeocode(latitude, longitude) {
     //https://maps.googleapis.com/maps/api/geocode/json?region=uk&address=Durham
     return new Promise(function (resolve, reject) {
@@ -295,7 +320,11 @@ function convertGeocode(latitude, longitude) {
         });
     });
 }
-
+/**Converts an address to its geocode
+ *
+ * @param position Address
+ * @param callback
+ */
 function geocode(position, callback) {
     //https://maps.googleapis.com/maps/api/geocode/json?region=uk&address=Durham
     var params = {
@@ -321,75 +350,122 @@ $(function() {
                 success: function( data ) {
                     return response(data.tags)
                 }
-
             });
         },
         minLength: 3,
-
     });
 });
 
 //map stuff
 
+var prev_infowindow;
+
+/**Initialize the map centered at specified location
+ *
+ * @param pos Center position
+ */
 function initMap(pos) {
+    var mapContent = '<div id="map"> </div>';
+    $('#map-container').html(mapContent);
+    $('#map').show('blind', {direction: 'up'}, 1000);
+    $('#map-button').addClass('active')
+        .css('border-radius', '5px 5px 0 0');
     var myLatlng = new google.maps.LatLng(pos[0], pos[1]);
     mymap = new google.maps.Map(document.getElementById('map'), {
-        zoom: 13,
-        center: myLatlng
+        zoom: 15,
+        center: myLatlng,
+        scrollwheel: false,
+        disableDoubleClickZoom: true,
+    });
+    google.maps.event.addListener(mymap, 'click', function() {
+        var pos = mymap.getCenter();
+        console.log("ere");
+        loadMapFood(q, pos, radius, expiry, time, sort, resultsPerPage, 0, function() {
+            console.log("Loaded food at "+e.latlng);
+        });
     });
 }
-
+/**Create details for pop up of a food item
+ *
+ * @param food Food data
+ * @param address Address of food item
+ * @returns {string}
+ */
 function popupDetails(food, address) {
     return '<div class="food-popup"><h3>'+food["name"]+'</h3>' +
         '<p>'+food["description"]+'</p>' +
         "<p>Expiry date: " + food['expiry'] + "</p>" +
         "<p>Submission date: " + food['time'] + "</p>" +
         "<p>Address: " + address + "</p>" +
-        '<button class="btn btn-primary btn-sm" onClick="function(){loadFullFood('+food["id"]+')}">More</button></div>';
+        '<button class="btn btn-primary btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
 }
 
-google.maps.event.addListener(map, 'click', function(event) {
-    mapZoom = map.getZoom();
-    var pos = mymap.getCenter();
-    loadMapFood(q, pos, radius, expiry, time, sort, resultsPerPage, 0, function() {
-        console.log("Loaded food at "+e.latlng);
-    });
-
-});
-
-function loadMapFood(q, location, distance, expiry, time, sort, results, page) {
-    clearMarkers();
-    var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: results, offset: page};
-    $.getJSON("api/food.php", parameters, function(data) {
-        if(data.food.length > 0) {
-            mymap.on('click', mapOnClick);
-            $.each(data.food, function (key, element) {
-                var address = convertGeocode(element['latitude'], element['longitude']);
-
-                var p = Promise.resolve(address);
-                p.then(function(address) {
-                    var infowindow = new google.maps.InfoWindow({
-                        content: popupDetails(element, address)
-                    });
-
-                    var marker = new google.maps.Marker({
-                        position: {lat: element['latitude'], lng: element['longitude']},
-                        map: mymap,
-                        title: element['name']
-                    });
-
-                    marker.addListener('click', function() {
-                        infowindow.open(mymap, marker);
-                    });
-                    markers.push(marker);
-                });
-            });
-        }
-    });
-}
 function clearMarkers() {
     for (var i=0; i<markers.length; i++) {
         markers[i].setMap(null);
     }
     markers = [];
 }
+
+//click event for showing and hiding the map
+$("#map-button").on('click', function () {
+    if($( "#map").is(':visible')) {
+        $('#map').hide('blind',{direction:'up'}, 1000, function() {
+            $('#map-button').removeClass('active')
+                .css('border-radius', '5px')
+                .text('Open map')
+        });
+    }
+    else {
+        $('#map').show('blind', {direction: 'up'}, 1000);
+        $('#map-button').addClass('active')
+            .css('border-radius', '5px 5px 0 0')
+            .text('Close map')
+    }
+});
+/**Set the map zoom to match the radius specified
+ *
+ * @param location Central location
+ * @param radius Radius of search
+ */
+function setMapBounds(location, radius) {
+    var myLatLng = new google.maps.LatLng(location[0],location[1]);
+    var circleOptions = {
+        center: myLatLng,
+        fillOpacity: 0,
+        strokeOpacity: 0,
+        map: mymap,
+        radius: (radius*1000) /* 20 miles */
+    }
+    var myCircle = new google.maps.Circle(circleOptions);
+    mymap.fitBounds(myCircle.getBounds());
+    zoomChangeBoundsListener =
+        google.maps.event.addListenerOnce(mymap, 'bounds_changed', function(event) {
+            var currentZoomLevel = mymap.getZoom();
+            console.log("Current zoom level: " + currentZoomLevel);
+            mymap.setZoom(currentZoomLevel+1);
+        });
+
+}
+/**Scroll to the specified food
+ *
+ * @param id ID of food
+ * @param button Button linked to specified food
+ */
+function loadFullFood(id, button) {
+    $(button).click(function() {
+        $('html, body').animate({
+            scrollTop: $("#" + id).offset().top
+        }, 1000);
+    });
+}
+var page = $("html, body");
+
+//stop animation when user scrolls
+
+$( '.page-content' ).click(function(e) {
+    page.on("scroll mousedown wheel DOMMouseScroll mousewheel keyup touchmove", function(){
+        page.stop();
+    });
+    return false;
+});

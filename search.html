@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <title>Test search page</title>
 
+    <!-- Include jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
-
-
-
+    <!-- Include Bootstrap 3 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.css">
 
+    <!-- Include moment and Bootstrap slider -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/bootstrap-slider.js"></script>
 
@@ -21,21 +21,31 @@
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
 
-    <!-- jquery ui for autocomplete -->
+    <!-- Include jQuery ui for autocomplete -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0-rc.2/jquery-ui.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0-rc.2/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
+    <!-- Include Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApspzkH9nU8Imd1KffUjhlEo0iMg9D9Sg"></script>
 
-
-
-
-
     <style>
+        .col-centered{
+            float: none;
+            margin: 0 auto;
+        }
+        #map-button {
+            margin-top: 20px;
+            text-align: center;
+            visibility: hidden;
+            border-radius: 5px 5px 0 0;
+        }
         #map {
-            height: 100vh;
-            background-color: #FFF;
+            height: 80vh;
             display: block;
+
+        }
+        #results {
+            margin-top: 20px;
         }
 
         #radius .slider-selection {
@@ -77,11 +87,9 @@
                 width: 500px;
                 margin: 0 auto;
             }
-
             .dropdown.dropdown-lg {
                 position: static !important;
             }
-
             .dropdown.dropdown-lg .dropdown-menu {
                 min-width: 500px;
             }
@@ -92,13 +100,26 @@
             height: 16px;
             background: transparent url("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif") no-repeat center center;
         }
+
+        .loadingOverlay {
+            position: fixed;
+            background-image: url("img/spinner.gif");
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
     </style>
 
 </head>
 <body>
 <div class="container">
+    <h2 style="text-align: center">FlavourTown</h2>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 col-centered">
                 <div class="input-group" id="adv-search">
                     <input class="form-control" type="text" placeholder="Search food" id="q1">
                     <div class="input-group-btn">
@@ -128,9 +149,9 @@
                                         <div class="form-group row">
                                             <label for="radius" class="col-2 col-form-label">Radius</label>
                                             <div class="col-4">
-                                                <b>0 km</b> <input id="radius" data-slider-id="radiusSlider" type="text" data-slider-min="0" data-slider-max="50" data-slider-step="1" data-slider-value="20"/>
-                                                <b>50 km</b>
-                                                <span id="radiusCurrentSliderValLabel">Radius: <span id="radiusSliderVal">20</span> km</span>
+                                                <b>0 km</b> <input id="radius" data-slider-id="radiusSlider" type="text" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="15"/>
+                                                <b>30 km</b>
+                                                <span id="radiusCurrentSliderValLabel">Radius: <span id="radiusSliderVal">15</span> km</span>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -145,8 +166,6 @@
                                                 <input class="form-control" id="time" name="datetimerange" type = "text" value="Any time" style="width: 100%">
                                             </div>
                                         </div>
-
-
                                         <div class="form-group">
                                             <label for="resultsPerPage">Results per page</label>
                                             <input class="form-control" type="text" value="15" id="resultsPerPage">
@@ -161,15 +180,20 @@
                 </div>
             </div>
         </div>
-        <div id="map">
+    <div class="row page-content">
+        <div class="col-md-8 col-centered ">
+            <button id="map-button" class="btn btn-primary btn-block active">Close map</button>
+            <div id="map-container">
 
-        </div>
-        <div id="results">
+            </div>
+            <div id="results">
 
+            </div>
+            <div class="text-center">
+                <ul class="pagination" ></ul>
+            </div>
         </div>
-        <nav aria-label="Page navigation example">
-            <ul class="pagination"></ul>
-        </nav>
+    </div>
 </div>
 </body>
 <script src="js/search.js" type="application/javascript"></script>
