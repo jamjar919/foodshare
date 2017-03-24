@@ -21,8 +21,9 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 echo "<br>";
 ?>
 <br>
+<img src="<?php echo $user->getProfilePicture(); ?>" id="currentProfilePicture" height="100px" width="100px">
 <input accept="image/*" type="file" id="profilepicture">
-Profile picture: <input type="text" name="profilepictureurl" id="profilepictureurl"> <a id="changeProfilePicture">Change</a><br>
+<a id="changeProfilePicture">Change</a><br>
 <br>
 Postcode: <input type="text" name="postcode" id="postcode"> <a id="changePostcode">Change</a><br>
 <br>
@@ -43,6 +44,7 @@ Password Verify: <input type="password" name="password" id="passwordverify"> <a 
                 var link = result["data"]["link"];
                 changeProfilePicture(link)
                 .then(function(result) {
+                        $("#currentProfilePicture").attr("src",link);
                         console.log(result);
                         $("#message").html = 'Success: ' + result;
                 }).catch(function(error) {

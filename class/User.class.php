@@ -305,6 +305,16 @@ class User
         * Returns the URL stored in the database.
         **/
         public function getProfilePicture() {
+                try {
+                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                        $stmt = $db->prepare("SELECT profile_picture_url FROM user WHERE username = :username");
+                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                        $stmt->execute();
+                        $row = $stmt->fetch();
+                        return $row["profile_picture_url"];
+                } catch(PDOException $ex) {
+                        return false;
+                }
         }
         
         /**
@@ -313,7 +323,7 @@ class User
         public function updateProfilePictureURL($url) {
                 if ($this->isLoggedIn()) {
                         // only accept imgur images
-                        if (substr($url,0,18) === "http://i.imgur.com/") {
+                        if (substr($url,0,19) === "http://i.imgur.com/") {
                                 try {
                                         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
                                         $stmt = $db->prepare("UPDATE user SET profile_picture_url = :url WHERE username = :username");
