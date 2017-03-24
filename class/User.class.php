@@ -341,6 +341,58 @@ class User
                 }
                 return false;
         }
+        
+        /**
+        * Get the public profile of the user - username, profile URL, score
+        **/
+        public function getPublicProfile() {
+                try {
+                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                        $stmt = $db->prepare("SELECT username, score, profile_picture_url FROM user WHERE username = :username");
+                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                        $stmt->execute();
+                        $row = $stmt->fetch();
+                        return $row;
+                } catch(PDOException $ex) {
+                        return false;
+                }
+        }
+        
+        /**
+        * Get the private profile of the user. They need to be logged in for this.
+        **/
+        public function getPrivateProfile() {
+                if ($this->isLoggedIn()) {
+                        try {
+                                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                                $stmt = $db->prepare("SELECT username, email, postcode, latitude, longitude, score, profile_picture_url FROM user WHERE username = :username");
+                                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                                $stmt->execute();
+                                $row = $stmt->fetch();
+                                return $row;
+                        } catch(PDOException $ex) {
+                                return false;
+                        }
+                }
+                return false;
+        }
 	
+	/**
+	* Generate a javascript object containing user details. 
+	* @param private Default false. Whether to include private data (user has to be logged in)
+	* @returns A UTF8 encoded JSON string containing the user details.
+	**/
+	public function getJSON($private = false) {
+                $details = array();
+                if ($private) {
+                        $details = $this->getPrivateProfile();
+                } else {
+                        $details = $this->getPublicProfile();
+                }
+                if ($details !== false) {
+                        return json_encode($details);
+                } 
+                return json_encode((object) null);
+	}
 }
 ?>

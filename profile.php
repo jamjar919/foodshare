@@ -11,15 +11,18 @@ require_once __ROOT__."/class/User.class.php";
 if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
 	if ($user->isLoggedIn()) {
-            echo "Logged in as user ".$_COOKIE["username"];
+            echo "Logged in as user ".$_COOKIE["username"]."<br>";
 	} else {
             echo "Failed to log in in as user ".$_COOKIE["username"];
 	}
 } else {
     echo "Not logged in";
 }
-echo "<br>";
 ?>
+<script>
+    var user = JSON.parse('<?php echo $user->getJSON(true); ?>');
+    console.log(user);
+</script>
 <br>
 <img src="<?php echo $user->getProfilePicture(); ?>" id="currentProfilePicture" height="100px" width="100px">
 <input accept="image/*" type="file" id="profilepicture">
