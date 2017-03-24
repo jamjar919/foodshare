@@ -11,17 +11,23 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 	}
 }
 if (!$loggedIn) {
-	header("Location: login.php");	
+        header("Location: login.php");	
 }
 ?>
 Eventually there will be stuff here
 <br>
 <a href="logout.php">Logout</a>
-
+<br>
 Cookies:
 <br>
 <?php
 
 var_dump($_COOKIE);
 
+?>
+<br>
+Location:
+<br>
+<?php
+var_dump($user->getLocation());
 ?>

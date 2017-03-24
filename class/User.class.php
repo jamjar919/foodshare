@@ -238,9 +238,9 @@ class User
                 return false;
         }
 	
-    /**
-    * Changes the user password. Returns FALSE on failure. Will also expire all user tokens!
-    **/
+        /**
+        * Changes the user password. Returns FALSE on failure. Will also expire all user tokens!
+        **/
 	public function updatePassword($password) {
                 if ($this->isLoggedIn()) {
                         // Check for dumb cases
@@ -262,6 +262,36 @@ class User
                                 if ($stmt->rowCount()) {
                                         $this->expireLoginTokens();
                                         return true;
+                                }
+                                return false;
+                        } catch(PDOException $ex) {
+                                return false;
+                        }
+                }
+                return false;
+        }
+        
+        
+        /**
+        * Returns the location stored in the database. Returns FALSE if not stored, or could not be retrieved.
+        **/
+        public function getLocation() {
+                if ($this->isLoggedIn()) {
+                        try {
+                                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                                $stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
+                                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                                $stmt->execute();
+                                $row = $stmt->fetch();
+                                // Check if lat/long are nonzero
+                                // if long/lat are NULL then this is also evaluated due to type juggling
+                                if (
+                                        !(
+                                                ($row["latitude"] == 0) &&
+                                                ($row["longitude"] == 0)
+                                        )
+                                ) {
+                                        return array((float)$row["latitude"],(float)$row["longitude"]);
                                 }
                                 return false;
                         } catch(PDOException $ex) {
