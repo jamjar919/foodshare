@@ -300,6 +300,37 @@ class User
                 }
                 return false;
         }
+        
+        /**
+        * Returns the URL stored in the database.
+        **/
+        public function getProfilePicture() {
+        }
+        
+        /**
+        * Update the stored url to that of the parameter passed. Returns FALSE on failure.
+        **/
+        public function updateProfilePictureURL($url) {
+                if ($this->isLoggedIn()) {
+                        // only accept imgur images
+                        if (substr($url,0,18) === "http://i.imgur.com/") {
+                                try {
+                                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                                        $stmt = $db->prepare("UPDATE user SET profile_picture_url = :url WHERE username = :username");
+                                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                                        $stmt->bindValue(":url", $url, PDO::PARAM_STR);
+                                        $stmt->execute();
+                                        if ($stmt->rowCount()) {
+                                                return true;
+                                        }
+                                        return false;
+                                } catch(PDOException $ex) {
+                                        return false;
+                                }
+                        }
+                }
+                return false;
+        }
 	
 }
 ?>

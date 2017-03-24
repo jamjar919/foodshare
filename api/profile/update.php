@@ -30,14 +30,17 @@ function update_profile() {
 				} else {
 					$response["location"]["message"] = "Couldn't update the location";
 					$response["location"]["success"] = false;
+					$response["error"] = "An error occured updating your profile.";
 				}
 			} else {
 				$response["location"]["message"] = "Invalid latitude or longitude specified";
 				$response["location"]["success"] = false;
+				$response["error"] = "An error occured updating your profile.";
 			}
 		} else {
 			$response["location"]["message"] = "Location should be an array";
 			$response["location"]["success"] = false;
+			$response["error"] = "An error occured updating your profile.";
 		}
 	}
 	if (isset($_POST["postcode"])) {
@@ -47,6 +50,7 @@ function update_profile() {
 		} else {
 			$response["postcode"]["message"] = "Couldn't update the postcode.";
 			$response["postcode"]["success"] = false;
+			$response["error"] = "An error occured updating your profile.";
 		}
 	}
 	if (isset($_POST["email"])) {
@@ -56,11 +60,19 @@ function update_profile() {
             } else {
                 $response["email"]["message"] = "Couldn't update the email address.";
                 $response["email"]["success"] = false;
+                $response["error"] = "An error occured updating your profile.";
             }
 		
 	}
 	if (isset($_POST["profilepicture"])) {
-		
+            if($user->updateProfilePictureURL($_POST["profilepicture"])) {
+                $response["profilepicture"]["message"] = "Successfully updated profile picture.";
+                $response["profilepicture"]["success"] = true;
+            } else {
+                $response["profilepicture"]["message"] = "Couldn't update your profile picture.";
+                $response["profilepicture"]["success"] = false;
+                $response["error"] = "An error occured updating your profile.";
+            }
 	}
 	if (isset($_POST["password"])) {
             if($user->updatePassword($_POST["password"])) {
@@ -69,6 +81,7 @@ function update_profile() {
             } else {
                 $response["password"]["message"] = "Couldn't update the password.";
                 $response["password"]["success"] = false;
+                $response["error"] = "An error occured updating your profile.";
             }
 	}
 	return $response;
