@@ -1,3 +1,21 @@
+<?php
+define('__ROOT__',dirname(__FILE__));
+require_once __ROOT__."/class/User.class.php";
+require_once __ROOT__."/class/UserTools.class.php";
+// Check we aren't already logged in via cookie
+$loggedIn = false;
+$user = "";
+if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
+	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
+	if ($user->isLoggedIn()) {
+$loggedIn = true;
+}
+}
+if (!$loggedIn) {
+header("Location: login.php");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +45,8 @@
 
     <!-- Include Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApspzkH9nU8Imd1KffUjhlEo0iMg9D9Sg"></script>
+
+    <script src="js/cookie.js"></script>
 
     <style>
         .col-centered{
@@ -117,6 +137,9 @@
 </head>
 <body>
 <div class="container">
+    <br>
+    <a href="logout.php">Logout</a>
+    <br>
     <h2 style="text-align: center">FlavourTown</h2>
         <div class="row">
             <div class="col-md-12 col-centered">
@@ -196,6 +219,11 @@
     </div>
 </div>
 </body>
+<script>
+    var user = JSON.parse('<?php echo $user->getJSON(true); ?>');
+    var memberSearch = true;
+    console.log(user);
+</script>
 <script src="js/search.js" type="application/javascript"></script>
 
 </html>

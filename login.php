@@ -8,7 +8,7 @@ $errors = array();
 if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
 	if ($user->isLoggedIn()) {
-		header("Location: feed.php");	
+		header("Location: search.php");
 	}
 }
 
@@ -17,7 +17,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 	$user = new User($_POST["username"]);
 	$user->login($_POST["password"]);
 	if ($user->isLoggedIn()) {
-		header("Location: feed.php");	
+		header("Location: search.php");
 	} else {
 		$errors[] = "Incorrect username or password";
 	}

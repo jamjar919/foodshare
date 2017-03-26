@@ -11,6 +11,22 @@ window.totalResults = 0;
 var mymap;
 var markers = [];
 
+//get user's location from browser (non-members only)
+var initialPosition = null;
+if (navigator.geolocation && !memberSearch){
+    navigator.geolocation.getCurrentPosition(
+        function(position){
+            initialPosition = [position.coords.latitude,position.coords.longitude];
+            console.log("Got initial position as: "+initialPosition);
+        },
+        function(error){
+            // If we don't find the initial position just go L O N D O N
+            initialPosition = [51.5, -0.09];
+            console.log("Error getting pos: "+error);
+        }
+    );
+}
+
 $('document').ready(function() {
     $("#radius").bootstrapSlider( {
         formatter: function(value) {
@@ -25,6 +41,13 @@ $('document').ready(function() {
             $("#search").click();
         }
     });
+
+    if(memberSearch) {
+        $("#loc").val(user['postcode'])
+    }
+    else {
+        $("#loc").val(convertGeocode(initialPosition[0], initialPosition[1]))
+    }
 });
 
 var today = new Date();
@@ -101,7 +124,7 @@ $('#searchAdvanced').click(function(e){
     e.preventDefault();
     $("#dlDropDown").dropdown("toggle");
     $('#map-container').html('');
-    geocode($("#loc").val(), function(pos) {
+    geocode($('#loc').val(), function(pos) {
         q = $('#q2').val();
         storedLocation = pos;
         radius = $('#radius').val();
@@ -126,20 +149,25 @@ $('#searchAdvanced').click(function(e){
 //basic search
 $('#search').click(function() {
     $('#map-container').html('');
-    geocode("durham", function(pos) {
-        q = $('#q1').val();
-        storedLocation = pos;
-        expiry = "Any time";
-        time = "Any time";
-        radius = 15;
-        sort = "Best match";
-        resultsPerPage = 4;
-        pageNumber = 0;
+    var location;
+    if(memberSearch) {
+        location = [user['latitude'], user['longitude']]
+    }
+    else {
+        location = initialPosition;
+    }
+    q = $('#q1').val();
+    storedLocation = location;
+    expiry = "Any time";
+    time = "Any time";
+    radius = 15;
+    sort = "Best match";
+    resultsPerPage = 4;
+    pageNumber = 0;
 
-        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
-        //remove pagination
-        $('.pagination').html("");
-    });
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+    //remove pagination
+    $('.pagination').html("");
 });
 
 //pagination links
@@ -242,12 +270,25 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                 var p = Promise.resolve(address);
                 p.then(function(address) {
                     foodInfo.append("<p id='" + element['id'] + "'>Name: " + element['name'] + "</p>" +
+                        "<img src='" + element['image_url'] + "' height='200px' width='100%'>" +
                         "<p>Description: " + element['description'] + "</p>" +
                         "<p>Expiry date: " + element['expiry'] + "</p>" +
                         "<p>Submission date: " + element['time'] + "</p>" +
-                        "<p>Address: " + address + "</p>" +
-                        "<br>"
+                        "<p>Address: " + address + "</p>"
                     );
+                    if(memberSearch) {
+                        var claimerButton = document.createElement('button');
+                        claimerButton.textContent = "Claim";
+                        claimerButton.className = "btn btn-primary btn-sm";
+                        claimerButton.addEventListener('click', function() {
+                            claimFood(element['id'], element['user_username'], user['username']);
+                        }, false);
+                    foodInfo.append(
+                        claimerButton
+                    );
+                    }
+                    foodInfo.append("<br>");
+
                     var myLatlng = new google.maps.LatLng(element['latitude'], element['longitude']);
                     var infowindow = new google.maps.InfoWindow({
                         content: popupDetails(element, address)
@@ -377,13 +418,6 @@ function initMap(pos) {
         scrollwheel: false,
         disableDoubleClickZoom: true,
     });
-    google.maps.event.addListener(mymap, 'click', function() {
-        var pos = mymap.getCenter();
-        console.log("ere");
-        loadMapFood(q, pos, radius, expiry, time, sort, resultsPerPage, 0, function() {
-            console.log("Loaded food at "+e.latlng);
-        });
-    });
 }
 /**Create details for pop up of a food item
  *
@@ -394,9 +428,9 @@ function initMap(pos) {
 function popupDetails(food, address) {
     return '<div class="food-popup"><h3>'+food["name"]+'</h3>' +
         '<p>'+food["description"]+'</p>' +
-        "<p>Expiry date: " + food['expiry'] + "</p>" +
-        "<p>Submission date: " + food['time'] + "</p>" +
-        "<p>Address: " + address + "</p>" +
+        '<p>Expiry date: ' + food['expiry'] + '</p>' +
+        '<p>Submission date: ' + food['time'] + '</p>' +
+        '<p>Address: ' + address + '</p>' +
         '<button class="btn btn-primary btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
 }
 
@@ -436,13 +470,12 @@ function setMapBounds(location, radius) {
         strokeOpacity: 0,
         map: mymap,
         radius: (radius*1000) /* 20 miles */
-    }
+    };
     var myCircle = new google.maps.Circle(circleOptions);
     mymap.fitBounds(myCircle.getBounds());
     zoomChangeBoundsListener =
         google.maps.event.addListenerOnce(mymap, 'bounds_changed', function(event) {
             var currentZoomLevel = mymap.getZoom();
-            console.log("Current zoom level: " + currentZoomLevel);
             mymap.setZoom(currentZoomLevel+1);
         });
 
@@ -452,13 +485,12 @@ function setMapBounds(location, radius) {
  * @param id ID of food
  * @param button Button linked to specified food
  */
-function loadFullFood(id, button) {
-    $(button).click(function() {
-        $('html, body').animate({
+function loadFullFood(id) {
+    $('html, body').animate({
             scrollTop: $("#" + id).offset().top
         }, 1000);
-    });
 }
+
 var page = $("html, body");
 
 //stop animation when user scrolls
@@ -469,3 +501,26 @@ $( '.page-content' ).click(function(e) {
     });
     return false;
 });
+/**Send post request to set food item to claimed then send notification to poster
+ *
+ *
+ * @param id ID of food item
+ * @param poster Poster's username
+ * @param claimer Claimer's username
+ */
+function claimFood(id, poster, claimer) {
+    var parameters = {id: id, claimer: claimer};
+    $.post("api/food.php", parameters)
+        .done(function(data) {
+            if(data.hasOwnProperty("error")) {
+                console.log(data.error);
+            }
+            else if (data.hasOwnProperty("claimed")){
+                alert(data.claimed);
+            }
+            else {
+                alert(data.message);
+            }
+        });
+    //TODO send notification to poster to say food has been claimed
+}

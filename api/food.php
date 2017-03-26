@@ -4,7 +4,7 @@ define('__ROOT__',dirname(__FILE__));
 require __ROOT__.'/db.php';
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == "GET") {
+if ($_SERVER['REQUEST_METHOD'] === "GET") {
     //make location required parameter
     if (!isset($_GET['location'])) {
         echo json_encode(array("error" => "Location not defined"));
@@ -30,6 +30,27 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         $offset = (int)$_GET['offset'];
         getFoodListing($query, $location, $distance, $expiry, $time, $sort, $num, $offset);
     }
+}
+else if($_SERVER['REQUEST_METHOD'] === "POST") {
+    $response = array();
+    if (!isset($_POST["id"]) || !isset($_POST["claimer"])) {
+        $response["error"] = "id of food or username of claimer not provided";
+    }
+    else {
+        $id = $_POST['id'];
+        $claimer = $_POST['claimer'];
+        if(!isClaimed($id)) {
+            if (setFoodtoClaimed($id, $claimer)) {
+                $response['message'] = "Food successfully claimed";
+            } else {
+                $response['error'] = "Failed to claim food";
+            }
+        }
+        else {
+            $response['claimed'] = "Sorry, the food has already been claimed";
+        }
+    }
+    echo json_encode($response);
 }
 
 /**
@@ -58,7 +79,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         $query .= "INNER JOIN tag_list ON tag_list.id = f.tag_list_id
         INNER JOIN tag t ON t.id = tag_list.tag_id
         WHERE MATCH(f.name, f.description, t.name) 
-        AGAINST ('$words' IN BOOLEAN MODE)";
+        AGAINST ('$words' IN BOOLEAN MODE) AND (f.claimer_username = NULL OR f.claimer_username = '')";
     }
 
     if(!$expiry == "Any time") {
@@ -139,8 +160,10 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         case 'Best match':
             //need to include search by tags some how rather than just name and description
             try {
-                $query .= "LIMIT :offset, :num;";
                 $countQuery = str_replace("SELECT", "SELECT COUNT(*) AS resultsCount, ", $query);
+                $query = str_replace("SELECT", "SELECT MATCH(t.name) 
+        AGAINST ('$words') AS score1, MATCH(f.name, f.description) AGAINST ('$words') AS score2, ", $query);
+                $query .= "ORDER BY score1 + score2 DESC LIMIT :offset, :num;";
                 $stmt = $db->prepare($query);
                 $stmt->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
@@ -158,8 +181,6 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
                 $stmt2->bindValue(":center_lat", $location[0], PDO::PARAM_INT);
                 $stmt2->bindValue(":center_lng", $location[1], PDO::PARAM_INT);
                 $stmt2->bindValue(":distance", $distance, PDO::PARAM_INT);
-                $stmt2->bindValue(":offset", $offset, PDO::PARAM_INT);
-                $stmt2->bindValue(":num", $num, PDO::PARAM_INT);
                 $stmt2->execute();
                 $resultsCount = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 $food["resultsCount"] = $resultsCount[0]['resultsCount'];
@@ -230,11 +251,41 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }
-
             break;
     }
 }
 
+function isClaimed($id) {
+    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+    try {
+        $stmt = $db->prepare("SELECT claimer_username FROM food WHERE id = :id");
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        if($result['claimer_username'] != "" || $result['claimer_username'] != null) {
+            return true;
+        }
+        return false;
+
+    }catch (PDOException $e) {
+        echo $e->getMessage();
+        return false;
+    }
+}
+
+function setFoodtoClaimed($id, $claimer) {
+    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+    try {
+        $stmt = $db->prepare("UPDATE food SET claimer_username = :claimer WHERE id = :id");
+        $stmt->bindValue(":claimer", $claimer, PDO::PARAM_STR);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        return $stmt->execute();
+
+    }catch (PDOException $e) {
+        echo $e->getMessage();
+        return false;
+    }
+}
 
 
 /*
