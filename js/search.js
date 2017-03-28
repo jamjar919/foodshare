@@ -18,13 +18,23 @@ if (navigator.geolocation && !memberSearch){
         function(position){
             initialPosition = [position.coords.latitude,position.coords.longitude];
             console.log("Got initial position as: "+initialPosition);
+            var address = convertGeocode(initialPosition[0], initialPosition[1]);
+            var p = Promise.resolve(address);
+            p.then(function(address) {
+                $("#loc").val(address);
+            });
         },
         function(error){
             // If we don't find the initial position just go L O N D O N
             initialPosition = [51.5, -0.09];
             console.log("Error getting pos: "+error);
+            var address = convertGeocode(initialPosition[0], initialPosition[1]);
+            var p = Promise.resolve(address);
+            p.then(function(address) {
+                $("#loc").val(address);
+            });
         }
-    );
+    )
 }
 
 $('document').ready(function() {
@@ -44,9 +54,6 @@ $('document').ready(function() {
 
     if(memberSearch) {
         $("#loc").val(user['postcode'])
-    }
-    else {
-        $("#loc").val(convertGeocode(initialPosition[0], initialPosition[1]))
     }
 });
 

@@ -2,16 +2,20 @@
 define('__ROOT__',dirname(__FILE__));
 require_once __ROOT__."/class/User.class.php";
 require_once __ROOT__."/class/UserTools.class.php";
-$errors = array();
-
 // Check we aren't already logged in via cookie
+$loggedIn = false;
+$user = "";
 if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
-    $user = new User($_COOKIE["username"],$_COOKIE["token"]);
-    if ($user->isLoggedIn()) {
-        header("Location: membersSearch.php");
-    }
+	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
+	if ($user->isLoggedIn()) {
+$loggedIn = true;
+}
+}
+if (!$loggedIn) {
+header("Location: login.php");
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,8 +50,8 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 
     <style>
         .col-centered{
-    float: none;
-    margin: 0 auto;
+            float: none;
+            margin: 0 auto;
         }
         #map-button {
             margin-top: 20px;
@@ -68,58 +72,58 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
             background: #BABABA;
         }
         body {
-    padding-top: 50px;
+            padding-top: 50px;
         }
         .dropdown.dropdown-lg .dropdown-menu {
-    margin-top: -1px;
+            margin-top: -1px;
             padding: 6px 20px;
         }
         .input-group-btn .btn-group {
-    display: flex !important;
+            display: flex !important;
         }
         .btn-group .btn {
-    border-radius: 0;
+            border-radius: 0;
             margin-left: -1px;
         }
         .btn-group .btn:last-child {
-    border-top-right-radius: 4px;
+            border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
         .btn-group .form-horizontal .btn[type="submit"] {
-    border-top-left-radius: 4px;
+            border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
         .form-horizontal .form-group {
-    margin-left: 0;
+            margin-left: 0;
             margin-right: 0;
         }
         .form-group .form-control:last-child {
-    border-top-left-radius: 4px;
+            border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
 
         @media screen and (min-width: 768px) {
-    #adv-search {
-    width: 500px;
+            #adv-search {
+                width: 500px;
                 margin: 0 auto;
             }
             .dropdown.dropdown-lg {
-    position: static !important;
+                position: static !important;
             }
             .dropdown.dropdown-lg .dropdown-menu {
-    min-width: 500px;
+                min-width: 500px;
             }
         }
         .loading {
-    display: block;
-    width: 16px;
+            display: block;
+            width: 16px;
             height: 16px;
             background: transparent url("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif") no-repeat center center;
         }
 
         .loadingOverlay {
-    position: fixed;
-    background-image: url("img/spinner.gif");
+            position: fixed;
+            background-image: url("img/spinner.gif");
             background-repeat: no-repeat;
             background-position: center;
             width: 100vw;
@@ -133,6 +137,9 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 </head>
 <body>
 <div class="container">
+    <br>
+    <a href="logout.php">Logout</a>
+    <br>
     <h2 style="text-align: center">FlavourTown</h2>
         <div class="row">
             <div class="col-md-12 col-centered">
@@ -213,7 +220,9 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 </div>
 </body>
 <script>
-    var memberSearch = false;
+    var user = JSON.parse('<?php echo $user->getJSON(true); ?>');
+    var memberSearch = true;
+    console.log(user);
 </script>
 <script src="js/search.js" type="application/javascript"></script>
 
