@@ -2,7 +2,6 @@
 ob_start();
 require 'class/Page.class.php';
 $p = new Page("Login");
-$p->buildHead();
 
 
 define('__ROOT__',dirname(__FILE__));
@@ -28,6 +27,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 		$errors[] = "Incorrect username or password";
 	}
 }
+$p->buildHead();
 ?>
 <?php UserTools::printErrors($errors); ?>
 <div class="row">
