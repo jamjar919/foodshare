@@ -1,0 +1,87 @@
+
+<!doctype html>
+<html>
+<head>
+    <title>Profile</title>
+    <link rel="stylesheet" href ="food_v.css" type="text/css" />
+</head>
+<body>
+
+<div class="wrapper">
+
+    <header class="site-header">
+        <div class="inner-wrap">
+            <h1>Flavourtown</h1>
+            <ul class="list-inline">
+                <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
+                <li><a href="#" class="account">Home</a></li>
+                <li><a href="#" class="account">About Us</a></li>
+                <li><div class="dropdown">
+                    <button onclick="myFunction()" class="dropbtn">My Account</button>
+                    <div id="myDropdown" class="dropdown-content">
+                        <a href="#home">Profile</a>
+                        <a href="#about">Messages</a>
+                        <a href="#contact">My Items</a>
+                    </div>
+                </div></li>
+            </ul>
+            <div class="site-toolbar"></div>
+        </div>
+
+    </header>
+
+    <div id="profile">
+        <div id="options" style="float: left; width: 30%;">
+            <h2>User Profile</h2>
+            <img src="#userprofile" alt="img\defaultIcon.png" >
+        </div>
+
+        <div id="listings" style="float: left; width: 50%;">
+            <h2>User Listings</h2>
+
+        </div>
+
+        <div id="empty_space" style="float: left; width: 20%;">
+
+        </div>
+
+    </div>
+
+</div>
+<script>
+    /* When the user clicks on the button,
+     toggle between hiding and showing the dropdown content */
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+</script>
+</body>
+<footer>
+    <nav class = "downhere">
+        <ul class= "footer">
+            <li><a href="#">About FlavourTown</a></li>
+            <li><a href="#">Announcements</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Help & Contact</a></li>
+            <li><a href="#">Policies</a></li>
+        </ul>
+    </nav>
+    <p>Property of <a href="https://www.dur.ac.uk/">
+        Durham University</a></p>
+</footer>
+</html>
