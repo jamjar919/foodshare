@@ -23,6 +23,10 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
 
     <!-- Include Bootstrap 3 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+
+    <!-- Include Bootstrap 4 cards -->
+    <link rel="stylesheet" href="css/cards.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.css">
@@ -45,9 +49,20 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
     <script src="js/cookie.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css?family=Lobster|Raleway');
+
+        body {
+            font-family: 'Raleway', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            padding-top: 50px;
+        }
+
+        h1,h2,h3,h4,h5,h6 {
+            font-family: 'Lobster', 'Garamond',serif;
+        }
+
         .col-centered{
-    float: none;
-    margin: 0 auto;
+            float: none;
+            margin: 0 auto;
         }
         #map-button {
             margin-top: 20px;
@@ -67,67 +82,128 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
         #radius .slider-selection {
             background: #BABABA;
         }
-        body {
-    padding-top: 50px;
-        }
         .dropdown.dropdown-lg .dropdown-menu {
-    margin-top: -1px;
+            margin-top: -1px;
             padding: 6px 20px;
         }
         .input-group-btn .btn-group {
-    display: flex !important;
+            display: flex !important;
         }
         .btn-group .btn {
-    border-radius: 0;
+            border-radius: 0;
             margin-left: -1px;
         }
         .btn-group .btn:last-child {
-    border-top-right-radius: 4px;
+            border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
         .btn-group .form-horizontal .btn[type="submit"] {
-    border-top-left-radius: 4px;
+            border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
         .form-horizontal .form-group {
-    margin-left: 0;
+            margin-left: 0;
             margin-right: 0;
         }
         .form-group .form-control:last-child {
-    border-top-left-radius: 4px;
+            border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
 
         @media screen and (min-width: 768px) {
-    #adv-search {
-    width: 500px;
+            #adv-search {
+                width: 500px;
                 margin: 0 auto;
             }
             .dropdown.dropdown-lg {
-    position: static !important;
+                position: static !important;
             }
             .dropdown.dropdown-lg .dropdown-menu {
-    min-width: 500px;
+                min-width: 500px;
             }
         }
-        .loading {
-    display: block;
-    width: 16px;
-            height: 16px;
-            background: transparent url("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif") no-repeat center center;
+
+        .card {
+            margin-bottom: 10px;
         }
 
-        .loadingOverlay {
-    position: fixed;
-    background-image: url("img/spinner.gif");
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: -1;
+        .card-title {
+            font-weight: bold;
         }
+        .card .row {
+            width: 100%;
+            margin: 0;
+        }
+        .food-display-panel {
+            margin-top: 3em;
+            margin-bottom: 3em;
+        }
+
+        .card .row {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display:         flex;
+            flex-wrap: wrap;
+        }
+        .card .row > [class*='col-'] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card .row img {
+            height: 25vh;
+        }
+
+        .center {
+            display: inline-block;
+            margin: auto;
+            vertical-align: middle;
+        }
+
+        .card-block {
+            border-right: 1px solid rgba(0,0,0,.125);
+        }
+
+        .btn-custom {
+            background-color: #212a3f;
+            border-color: #212a3f;
+            color: white;
+        }
+        .btn-custom:hover,
+        .btn-custom:focus,
+        .btn-custom:active,
+        .btn-custom.active {
+            background-color: #181f2e;
+            border-color: #0f141e;
+            color: white;
+        }
+        .btn-custom.disabled:hover,
+        .btn-custom.disabled:focus,
+        .btn-custom.disabled:active,
+        .btn-custom.disabled.active,
+        .btn-custom[disabled]:hover,
+        .btn-custom[disabled]:focus,
+        .btn-custom[disabled]:active,
+        .btn-custom[disabled].active,
+        fieldset[disabled] .btn-custom:hover,
+        fieldset[disabled] .btn-custom:focus,
+        fieldset[disabled] .btn-custom:active,
+        fieldset[disabled] .btn-custom.active {
+            background-color: #212a3f;
+            border-color: #212a3f;
+            color: white;
+        }
+
+        .pagination a {
+            color: #212a3f;
+        }
+        .pagination a.active {
+            background-color: #212a3f;
+            color: white;
+        }
+
+
     </style>
 
 </head>
@@ -141,7 +217,7 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
                     <div class="input-group-btn">
                         <div class="btn-group" role="group">
                             <div class="dropdown dropdown-lg">
-                                <button id="dlDropDown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                                <button id="dlDropDown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Advanced <span class="caret"></span></button>
                                 <div class="dropdown-menu dropdown-menu-right" role="menu">
                                     <form class="form-horizontal">
                                         <div class="form-group">
@@ -186,11 +262,11 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
                                             <label for="resultsPerPage">Results per page</label>
                                             <input class="form-control" type="text" value="15" id="resultsPerPage">
                                         </div>
-                                        <button id="searchAdvanced" class="btn btn-primary">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                        <button id="searchAdvanced" class="btn btn-custom">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                                     </form>
                                 </div>
                             </div>
-                            <button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                         </div>
                     </div>
                 </div>
@@ -198,19 +274,17 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
         </div>
     <div class="row page-content">
         <div class="col-md-8 col-centered ">
-            <button id="map-button" class="btn btn-primary btn-block active">Close map</button>
+            <button id="map-button" class="btn btn-custom btn-block active">Close map</button>
             <div id="map-container">
 
             </div>
             <div id="results">
-
             </div>
             <div class="text-center">
                 <ul class="pagination" ></ul>
             </div>
         </div>
     </div>
-</div>
 </body>
 <script>
     var memberSearch = false;

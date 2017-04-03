@@ -53,21 +53,17 @@ $('document').ready(function() {
     });
 
     if(memberSearch) {
-        $("#loc").val(user['postcode'])
+        $("#loc").val(user['postcode']);
+        search("", [user['latitude'], user['longitude']], 15, "Any time", "Any time", "Closest", 10, 0, true);
     }
+    //auto fill with closest food
+
 });
 
 var today = new Date();
-var dd = today.getDate();
-var mm = today.getMonth() + 1;
-var yyyy = today.getFullYear();
-if(dd < 10) {
-    dd = "0" + dd
-}
-if(mm < 10) {
-    mm = "0" + mm
-}
-today = yyyy + "-" + mm + "-" + dd;
+var monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
 
 //daterangepicker setup for expiry date
 $(function() {
@@ -226,7 +222,7 @@ function addLinks() {
     var paginationList = "";
 
     if(totalLinks > 1) {
-        paginationList += '<li class="page-item" id="prev"><a class="page-link" href="#">Previous</a></li>';
+        paginationList += '<li class="page-item" id="prev"><a class="page-link btn-custom" href="#">Previous</a></li>';
         if(totalLinks > 3) {
             totalLinks = 3;
         }
@@ -241,7 +237,7 @@ function addLinks() {
                     + (i+1) + '</a></li>';
             }
         }
-        paginationList += '<li class="page-item" id="next"><a class="page-link" href="#">Next</a></li>';
+        paginationList += '<li class="page-item btn-custom" id="next"><a class="page-link " href="#">Next</a></li>';
     }
 
 
@@ -275,27 +271,40 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
             $.each(data.food, function (key, element) {
                 var address = convertGeocode(element['latitude'], element['longitude']);
                 var p = Promise.resolve(address);
+                var expiryDate = new Date(element['expiry']);
                 p.then(function(address) {
-                    foodInfo.append("<p id='" + element['id'] + "'>Name: " + element['name'] + "</p>" +
-                        "<img src='" + element['image_url'] + "' height='200px' width='100%'>" +
-                        "<p>Description: " + element['description'] + "</p>" +
-                        "<p>Expiry date: " + element['expiry'] + "</p>" +
-                        "<p>Submission date: " + element['time'] + "</p>" +
-                        "<p>Address: " + address + "</p>"
-                    );
+                    foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
+                    "<div class='row'>" +
+                        "<div class='col-md-8 col-sm-8 col-xs-7'>" +
+                            "<div class='card-block'>" +
+                                "<h4 class='card-title'>" + element['name'] + "</h4>" +
+                                "<p class='card-text card-time' style='font-style=italic '>" + timePosted(element['time']) + "</p>" +
+                                "<p >Expiry date: " + expiryDate.getDate() + '/' + (expiryDate.getMonth() + 1) + '/' +
+                        expiryDate.getFullYear() + "</p>" +
+                                "<div class='details' style='display:none'><p class='card-text'>" + element['description'] + "</p>" +
+                                "<p class='card-text' >Address: " + address + "</p></div>" +
+                                "<div class='btn-group buttons'>" +
+                                "<a href='#' class='btn btn-custom' onclick=displayDetails(" +element['id']+ ",this)>More</a>" +
+                        "</div></div></div>");
                     if(memberSearch) {
                         var claimerButton = document.createElement('button');
                         claimerButton.textContent = "Claim";
-                        claimerButton.className = "btn btn-primary btn-sm";
+                        claimerButton.className = "btn btn-custom";
                         claimerButton.addEventListener('click', function() {
                             claimFood(element['id'], element['user_username'], user['username']);
                         }, false);
-                    foodInfo.append(
-                        claimerButton
-                    );
+                        $('#' + element['id'] + ' .buttons').append(
+                            claimerButton
+                        );
+                        $('#' + element['id'] + ' .card-time').text("Posted by: " + element['user_username'] + " "
+                            + timePosted(element['time']));
                     }
-                    foodInfo.append("<br>");
+                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 '>" +
+                        "<img class='center' src='"+ element['image_url'] + "'>" +
+                        "</div>"
+                    );
 
+                    //Create markers and info windows
                     var myLatlng = new google.maps.LatLng(element['latitude'], element['longitude']);
                     var infowindow = new google.maps.InfoWindow({
                         content: popupDetails(element, address)
@@ -304,7 +313,8 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                     var marker = new google.maps.Marker({
                         position: myLatlng,
                         map: mymap,
-                        title: element['name']
+                        title: element['name'],
+                        icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
                     });
 
                     marker.addListener('click', function() {
@@ -433,12 +443,56 @@ function initMap(pos) {
  * @returns {string}
  */
 function popupDetails(food, address) {
+    var expiryDate = new Date(food['expiry']);
     return '<div class="food-popup"><h3>'+food["name"]+'</h3>' +
         '<p>'+food["description"]+'</p>' +
-        '<p>Expiry date: ' + food['expiry'] + '</p>' +
-        '<p>Submission date: ' + food['time'] + '</p>' +
+        '<p>Expiry date: ' + expiryDate.getDate() + '/' + (expiryDate.getMonth() + 1) + '/' +
+    expiryDate.getFullYear() + '</p>' +
+        '<p>Submission date: ' + timePosted(food['time']) + '</p>' +
         '<p>Address: ' + address + '</p>' +
-        '<button class="btn btn-primary btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
+        '<button class="btn btn-custom btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
+}
+
+function displayDetails(id, button) {
+
+    if($("#" + id + " .details").is(':visible')) {
+        $("#" + id + " .details").hide('blind',{direction:'up'}, 1000, function() {
+            $(button).text('More');
+        });
+
+    }
+    else {
+        $("#" + id + " .details").show('blind',{direction:'up'}, 1000, function() {
+            $(button).text('Less')
+        });
+    }
+}
+/**Convert date time to nice formatting
+ *
+ * @param dateString Datetime string
+ * @returns {string}
+ */
+function timePosted(dateString) {
+    var timePosted = new Date(dateString);
+    var timePostedString;
+    //today
+    if(timePosted.getDate() === today.getDate()) {
+        timePostedString = "Today";
+    }
+    //yesterday
+    else if(timePosted.getDate() === today.getDate(today.setDate(today.getDate()-1))) {
+        timePostedString = "Yesterday";
+    }
+    else {
+        timePostedString = timePosted.getDate() + " " + monthNames[timePosted.getMonth()];
+    }
+    timePostedString += " at " + timePosted.getHours() + ":";
+    if(parseInt(timePosted.getMinutes()) < 10 ) {
+        timePostedString += 0;
+    }
+    timePostedString += timePosted.getMinutes();
+    today = new Date();
+    return timePostedString
 }
 
 function clearMarkers() {

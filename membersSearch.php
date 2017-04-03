@@ -27,6 +27,10 @@ header("Location: login.php");
 
     <!-- Include Bootstrap 3 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+
+    <!-- Include Bootstrap 4 cards -->
+    <link rel="stylesheet" href="css/cards.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.7.2/css/bootstrap-slider.css">
@@ -49,6 +53,16 @@ header("Location: login.php");
     <script src="js/cookie.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css?family=Lobster|Raleway');
+
+        body {
+            font-family: 'Raleway', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            padding-top: 50px;
+        }
+
+        h1,h2,h3,h4,h5,h6 {
+            font-family: 'Lobster', 'Garamond',serif;
+        }
         .col-centered{
             float: none;
             margin: 0 auto;
@@ -70,9 +84,6 @@ header("Location: login.php");
 
         #radius .slider-selection {
             background: #BABABA;
-        }
-        body {
-            padding-top: 50px;
         }
         .dropdown.dropdown-lg .dropdown-menu {
             margin-top: -1px;
@@ -114,24 +125,88 @@ header("Location: login.php");
                 min-width: 500px;
             }
         }
-        .loading {
-            display: block;
-            width: 16px;
-            height: 16px;
-            background: transparent url("https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif") no-repeat center center;
+        .card {
+            margin-bottom: 10px;
         }
 
-        .loadingOverlay {
-            position: fixed;
-            background-image: url("img/spinner.gif");
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: -1;
+        .card-title {
+            font-weight: bold;
         }
+        .card .row {
+            width: 100%;
+            margin: 0;
+        }
+        .food-display-panel {
+            margin-top: 3em;
+            margin-bottom: 3em;
+        }
+
+        .card .row {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display:         flex;
+            flex-wrap: wrap;
+        }
+        .card .row > [class*='col-'] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card .row img {
+            height: 25vh;
+        }
+
+        .center {
+            display: inline-block;
+            margin: auto;
+            vertical-align: middle;
+        }
+
+        .card-block {
+            border-right: 1px solid rgba(0,0,0,.125);
+        }
+
+
+        .btn-custom {
+            background-color: #212a3f;
+            border-color: #212a3f;
+            color: white;
+        }
+        .btn-custom:hover,
+        .btn-custom:focus,
+        .btn-custom:active,
+        .btn-custom.active {
+            background-color: #181f2e;
+            border-color: #0f141e;
+            color: white;
+        }
+        .btn-custom.disabled:hover,
+        .btn-custom.disabled:focus,
+        .btn-custom.disabled:active,
+        .btn-custom.disabled.active,
+        .btn-custom[disabled]:hover,
+        .btn-custom[disabled]:focus,
+        .btn-custom[disabled]:active,
+        .btn-custom[disabled].active,
+        fieldset[disabled] .btn-custom:hover,
+        fieldset[disabled] .btn-custom:focus,
+        fieldset[disabled] .btn-custom:active,
+        fieldset[disabled] .btn-custom.active {
+            background-color: #212a3f;
+            border-color: #212a3f;
+            color: white;
+        }
+
+        .pagination a {
+            color: #212a3f !important;
+        }
+        .pagination > li.active > a {
+            background-color: #212a3f !important;
+            color: white !important;
+            border: 1px solid lightgray !important;
+        }
+
     </style>
 
 </head>
@@ -141,71 +216,71 @@ header("Location: login.php");
     <a href="logout.php">Logout</a>
     <br>
     <h2 style="text-align: center">FlavourTown</h2>
-        <div class="row">
-            <div class="col-md-12 col-centered">
-                <div class="input-group" id="adv-search">
-                    <input class="form-control" type="text" placeholder="Search food" id="q1">
-                    <div class="input-group-btn">
-                        <div class="btn-group" role="group">
-                            <div class="dropdown dropdown-lg">
-                                <button id="dlDropDown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
-                                <div class="dropdown-menu dropdown-menu-right" role="menu">
-                                    <form class="form-horizontal">
-                                        <div class="form-group">
-                                            <label for="q2">Key words</label>
-                                            <input class="form-control" type="text" id="q2"/>
+    <div class="row">
+        <div class="col-md-12 col-centered">
+            <div class="input-group" id="adv-search">
+                <input class="form-control" type="text" placeholder="Search food" id="q1">
+                <div class="input-group-btn">
+                    <div class="btn-group" role="group">
+                        <div class="dropdown dropdown-lg">
+                            <button id="dlDropDown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Advanced <span class="caret"></span></button>
+                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="q2">Key words</label>
+                                        <input class="form-control" type="text" id="q2"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sort">Sort by</label>
+                                        <select class="form-control" id="sort">
+                                            <option>Alphabetical</option>
+                                            <option>Best match</option>
+                                            <option>Most recent</option>
+                                            <option>Expiry</option>
+                                            <option>Closest</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="loc">Location</label>
+                                        <input class="form-control" type="text" id="loc"/>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="radius" class="col-2 col-form-label">Radius</label>
+                                        <div class="col-4">
+                                            <b>0 km</b> <input id="radius" data-slider-id="radiusSlider" type="text" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="15"/>
+                                            <b>30 km</b>
+                                            <span id="radiusCurrentSliderValLabel">Radius: <span id="radiusSliderVal">15</span> km</span>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="sort">Sort by</label>
-                                            <select class="form-control" id="sort">
-                                                <option>Alphabetical</option>
-                                                <option>Best match</option>
-                                                <option>Most recent</option>
-                                                <option>Expiry</option>
-                                                <option>Closest</option>
-                                            </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expiry"  class="col-2 col-form-label">Expiry date</label>
+                                        <div class="col-4">
+                                            <input class="form-control" id="expiry" name="daterange" type = "text" value="Any time" style="width: 100%">
                                         </div>
-                                        <div class="form-group">
-                                            <label for="loc">Location</label>
-                                            <input class="form-control" type="text" id="loc"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="time"  class="col-2 col-form-label">Time posted</label>
+                                        <div class="col-4">
+                                            <input class="form-control" id="time" name="datetimerange" type = "text" value="Any time" style="width: 100%">
                                         </div>
-                                        <div class="form-group row">
-                                            <label for="radius" class="col-2 col-form-label">Radius</label>
-                                            <div class="col-4">
-                                                <b>0 km</b> <input id="radius" data-slider-id="radiusSlider" type="text" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="15"/>
-                                                <b>30 km</b>
-                                                <span id="radiusCurrentSliderValLabel">Radius: <span id="radiusSliderVal">15</span> km</span>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="expiry"  class="col-2 col-form-label">Expiry date</label>
-                                            <div class="col-4">
-                                                <input class="form-control" id="expiry" name="daterange" type = "text" value="Any time" style="width: 100%">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="time"  class="col-2 col-form-label">Time posted</label>
-                                            <div class="col-4">
-                                                <input class="form-control" id="time" name="datetimerange" type = "text" value="Any time" style="width: 100%">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="resultsPerPage">Results per page</label>
-                                            <input class="form-control" type="text" value="15" id="resultsPerPage">
-                                        </div>
-                                        <button id="searchAdvanced" class="btn btn-primary">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                                    </form>
-                                </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="resultsPerPage">Results per page</label>
+                                        <input class="form-control" type="text" value="15" id="resultsPerPage">
+                                    </div>
+                                    <button id="searchAdvanced" class="btn btn-custom">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                </form>
                             </div>
-                            <button id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                         </div>
+                        <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     <div class="row page-content">
         <div class="col-md-8 col-centered ">
-            <button id="map-button" class="btn btn-primary btn-block active">Close map</button>
+            <button id="map-button" class="btn btn-custom btn-block active">Close map</button>
             <div id="map-container">
 
             </div>
