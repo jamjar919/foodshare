@@ -2,3 +2,4 @@ db.php
 phpmyadmin
 *.xml
 .idea/workspace.xml
+.idea/foodshare.iml
