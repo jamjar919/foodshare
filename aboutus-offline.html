@@ -3,6 +3,16 @@
   <head>
     <title>FlavourTown</title>
     <link rel="stylesheet" href ="css/food.css" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'>
+        </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+        <link rel="stylesheet" type="text/css" href="superhero.css">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="modal.css">
   </head>
   <body>
 
@@ -12,8 +22,8 @@
           <h1>Flavourtown</h1>
           <ul class="list-inline">
             <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
-            <li><a href="#" class="account">Register</a></li>
-            <li><a href="#" class="account">Login</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#modal2" class="account">Register</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#modal1" class="account">Login</a></li>
           </ul>
           <div class="site-toolbar">
           	<div class="main-container">
@@ -62,7 +72,103 @@
           </div>
       </div>
     </div>
-	
+	<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1">
+            <div class="vertical-alignment-helper">
+                <div class = "modal-dialog vertical-alignment-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title text-center">Login</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="login-form" action="login.php" method="POST">
+                                <div class="form-group row">
+                                    <!-- <label for="fname" class="col-xs-2 col-form-label">First Name</label> -->
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="text" name="username" placeholder="Username/Email">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <!-- <label for="password" class="col-xs-2 col-form-label">Password</label> -->
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="password" name="password" placeholder="Password">
+                                    </div>
+                                </div>
+                                <div class="row loginform-bottom">
+                                    <div class=" col-xs-6 col-sm-6 text-right">
+                                        <label><input type="checkbox"> Remember me</label>
+                                    </div>
+                                    <div class=" col-xs-6 col-sm-6">
+                                        &nbsp;<a href="#">Forgot Password</a>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="text-center col-xs-12 col-sm-8 col-centered">
+                                        <button style="width: 100%" type="submit" class="btn btn-default " name="submit" value="Login">Log in</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="modal2">
+            <div class="vertical-alignment-helper">
+                <div class = "modal-dialog vertical-alignment-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title text-center">Register</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="login-form" action="login.php" method="POST">
+                                <div class="form-group row">
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="text" name="email" placeholder="Email">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="text" name="username" placeholder="Username">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="password" name="password" placeholder="Password">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="password" name="password" placeholder="Re-enter password">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-xs-12 col-sm-8 col-centered">
+                                        <input class="form-control" type="text" name="postcode" placeholder="Postcode">
+                                    </div>
+                                </div>
+                                <div class="row loginform-bottom">
+                                    <div class=" col-xs-12 col-sm-12 text-center">
+                                        <label><input type="checkbox"> Remember me</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="text-center col-xs-12 col-sm-8 col-centered">
+                                        <button style="width: 100%" type="submit" class="btn btn-default " name="submit" value="Login">Sign Up and Log In</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="functions.js"></script>
   </body>
   <footer>
     <nav class ="downhere">

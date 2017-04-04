@@ -16,7 +16,7 @@
     height: inherit;
     margin: 0 auto;
     pointer-events: all;
-    z-index:1;
+    z-index:99997;
     background-color: rgb(87, 105, 120);
 }
 
@@ -30,12 +30,12 @@
 }
 
 .modal.fade {
-    z-index: 5;
+    z-index: 99999;
     background-color: rgba(0,0,0,0.4);
 }
 
 .modal-backdrop {
-    z-index: 4;
+    z-index: 99998;
 }
 
 @media(max-width:520px) {
