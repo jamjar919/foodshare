@@ -1,2 +1,4 @@
 db.php
 phpmyadmin
+*.xml
+.idea/workspace.xml

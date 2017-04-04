@@ -326,3 +326,13 @@ nav li{
   background-color: #555555;
   color: white;
 }
+
+#profile_pic {
+    padding:5px;
+    border:1px solid #021a40;
+}
+
+#listing_image {
+    padding:5px;
+    border:1px solid #021a40;
+}

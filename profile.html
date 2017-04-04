@@ -2,8 +2,13 @@
 <!doctype html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profile</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href ="food_v.css" type="text/css" />
+    <link rel="stylesheet" href="css/grid.css">
 </head>
 <body>
 
@@ -30,18 +35,26 @@
 
     </header>
 
-    <div id="profile">
-        <div id="options" style="float: left; width: 30%;">
-            <h2>User Profile</h2>
-            <img src="#userprofile" alt="img\defaultIcon.png" >
+    <div id="profile" class="container">
+        <div id="options" class="col-md-3">
+            <img id="profile_pic" class="center-block" src="img\defaultIcon.png" alt="img\defaultIcon.png" >
+            <div class="col-md-offset-1 col-md-10" id="info">
+                <p>username</p>
+                <p>messages</p>
+                <p>wish list</p>
+            </div>
         </div>
 
-        <div id="listings" style="float: left; width: 50%;">
-            <h2>User Listings</h2>
-
+        <div id="listings" class="col-md-offset-1 col-md-7">
+            <div id="heading">
+                <p>My Listings Add Listing</p>
+            </div>
+            <div class="col-md-offset-0 col-md-12" id="listing">
+                <div id="listings_user" class="col-md-3">
+                    <img id="listing_image" class="center-block" src="img\default_food.png" width="100" height="100" >
+                </div>
+            </div>
         </div>
-
-        <div id="empty_space" style="float: left; width: 20%;">
 
         </div>
 
