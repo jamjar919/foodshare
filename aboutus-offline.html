@@ -12,25 +12,17 @@
           <h1>Flavourtown</h1>
           <ul class="list-inline">
             <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
-            <li><a href="#" class="account">Home</a></li>
-            <li><a href="aboutus.html" class="account">About Us</a></li>
-            <li><div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">My Account</button>
-              <div id="myDropdown" class="dropdown-content">
-                <a href="profile.html">Profile</a>
-                <a href="messages.html">Messages</a>
-                <a href="offline.html">Log Out</a>
-              </div>
-            </div></li>
+            <li><a href="#" class="account">Register</a></li>
+            <li><a href="#" class="account">Login</a></li>
           </ul>
           <div class="site-toolbar">
-            <div class="main-container">
-              <div class="second-container">
-                <form>
-                  <input type="text" name="search" placeholder="Search...">
-                </form>
-              </div>
-           </div>
+          	<div class="main-container">
+          		<div class="second-container">
+          			<form>
+	          			<input type="text" name="search" placeholder="Search...">
+	          		</form>
+	          	</div>
+	         </div>
           </div>
         </div>
 
@@ -70,28 +62,7 @@
           </div>
       </div>
     </div>
-	<script>
-      /* When the user clicks on the button, 
-      toggle between hiding and showing the dropdown content */
-      function myFunction() {
-          document.getElementById("myDropdown").classList.toggle("show");
-      }
-
-      // Close the dropdown if the user clicks outside of it
-      window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn')) {
-
-          var dropdowns = document.getElementsByClassName("dropdown-content");
-          var i;
-          for (i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-              openDropdown.classList.remove('show');
-            }
-          }
-        }
-      }
-    </script>
+	
   </body>
   <footer>
     <nav class ="downhere">
@@ -99,7 +70,7 @@
       <li><a href="#">About FlavourTown</a></li>
       <li><a href="#">Announcements</a></li>
       <li><a href="#">Community</a></li>
-      <li><a href="faq.html">Help & Contact</a></li>
+      <li><a href="faq-offline.html">Help & Contact</a></li>
       <li><a href="#">Policies</a></li>   
       </ul>
     </nav>

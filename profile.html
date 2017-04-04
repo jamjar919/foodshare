@@ -16,24 +16,32 @@
 
     <header class="site-header">
         <div class="inner-wrap">
-            <h1>Flavourtown</h1>
-            <ul class="list-inline">
-                <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
-                <li><a href="#" class="account">Home</a></li>
-                <li><a href="#" class="account">About Us</a></li>
-                <li><div class="dropdown">
-                    <button onclick="myFunction()" class="dropbtn">My Account</button>
-                    <div id="myDropdown" class="dropdown-content">
-                        <a href="#home">Profile</a>
-                        <a href="#about">Messages</a>
-                        <a href="#contact">My Items</a>
-                    </div>
-                </div></li>
-            </ul>
-            <div class="site-toolbar"></div>
+          <h1>Flavourtown</h1>
+          <ul class="list-inline">
+            <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
+            <li><a href="#" class="account">Home</a></li>
+            <li><a href="aboutus.html" class="account">About Us</a></li>
+            <li><div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">My Account</button>
+              <div id="myDropdown" class="dropdown-content">
+                <a href="profile.html">Profile</a>
+                <a href="messages.html">Messages</a>
+                <a href="offline.html">Log Out</a>
+              </div>
+            </div></li>
+          </ul>
+          <div class="site-toolbar">
+            <div class="main-container">
+                <div class="second-container">
+                    <form>
+                        <input type="text" name="search" placeholder="Search...">
+                    </form>
+                </div>
+             </div>
+          </div>
         </div>
 
-    </header>
+      </header>
 
     <div id="profile" class="container">
         <div id="options" class="col-md-3">
@@ -53,35 +61,7 @@
                 <div id="listings_user" class="col-md-3">
                     <img id="listing_image" class="center-block" src="img\default_food.png" width="100" height="100" >
                 </div>
-                <div id="listing_details" class="col-md-offset-1 col-md-4">
-                    <p>Some details go here</p>
-                    <br>
-                    <p>Button to mark listing as claimed</p>
-                </div>
-                <div id="listing_edit" class="col-md-offset-1 col-md-3">
-                    <p>delete</p>
-                    <br>
-                    <p>edit</p>
-                </div>
             </div>
-            <br>
-            <br>
-            <div class="col-md-offset-0 col-md-12" id="listing">
-                <div id="listings_user" class="col-md-3">
-                    <img id="listing_image" class="center-block" src="img\default_food.png" width="100" height="100" >
-                </div>
-                <div id="listing_details" class="col-md-offset-1 col-md-4">
-                    <p>Some details go here</p>
-                    <br>
-                    <p>Button to mark listing as claimed</p>
-                </div>
-                <div id="listing_edit" class="col-md-offset-1 col-md-3">
-                    <p>delete</p>
-                    <br>
-                    <p>edit</p>
-                </div>
-            </div>
-
         </div>
 
         </div>
@@ -115,10 +95,10 @@
 <footer>
     <nav class = "downhere">
         <ul class= "footer">
-            <li><a href="#">About FlavourTown</a></li>
+            <li><a href="aboutus.html">About FlavourTown</a></li>
             <li><a href="#">Announcements</a></li>
             <li><a href="#">Community</a></li>
-            <li><a href="#">Help & Contact</a></li>
+            <li><a href="faq.html">Help & Contact</a></li>
             <li><a href="#">Policies</a></li>
         </ul>
     </nav>

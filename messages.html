@@ -16,69 +16,51 @@
 
     <header class="site-header">
         <div class="inner-wrap">
-            <h1>Flavourtown</h1>
-            <ul class="list-inline">
-                <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
-                <li><a href="#" class="account">Home</a></li>
-                <li><a href="#" class="account">About Us</a></li>
-                <li><div class="dropdown">
-                    <button onclick="myFunction()" class="dropbtn">My Account</button>
-                    <div id="myDropdown" class="dropdown-content">
-                        <a href="#home">Profile</a>
-                        <a href="#about">Messages</a>
-                        <a href="#contact">My Items</a>
-                    </div>
-                </div></li>
-            </ul>
-            <div class="site-toolbar"></div>
+          <h1>Flavourtown</h1>
+          <ul class="list-inline">
+            <li><a href="#" class="search"><i class="fa fa-search"></i></a></li>
+            <li><a href="#" class="account">Home</a></li>
+            <li><a href="aboutus.html" class="account">About Us</a></li>
+            <li><div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">My Account</button>
+              <div id="myDropdown" class="dropdown-content">
+                <a href="profile.html">Profile</a>
+                <a href="messages.html">Messages</a>
+                <a href="offline.html">Log Out</a>
+              </div>
+            </div></li>
+          </ul>
+          <div class="site-toolbar">
+            <div class="main-container">
+                <div class="second-container">
+                    <form>
+                        <input type="text" name="search" placeholder="Search...">
+                    </form>
+                </div>
+             </div>
+          </div>
         </div>
 
-    </header>
+      </header>
 
     <div id="messages_whole" class="container">
         <div class="col-md-2" id="options">
             <h2>Options</h2>
             <button class="button5">inbox</button>
             <br>
-            <br>
             <button class="button5">Sent</button>
-            <br>
             <br>
             <button class="button5">Deleted</button>
         </div>
 
-        <div id="names" class="col-md-4">
+        <div id="names" class="col-md-2">
             <h2>People</h2>
-            <div id="conversation" class="col-md-offset-0">
-                <button class="people">
-                    <div id="user_pic" class="col-md-offset-0 col-md-3">
-                        <p>image</p>
-                    </div>
-                    <div id="details" class="col-md-offset-1 col-md-8">
-                        <div id="senders name" class="col-md-offset=0">
-                            <p>Name</p>
-                        </div>
-                        <div id="preview" class="col-md-offset-0">
-                            <p>Message preview</p>
-                        </div>
-                    </div>
-
-                </button>
-            </div>
+            <button class="people">test</button>
             <br>
         </div>
 
-        <div id="messages" class="col-md-6">
+        <div id="messages" class="col-md-8">
             <h2>Messages</h2>
-            <div id="recipient" class="col-md-offset-0">
-                <div id="user_name" class="col-md-offset-0">
-                    The name of the person goes here
-                </div>
-                <div id="messaging" class="col-md-offset-0">
-                    The messages go here
-                </div>
-
-            </div>
         </div>
 
     </div>
@@ -110,10 +92,10 @@
 <footer>
     <nav class = "downhere">
         <ul class= "footer">
-            <li><a href="#">About FlavourTown</a></li>
+            <li><a href="aboutus.html">About FlavourTown</a></li>
             <li><a href="#">Announcements</a></li>
             <li><a href="#">Community</a></li>
-            <li><a href="#">Help & Contact</a></li>
+            <li><a href="faq.html">Help & Contact</a></li>
             <li><a href="#">Policies</a></li>
         </ul>
     </nav>
