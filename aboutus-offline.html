@@ -2,17 +2,12 @@
 <html>
   <head>
     <title>FlavourTown</title>
+      <link rel="stylesheet" href ="css/bootstrap.css" type="text/css" />
     <link rel="stylesheet" href ="css/food.css" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'>
-        </script>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-        <link rel="stylesheet" type="text/css" href="superhero.css">
-        <link rel="stylesheet" type="text/css" href="style.css">
-        <link rel="stylesheet" type="text/css" href="modal.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+      <link rel="stylesheet" type="text/css" href="modal.css">
   </head>
   <body>
 
@@ -37,40 +32,40 @@
         </div>
 
       </header>
-      	<div id="container">
-		    <div class="carousel">
-          <div class="carousel-inner">
-              <input class="carousel-open" type="radio" id="carousel-1" name="carousel" aria-hidden="true" hidden="" checked="checked">
-              <div class="carousel-item">
-                  <img src="http://fakeimg.pl/2000x800/0079D8/fff/?text=Flavourtown">
-              </div>
-              <input class="carousel-open" type="radio" id="carousel-2" name="carousel" aria-hidden="true" hidden="">
-              <div class="carousel-item">
-                  <img src="http://fakeimg.pl/2000x800/DA5930/fff/?text=We Bring">
-              </div>
-              <input class="carousel-open" type="radio" id="carousel-3" name="carousel" aria-hidden="true" hidden="">
-              <div class="carousel-item">
-                  <img src="http://fakeimg.pl/2000x800/F90/fff/?text=The Flavour">
-              </div>
-              <label for="carousel-3" class="carousel-control prev control-1">‹</label>
-              <label for="carousel-2" class="carousel-control next control-1">›</label>
-              <label for="carousel-1" class="carousel-control prev control-2">‹</label>
-              <label for="carousel-3" class="carousel-control next control-2">›</label>
-              <label for="carousel-2" class="carousel-control prev control-3">‹</label>
-              <label for="carousel-1" class="carousel-control next control-3">›</label>
-              <ol class="carousel-indicators">
-                  <li>
-                      <label for="carousel-1" class="carousel-bullet">•</label>
-                  </li>
-                  <li>
-                      <label for="carousel-2" class="carousel-bullet">•</label>
-                  </li>
-                  <li>
-                      <label for="carousel-3" class="carousel-bullet">•</label>
-                  </li>
-              </ol>
-          </div>
-      </div>
+      	<div id="my-container">
+            <div class="my-carousel">
+                <div class="my-carousel-inner">
+                    <input class="carousel-open" type="radio" id="carousel-1" name="my-carousel" aria-hidden="true" hidden="" checked="checked">
+                    <div class="carousel-item">
+                        <img src="http://fakeimg.pl/2000x800/0079D8/fff/?text=Flavourtown">
+                    </div>
+                    <input class="carousel-open" type="radio" id="carousel-2" name="my-carousel" aria-hidden="true" hidden="">
+                    <div class="carousel-item">
+                        <img src="http://fakeimg.pl/2000x800/DA5930/fff/?text=We Bring">
+                    </div>
+                    <input class="carousel-open" type="radio" id="carousel-3" name="my-carousel" aria-hidden="true" hidden="">
+                    <div class="carousel-item">
+                        <img src="http://fakeimg.pl/2000x800/F90/fff/?text=The Flavour">
+                    </div>
+                    <label for="carousel-3" class="my-carousel-control my-prev control-1">‹</label>
+                    <label for="carousel-2" class="my-carousel-control my-next control-1">›</label>
+                    <label for="carousel-1" class="my-carousel-control my-prev control-2">‹</label>
+                    <label for="carousel-3" class="my-carousel-control my-next control-2">›</label>
+                    <label for="carousel-2" class="my-carousel-control my-prev control-3">‹</label>
+                    <label for="carousel-1" class="my-carousel-control my-next control-3">›</label>
+                    <ol class="my-carousel-indicators">
+                        <li>
+                            <label for="carousel-1" class="carousel-bullet">•</label>
+                        </li>
+                        <li>
+                            <label for="carousel-2" class="carousel-bullet">•</label>
+                        </li>
+                        <li>
+                            <label for="carousel-3" class="carousel-bullet">•</label>
+                        </li>
+                    </ol>
+                </div>
+            </div>
     </div>
 	<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1">
             <div class="vertical-alignment-helper">
@@ -168,7 +163,7 @@
                 </div>
             </div>
         </div>
-        <script src="functions.js"></script>
+    </div>
   </body>
   <footer>
     <nav class ="downhere">
