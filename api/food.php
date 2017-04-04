@@ -76,7 +76,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f ";
     //check if expiry date and time is empty for any time filter
     if (!$words == "" or $sort == "Best match") {
-        $query .= "INNER JOIN tag_list ON tag_list.id = f.tag_list_id
+        $query .= "INNER JOIN tag_list ON tag_list.food_id = f.id
         INNER JOIN tag t ON t.id = tag_list.tag_id
         WHERE MATCH(f.name, f.description, t.name) 
         AGAINST ('$words' IN BOOLEAN MODE) AND (f.claimer_username = NULL OR f.claimer_username = '')";

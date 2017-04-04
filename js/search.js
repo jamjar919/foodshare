@@ -412,6 +412,21 @@ $(function() {
         },
         minLength: 3,
     });
+    $( "#q2" ).autocomplete({
+        source: function( request, response ) {
+            $.ajax({
+                url: "api/getTag.php",
+                dataType: "json",
+                data: {
+                    q: request.term
+                },
+                success: function( data ) {
+                    return response(data.tags)
+                }
+            });
+        },
+        minLength: 3,
+    });
 });
 
 //map stuff
