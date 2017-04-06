@@ -71,7 +71,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
     $words = strtolower($q);
 
     $query = "SELECT f.id, f.name, f.description, f.image_url, f.expiry, f.time, f.latitude,
- f.longitude, f.user_username, f.claimer_username, f.tag_list_id, ( 6371 * acos( cos( radians(:center_lat) ) * 
+ f.longitude, f.user_username, f.claimer_username, ( 6371 * acos( cos( radians(:center_lat) ) * 
                 cos( radians( latitude ) ) * cos( radians( longitude ) - radians(:center_lng) )
  + sin( radians(:center_lat) ) * sin( radians( latitude ) ) ) ) AS distance FROM food AS f ";
     //check if expiry date and time is empty for any time filter
