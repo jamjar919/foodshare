@@ -16,6 +16,13 @@
                     <a href="editprofile.php" class="btn btn-primary">Edit Details</a>
                 </div>
             </div>
+            <div class="card user-profile-links">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="user.php?id=<?php echo $profile['username'];?>">Your public profile</a></li>
+                    <li class="list-group-item"><a href="editprofile.php">Edit profile details</a></li>
+                    <li class="list-group-item"><a href="messages.php">Messages</a></li>
+                </ul>
+            </div>
         </div>
         <div class="col-sm-6 col-md-9">
             <div class="card">

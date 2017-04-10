@@ -134,6 +134,9 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 /** USER STUFF **/
+.user-profile {
+    margin-bottom: 2em;    
+}
 .user-profile h2,.notifications h3 {
     margin-top: 0;    
 }
@@ -165,6 +168,13 @@ h1,h2,h3,h4,h5,h6 {
     -moz-break-inside: avoid-column;
     break-inside: avoid-column;
     margin-bottom: 40px;
+}
+.list-group-item {
+    background-color: #FFF;
+    border-bottom: 2px solid rgba(0,0,0,.125);
+}
+.list-group-item:last-child {
+    border: none;    
 }
 
 /** This is needed else the alerts bugger up **/
