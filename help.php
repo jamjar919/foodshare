@@ -1,7 +1,7 @@
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';
-    $p = new Page("About us");
+    $p = new Page("Help and FAQ's");
     $p->buildHead();
     $p->buildHeader();
 ?>

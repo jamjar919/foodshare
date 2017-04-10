@@ -30,9 +30,8 @@ if (isset($_POST["submitted"])) {
 $p->buildHead();
 $p->buildHeader();
 ?>
-<?php UserTools::printErrors($errors); ?>
 <div class="row">
-    <div class="col-sm-12 col-md-12">
+    <div class="col-md-6">
         <form action="#" method="POST">
             <div class="form">
                 <h3>Welcome to FoodShare!</h3>
@@ -52,6 +51,9 @@ $p->buildHeader();
                 <input type="submit" class="btn btn-default" value="Sign Up">
             </div>
         </form>
+    </div>
+    <div class="col-md-6">
+        <?php UserTools::printErrors($errors); ?>
     </div>
 </div>
 <?php

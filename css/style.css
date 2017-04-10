@@ -133,6 +133,16 @@ h1,h2,h3,h4,h5,h6 {
     margin-bottom: 1.5em;  
 }
 
+/** USER STUFF **/
+.user-profile h2,.notifications h3 {
+    margin-top: 0;    
+}
+.card-img-top.profilepicture {
+    height: auto;  
+    width: 100%;
+    display: block;
+}
+
 /**
  * 
  * B O O T S T R A P   M O D S

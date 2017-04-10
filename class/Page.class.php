@@ -7,19 +7,17 @@ require_once __ROOT__.'/class/User.class.php';
 class Page
 {
     public $name;
+    public $username;
     public $user;
+    private $isLoggedIn;
     function __construct($name,$requiresLogin=false) {
         $this->name = $name;
-        $user = null;
-        if ($requiresLogin) {
-            $user = isset($_COOKIE["username"])? $_COOKIE["username"] : null;
-            $token = isset($_COOKIE["token"])? $_COOKIE["token"] : null;
-            $user = new User($user,$token);
-            if (! ($user->isLoggedIn())) {
-                header("Location: login.php");
-            } else {
-                $this->user = $user;
-            }
+        $this->username = isset($_COOKIE["username"])? $_COOKIE["username"] : null;
+        $token = isset($_COOKIE["token"])? $_COOKIE["token"] : null;
+        $this->user = new User($this->username,$token);
+        $this->isLoggedIn = $this->user->isLoggedIn();
+        if ($requiresLogin && !$this->isLoggedIn) {
+            header("Location: login.php");
         }
     }
     public function buildHead() {
@@ -28,7 +26,7 @@ class Page
         require_once __ROOT__.'/class/template/head.html';
         echo '</head><body>';
     }
-    public function buildHeader() {
+    public function buildHeader($includeSearchbar=true) {
         echo '<header id="header">
             <div class="container">
                 <div class="top-header">
@@ -39,12 +37,15 @@ class Page
         $this->getNavItems();
         echo '      </nav>
                 </div>
-            </div>
-            <div class="searchbar-container">
+            </div>';
+        if ($includeSearchbar) {
+        echo '<div class="searchbar-container">
                 <div class="container">';
         require  __ROOT__.'/class/template/searchbar-simple.html';        
         echo '  </div>
-            </div>
+            </div>';
+        }
+        echo '
         </header>
         <div class="container">';
     }
@@ -66,12 +67,19 @@ class Page
                 <div class="nav-item">
                     <a href="about.php">About</a>
                 </div>';
-        if (! $requiresLogin) {
+        if (! $this->isLoggedIn) {
             echo '  <div class="nav-item">
                         <a href="login.php">Login</a>
                     </div>
                     <div class="nav-item">
                         <a href="register.php">Register</a>
+                    </div>';
+        } else {
+            echo '  <div class="nav-item">
+                        <a href="membersSearch.php">Find</a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="profile.php">Profile</a>
                     </div>';
         }
     }
