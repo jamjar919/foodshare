@@ -127,6 +127,12 @@ h1,h2,h3,h4,h5,h6 {
     float: left;
 }
 
+/** SEARCHBAR **/
+
+.inline-searchbar {
+    margin-bottom: 1.5em;  
+}
+
 /**
  * 
  * B O O T S T R A P   M O D S

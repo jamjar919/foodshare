@@ -9,6 +9,19 @@
         <p>We're aiming to rid the world of wasted food.</p>
         <p><a class="btn btn-primary btn-lg" href="register.php" role="button">Sign up now!</a></p>
     </div>
+    <h2>See what's on offer...</h2>
+    <div class="inline-searchbar">
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="Search food">
+            <div class="input-group-btn">
+                <div class="btn-group" role="group">
+                    <div class="dropdown dropdown-lg">
+                        <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="masonry">
         <div class="card">
             <img class="card-img-top" src="http://lorempixel.com/400/200/food/">

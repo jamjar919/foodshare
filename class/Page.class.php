@@ -33,7 +33,7 @@ class Page
             <div class="container">
                 <div class="top-header">
                     <div class="site-title">
-                        <h1><a href="index.php">Foodshare</a></h1>
+                        <h1><a href="index.php">FlavourTown</a></h1>
                     </div>
                     <nav class="main-navigation">';
         $this->getNavItems();
@@ -51,6 +51,10 @@ class Page
     public function buildFooter() {
         echo '</div><footer id="footer"><nav class="bottom-navigation">';
         $this->getNavItems();
+        // Bottom nav only items
+        echo '<div class="nav-item">
+                    <a href="help.php">Help &amp; FAQ\'s</a>
+                </div>';
         echo '</nav><p>Property of <a href="https://www.dur.ac.uk/">Durham University</a></p></footer>';
         require_once __ROOT__.'/class/template/footer-scripts.html'; 
         echo "</body></html>";
@@ -64,10 +68,10 @@ class Page
                 </div>';
         if (! $requiresLogin) {
             echo '  <div class="nav-item">
-                        <a href="register.php">Register</a>
+                        <a href="login.php">Login</a>
                     </div>
                     <div class="nav-item">
-                        <a href="login.php">Login</a>
+                        <a href="register.php">Register</a>
                     </div>';
         }
     }
