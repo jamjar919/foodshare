@@ -74,6 +74,9 @@ h1,h2,h3,h4,h5,h6 {
     border-radius: 1em;
     box-shadow: 0 10px 0 10px #8ab839;
 }
+#header .searchbar-container .input-group #search {
+    background: #444;
+}
 
 /**
  * 
