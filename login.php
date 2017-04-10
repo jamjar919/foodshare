@@ -28,6 +28,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 	}
 }
 $p->buildHead();
+$p->buildHeader();
 ?>
 <?php UserTools::printErrors($errors); ?>
 <div class="row">

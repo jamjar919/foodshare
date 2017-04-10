@@ -1,7 +1,6 @@
 <?php
 require 'class/Page.class.php';
 $p = new Page("Login");
-$p->buildHead();
 
 define('__ROOT__',dirname(__FILE__));
 require_once __ROOT__."/class/User.class.php";
@@ -28,6 +27,8 @@ if (isset($_POST["submitted"])) {
 		$errors = $register_success;
 	}
 }
+$p->buildHead();
+$p->buildHeader();
 ?>
 <?php UserTools::printErrors($errors); ?>
 <div class="row">
