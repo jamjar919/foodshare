@@ -1,0 +1,203 @@
+/* Global typography and bg colors */
+
+body {
+    font-family: 'Raleway',sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #2e2e2e;
+    background-color: #f2f2f2;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Lobster', cursive;
+}
+
+/**
+ * 
+ * H E A D E R
+ * 
+ **/
+
+/* Layout */
+/* WARNING This uses flexbox - Do not edit unless you know what you are doing! */
+#header {
+    margin: 0 0 2em 0;    
+}
+#header .top-header {
+    display: flex;
+    flex-direction: row;
+}
+#header .top-header .site-title, #header .top-header .main-navigation {
+    display: flex;
+}
+#header .top-header .site-title {
+    flex: 1 1;
+}
+#header .top-header .site-title h1 {
+    margin: 0.5em 0; 
+    font-size: 4em;
+}
+#header .top-header .site-title h1 a, #header .top-header .site-title h1 a:hover {
+    color: #FFF;
+}
+#header .top-header .main-navigation {
+    flex: 3 3;    
+    display: flex;
+    justify-content: flex-end;
+}
+#header .top-header .main-navigation .nav-item {
+    display: flex;
+    margin: auto 1em;
+    font-size: 1.25em;
+}
+#header .searchbar-container .input-group {
+    margin: 10px 0;  
+}
+
+/* Style */
+#header {
+    color: #fff;
+    background: #212a3f;
+}
+#header a {
+    color: #8ab839;
+}
+#header a:hover {
+    color: #df691a;
+    text-decoration: none;
+}
+#header .searchbar-container {
+    background-color: #8ab839;
+}
+#header .searchbar-container .input-group #search {
+    background: #444;
+}
+
+/**
+ * 
+ * F O O T E R
+ * 
+ **/
+
+/* Layout */
+#footer {
+    background: #212a3f;
+    text-align: center;
+    padding: 2em 0 2em 0;
+    margin: 5em 0 0 0;
+}
+#footer .bottom-navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+#footer .bottom-navigation .nav-item {
+    max-width: 100%;
+    padding: 1em;
+}
+
+/* Style */
+#footer {
+    color: #FFF;
+}
+
+#footer a {
+    color: #8ab839; 
+}
+#footer a:hover {
+    color: #df691a;
+    text-decoration: none;
+}
+
+
+/** SLIDER **/
+.aboutus-carousel img {
+    width: 100%;    
+    display: block;
+}
+.unslider-arrow.next,.unslider-arrow.prev {
+    position: relative;
+    left: 0;
+    right: 0;
+}
+.unslider-arrow.next {
+    float: right;
+}
+.unslider-arrow.prev {
+    float: left;
+}
+
+/** SEARCHBAR **/
+
+.inline-searchbar {
+    margin-bottom: 1.5em;  
+}
+
+/** USER STUFF **/
+.user-profile {
+    margin-bottom: 2em;    
+}
+.user-profile h2,.notifications h3 {
+    margin-top: 0;    
+}
+.card-img-top.profilepicture {
+    height: auto;  
+    width: 100%;
+    display: block;
+}
+
+/**
+ * 
+ * B O O T S T R A P   M O D S
+ * 
+ **/
+.jumbotron {
+    color: #FFF;    
+    background: #212a3f;
+}
+.masonry {
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+    -webkit-column-gap: 40px; 
+    -moz-column-gap: 40px;
+    column-gap: 40px;
+}
+.masonry-two {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    -webkit-column-gap: 20px; 
+    -moz-column-gap: 20px;
+    column-gap: 20px;
+}
+.masonry .card {
+    -webkit-break-inside: avoid-column;
+    -moz-break-inside: avoid-column;
+    break-inside: avoid-column;
+    margin-bottom: 40px;
+}
+.masonry-two .card {
+    margin-bottom: 20px;
+}
+.list-group-item {
+    background-color: #FFF;
+    border-bottom: 2px solid rgba(0,0,0,.125);
+}
+.list-group-item:last-child {
+    border: none;    
+}
+label {
+    font-size: 1em;    
+}
+.help-block {
+    color: #222;    
+}
+.form-control {
+    border: 1px solid #DDD;
+}
+
+/** This is needed else the alerts bugger up **/
+.fade {
+    opacity: 1;    
+}

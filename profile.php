@@ -1,117 +1,45 @@
 <?php
-define('__ROOT__',dirname(__FILE__));
-require_once __ROOT__."/class/User.class.php";
+    define('__ROOT__',dirname(__FILE__));
+    require __ROOT__.'/class/Page.class.php';
+    $p = new Page("User Home", true);
+    $p->buildHead();
+    $p->buildHeader();
+    $profile = $p->user->getPrivateProfile();
 ?>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="js/cookie.js"></script>
-<script src="js/editprofile.js"></script>
-
+    <div class="row">
+        <div class="col-sm-6 col-md-3">
+            <div class="card user-profile">
+                <img src="<?php echo $profile['profile_picture_url']; ?>" class="card-img-top profilepicture">
+                <div class="card-block">
+                    <h2><a class="card-title" href="user.php?id=<?php echo $profile['username'];?>"><?php echo $profile['username'];?></a></h2>
+                    <p class="card-text">Location: <?php echo $profile['postcode']; ?> (<?php echo $profile['latitude']; ?>, <?php echo $profile['longitude']; ?>)</p>
+                    <a href="editprofile.php" class="btn btn-primary">Edit Details</a>
+                </div>
+            </div>
+            <div class="card user-profile-links">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><a href="user.php?id=<?php echo $profile['username'];?>">Your public profile</a></li>
+                    <li class="list-group-item"><a href="editprofile.php">Edit profile details</a></li>
+                    <li class="list-group-item"><a href="messages.php">Messages</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-9">
+            <div class="card">
+                <div class="card-block notifications">
+                    <h3>Hey, you!</h3>
+                    Messages to the user (claim notices, etc) would go here...
+                </div>
+            </div>
+            <div class="row">
+                <h2 class="col-md-6">Your items</h2>
+                <h2 class="col-md-6 text-right"><small><a href="addfood.php">Add a new item</a></small></h2>
+            </div>
+            Load in via AJAX
+            <h2>Items you might be interested in...</h2>
+            Load in via AJAX
+        </div>
+    </div>
 <?php
-// Check we aren't already logged in via cookie
-if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
-	$user = new User($_COOKIE["username"],$_COOKIE["token"]);
-	if ($user->isLoggedIn()) {
-            echo "Logged in as user ".$_COOKIE["username"]."<br>";
-	} else {
-            echo "Failed to log in in as user ".$_COOKIE["username"];
-	}
-} else {
-    echo "Not logged in";
-}
+    $p->buildFooter();
 ?>
-<script>
-    var user = JSON.parse('<?php echo $user->getJSON(true); ?>');
-    console.log(user);
-</script>
-<br>
-<img src="<?php echo $user->getProfilePicture(); ?>" id="currentProfilePicture" height="100px" width="100px">
-<input accept="image/*" type="file" id="profilepicture">
-<a id="changeProfilePicture">Change</a><br>
-<br>
-Postcode: <input type="text" name="postcode" id="postcode"> <a id="changePostcode">Change</a><br>
-<br>
-Email: <input type="text" name="email" id="email"> <a id="changeEmail">Change</a><br>
-<br>
-Password: <input type="password" name="password" id="password"> <br>
-Password Verify: <input type="password" name="password" id="passwordverify"> <a id="changePassword">Change</a>
-<div id="message"></div>
-<script>
-        function changeProfilePictureWrapper(id){
-            var fileInput = document.getElementById(id.substring(1));
-            console.log(fileInput);
-            var file = fileInput.files[0];
-            console.log(file)
-            uploadProfilePicture(file)
-            .then(function(result) {
-                // Yay we uploaded, get link and send to our db
-                var link = result["data"]["link"];
-                changeProfilePicture(link)
-                .then(function(result) {
-                        $("#currentProfilePicture").attr("src",link);
-                        console.log(result);
-                        $("#message").html = 'Success: ' + result;
-                }).catch(function(error) {
-                        if (error.hasOwnProperty('error')) {
-                                alert(error.error);
-                        } else {
-                                console.log(error);
-                        }
-                })
-            })
-        }
-	function changePostcodeWrapper(id) {
-		changePostcode($(id).val())
-		.then(function(result) {
-			console.log(result);
-			$("#message").html = 'Success: ' + result;
-		}).catch(function(error) {
-			if (error.hasOwnProperty('error')) {
-				alert(error.error);
-			} else {
-				console.log(error);
-			}
-		})		
-	}
-	function changeEmailWrapper(id) {
-		changeEmail($(id).val())
-		.then(function(result) {
-			console.log(result);
-			$("#message").html = 'Success: ' + result;
-		}).catch(function(error) {
-			if (error.hasOwnProperty('error')) {
-				alert(error.error);
-			} else {
-				console.log(error);
-			}
-		})		
-	}
-	function changePasswordWrapper(id, verify) {
-            if ($(id).val() == $(verify).val()) {
-                changePassword($(id).val())
-                .then(function(result) {
-                        console.log(result);
-                        $("#message").html = 'Success: ' + result;
-                }).catch(function(error) {
-                        if (error.hasOwnProperty('error')) {
-                                alert(error.error);
-                        } else {
-                                console.log(error);
-                        }
-                })	
-            } else {
-                alert("yo those passwords ain't the same bruv");
-            }
-	}
-	$("#changeProfilePicture").click(function () {
-		changeProfilePictureWrapper("#profilepicture");
-	})
-	$("#changePostcode").click(function () {
-		changePostcodeWrapper("#postcode");
-	})
-	$("#changeEmail").click(function () {
-		changeEmailWrapper("#email");
-	})
-	$("#changePassword").click(function () {
-		changePasswordWrapper("#password", "#passwordverify");
-	})
-</script>

@@ -1,7 +1,6 @@
 <?php
 require 'class/Page.class.php';
 $p = new Page("Login");
-$p->buildHead();
 
 define('__ROOT__',dirname(__FILE__));
 require_once __ROOT__."/class/User.class.php";
@@ -28,10 +27,11 @@ if (isset($_POST["submitted"])) {
 		$errors = $register_success;
 	}
 }
+$p->buildHead();
+$p->buildHeader();
 ?>
-<?php UserTools::printErrors($errors); ?>
 <div class="row">
-    <div class="col-sm-12 col-md-12">
+    <div class="col-md-6">
         <form action="#" method="POST">
             <div class="form">
                 <h3>Welcome to FoodShare!</h3>
@@ -51,6 +51,9 @@ if (isset($_POST["submitted"])) {
                 <input type="submit" class="btn btn-default" value="Sign Up">
             </div>
         </form>
+    </div>
+    <div class="col-md-6">
+        <?php UserTools::printErrors($errors); ?>
     </div>
 </div>
 <?php

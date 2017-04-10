@@ -1,85 +1,46 @@
 <?php
-        session_start();
-        require "functions.php";
-        include "header.php";
-        include "nav.php";
-    ?>
-    <!-- Carousel -->
-    <div class="container">
-        <div class="thumbnail">
-            <h2 id="title">About Us</h2>
-            <div class="row">
-                <div class="col-sm-12 col-xs-12">
-
-                    <div id="theCarousel" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                            <li data-target="#theCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#theCarousel" data-slide-to="1"></li>
-                            <li data-target="#theCarousel" data-slide-to="2"></li>
-                        </ol>
-
-                        <div class="carousel-inner">
-                            <div class="item active">
-                                <img src="./images/Sharing_Food.jpg">
-                                <div class="slide1"></div>
-                                <div class="carousel-caption">
-                                    <h2>Sharing food</h2>
-                                    <p>FoodShare helps make sharing food with your local community easier than ever by allowing you to post rid of your unwanted food and get hold of others' unwanted food swiftly
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <img src="./images/Environment.jpg">
-                                <div class="slide2"></div>
-                                <div class="carousel-caption">
-                                    <h2>Saving the environment</h2>
-                                    <p>We seek to help save the environment through encouraging food sharing in communities. Millions of tonnes of food is wasted every year and much of it goes into landfills which take up land.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="item">
-                                <img src="./images/Food_Image1.jpg">
-                                <div class="slide3"></div>
-                                <div class="carousel-caption">
-                                    <h2>Title</h2>
-                                    <p>Bla bla bla bla bla bla bla bla</p>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <a class="left carousel-control" href="#theCarousel" data-slide="prev">
-                            <span class="glyphicon glyphicon-chevron-left"></span>
-                        </a>
-
-                        <a class="right carousel-control" href="#theCarousel" data-slide="next">
-                            <span class="glyphicon glyphicon-chevron-right"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-                <div class="row">
-                     <div class="col-xs-12 col-sm-12 text">
-                         <br>
-                         <br>
-                         <p>
-                             Ut sale voluptatum inciderint eos. Ex menandri incorrupte nam, pri no utinam disputando.
-                             Integre equidem dissentiet ei has, at adipisci petentium mei. Ex sea populo erroribus elaboraret.
-                             Eum latine periculis eu, ei sed modus paulo nemore, at eam feugiat civibus. Purto zril persius mei et, eruditi legendos ea eam.
-                         </p>
-                         <br>
-                         <p>
-                             Prima latine id ius, id quo mundi dicam percipitur. Meis offendit theophrastus eos ad, quo ea nemore virtute erroribus.
-                             In semper ullamcorper mei. Vim ea denique accusata, no sea nibh ocurreret euripidis. Usu sonet vocent cu, eos bonorum salutatus pertinacia et.
-                             Nec ea justo fierent, sapientem definitiones pri cu. Dolor viderer philosophia ei vis, has te nibh sensibus scripserit, wisi laoreet inermis duo no.
-                         </p>
-                     </div>
-                </div>
-            </div>
+    define('__ROOT__',dirname(__FILE__));
+    require __ROOT__.'/class/Page.class.php';
+    $p = new Page("About us");
+    $p->buildHead();
+    $p->buildHeader();
+?>
+    <div>
+        <div class="aboutus-carousel">
+            <ul>
+                <li>
+                    <img src="http://fakeimg.pl/2000x800/0079D8/fff/?text=Flavourtown">
+                </li>
+                <li>
+                    <img src="http://fakeimg.pl/2000x800/DA5930/fff/?text=We Bring">
+                </li>
+                <li>
+                    <img src="http://fakeimg.pl/2000x800/F90/fff/?text=The Flavour">
+                </li>
+            </ul>
         </div>
+    </div>
+    <h1>HTML Ipsum Presents</h1>
+    <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+    <h2>Header Level 2</h2>
+    <ol>
+    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+    <li>Aliquam tincidunt mauris eu risus.</li>
+    </ol>
+    <blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis, tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>
+    <h3>Header Level 3</h3>
+    <ul>
+    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+    <li>Aliquam tincidunt mauris eu risus.</li>
+    </ul>
+    <script>
+        $(document).ready(function() {
+            $('.aboutus-carousel').unslider({
+                'autoplay':true,
+                'nav':false
+            }) 
+        });
+    </script>
 <?php
-include "footer.php";
+    $p->buildFooter();
 ?>
