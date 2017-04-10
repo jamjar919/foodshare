@@ -35,11 +35,27 @@
                 <h2 class="col-md-6">Your items</h2>
                 <h2 class="col-md-6 text-right"><small><a href="addfood.php">Add a new item</a></small></h2>
             </div>
-            Load in via AJAX
+            <div id="myitems" class="masonry">
+            </div>
             <h2>Items you might be interested in...</h2>
             Load in via AJAX
         </div>
     </div>
+    <script src="js/useritems.js"></script>
+    <script>
+        $(document).ready(function() {
+            var username = "<?php echo $profile['username'];?>";
+            var selector = "#myitems";
+            getUserItems(username)
+            .then(function(data) {
+                console.log(data);
+                printFoodItems(data["food"],selector);
+            })
+            .catch(function(error) {
+                $(selector).text("There was an error loading your items");
+            });
+        });
+    </script>
 <?php
     $p->buildFooter();
 ?>
