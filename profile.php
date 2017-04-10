@@ -33,7 +33,7 @@
             </div>
             <div class="row">
                 <h2 class="col-md-6">Your items</h2>
-                <h2 class="col-md-6 text-right"><small><a href="#">Add a new item</a></small></h2>
+                <h2 class="col-md-6 text-right"><small><a href="addfood.php">Add a new item</a></small></h2>
             </div>
             Load in via AJAX
             <h2>Items you might be interested in...</h2>
