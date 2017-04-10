@@ -37,6 +37,9 @@ h1,h2,h3,h4,h5,h6 {
     margin: 0.5em 0; 
     font-size: 4em;
 }
+#header .top-header .site-title h1 a, #header .top-header .site-title h1 a:hover {
+    color: #FFF;
+}
 #header .top-header .main-navigation {
     flex: 3 3;    
     display: flex;
@@ -105,6 +108,8 @@ h1,h2,h3,h4,h5,h6 {
     color: #df691a;
     text-decoration: none;
 }
+
+
 /** SLIDER **/
 .aboutus-carousel img {
     width: 100%;    
@@ -120,6 +125,30 @@ h1,h2,h3,h4,h5,h6 {
 }
 .unslider-arrow.prev {
     float: left;
+}
+
+/**
+ * 
+ * B O O T S T R A P   M O D S
+ * 
+ **/
+.jumbotron {
+    color: #FFF;    
+    background: #212a3f;
+}
+.masonry {
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3;
+    -webkit-column-gap: 40px; 
+    -moz-column-gap: 40px;
+    column-gap: 40px;
+}
+.masonry .card {
+    -webkit-break-inside: avoid-column;
+    -moz-break-inside: avoid-column;
+    break-inside: avoid-column;
+    margin-bottom: 40px;
 }
 
 /** This is needed else the alerts bugger up **/

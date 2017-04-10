@@ -33,7 +33,7 @@ class Page
             <div class="container">
                 <div class="top-header">
                     <div class="site-title">
-                        <h1>Foodshare</h1>
+                        <h1><a href="index.php">Foodshare</a></h1>
                     </div>
                     <nav class="main-navigation">';
         $this->getNavItems();
@@ -57,13 +57,18 @@ class Page
     }
     public function getNavItems() {
         echo '  <div class="nav-item">
-                    <a href="about.php">About us</a>
+                    <a href="index.php">Home</a>
                 </div>
                 <div class="nav-item">
-                    <a href="register.php">Register</a>
-                </div>
-                <div class="nav-item">
-                    <a href="login.php">Login</a>
+                    <a href="about.php">About</a>
                 </div>';
+        if (! $requiresLogin) {
+            echo '  <div class="nav-item">
+                        <a href="register.php">Register</a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="login.php">Login</a>
+                    </div>';
+        }
     }
 }
