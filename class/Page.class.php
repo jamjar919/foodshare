@@ -26,10 +26,44 @@ class Page
         echo "<!doctype html><html><head>";
         echo "<title>".$this->name." - Flavourtown</title>";
         require_once __ROOT__.'/class/template/head.html';
-        echo '</head><body><div class="container">';
+        echo '</head><body>';
+    }
+    public function buildHeader() {
+        echo '<header id="header">
+            <div class="container">
+                <div class="top-header">
+                    <div class="site-title">
+                        <h1>Foodshare</h1>
+                    </div>
+                    <nav class="main-navigation">';
+        $this->getNavItems();
+        echo '      </nav>
+                </div>
+            </div>
+            <div class="searchbar-container">
+                <div class="container">';
+        require  __ROOT__.'/class/template/searchbar-simple.html';        
+        echo '  </div>
+            </div>
+        </header>
+        <div class="container">';
     }
     public function buildFooter() {
+        echo '</div><footer id="footer"><nav class="bottom-navigation">';
+        $this->getNavItems();
+        echo '</nav><p>Property of <a href="https://www.dur.ac.uk/">Durham University</a></p></footer>';
         require_once __ROOT__.'/class/template/footer-scripts.html'; 
-        echo "</div></body></html>";
+        echo "</body></html>";
+    }
+    public function getNavItems() {
+        echo '  <div class="nav-item">
+                    <a href="about.php">About us</a>
+                </div>
+                <div class="nav-item">
+                    <a href="register.php">Register</a>
+                </div>
+                <div class="nav-item">
+                    <a href="login.php">Login</a>
+                </div>';
     }
 }

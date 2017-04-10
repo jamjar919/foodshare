@@ -1,0 +1,128 @@
+/* Global typography and bg colors */
+
+body {
+    font-family: 'Raleway',sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #2e2e2e;
+    background-color: #f2f2f2;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Lobster', cursive;
+}
+
+/**
+ * 
+ * H E A D E R
+ * 
+ **/
+
+/* Layout */
+/* WARNING This uses flexbox - Do not edit unless you know what you are doing! */
+#header {
+    margin: 0 0 1em 0;    
+}
+#header .top-header {
+    display: flex;
+    flex-direction: row;
+}
+#header .top-header .site-title, #header .top-header .main-navigation {
+    display: flex;
+}
+#header .top-header .site-title {
+    flex: 1 1;
+}
+#header .top-header .site-title h1 {
+    margin: 0.5em 0; 
+    font-size: 4em;
+}
+#header .top-header .main-navigation {
+    flex: 3 3;    
+    display: flex;
+    justify-content: flex-end;
+}
+#header .top-header .main-navigation .nav-item {
+    display: flex;
+    margin: auto 1em;
+    font-size: 1.25em;
+}
+#header .searchbar-container {
+    /* This should match the shadow in the styling */
+    margin-bottom: 10px;    
+}
+#header .searchbar-container .input-group {
+    padding: 1em 3em 0 3em;
+}
+
+/* Style */
+#header {
+    color: #fff;
+    background: #212a3f;
+}
+#header a {
+    color: #8ab839;
+}
+#header a:hover {
+    color: #df691a;
+    text-decoration: none;
+}
+#header .searchbar-container {
+    background-color: #8ab839;
+}
+#header .searchbar-container .input-group {
+    border-radius: 1em;
+    box-shadow: 0 10px 0 10px #8ab839;
+}
+
+/**
+ * 
+ * F O O T E R
+ * 
+ **/
+
+/* Layout */
+#footer {
+    background: #212a3f;
+    text-align: center;
+    padding: 2em 0 2em 0;
+    margin: 1em 0 0 0;
+}
+#footer .bottom-navigation {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+#footer .bottom-navigation .nav-item {
+    max-width: 100%;
+    padding: 1em;
+}
+
+/* Style */
+#footer {
+    color: #FFF;
+}
+
+#footer a {
+    color: #8ab839; 
+}
+#footer a:hover {
+    color: #df691a;
+    text-decoration: none;
+}
+/** SLIDER **/
+.aboutus-carousel img {
+    width: 100%;    
+    display: block;
+}
+.unslider-arrow.next,.unslider-arrow.prev {
+    position: relative;
+    left: 0;
+    right: 0;
+}
+.unslider-arrow.next {
+    float: right;
+}
+.unslider-arrow.prev {
+    float: left;
+}
