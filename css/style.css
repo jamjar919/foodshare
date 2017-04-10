@@ -163,11 +163,22 @@ h1,h2,h3,h4,h5,h6 {
     -moz-column-gap: 40px;
     column-gap: 40px;
 }
+.masonry-two {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+    -webkit-column-gap: 20px; 
+    -moz-column-gap: 20px;
+    column-gap: 20px;
+}
 .masonry .card {
     -webkit-break-inside: avoid-column;
     -moz-break-inside: avoid-column;
     break-inside: avoid-column;
     margin-bottom: 40px;
+}
+.masonry-two .card {
+    margin-bottom: 20px;
 }
 .list-group-item {
     background-color: #FFF;
@@ -175,6 +186,15 @@ h1,h2,h3,h4,h5,h6 {
 }
 .list-group-item:last-child {
     border: none;    
+}
+label {
+    font-size: 1em;    
+}
+.help-block {
+    color: #222;    
+}
+.form-control {
+    border: 1px solid #DDD;
 }
 
 /** This is needed else the alerts bugger up **/

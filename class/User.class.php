@@ -208,7 +208,7 @@ class User
                                         $stmt->bindValue(":email", $email, PDO::PARAM_STR);
                                         $stmt->execute();
                                         if ($stmt->rowCount()) {
-                                                $this->reverifyMail();
+                                                $this->reverifyEmail();
                                                 return true;
                                         }
                                         return false;
