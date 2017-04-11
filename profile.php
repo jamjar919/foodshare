@@ -9,7 +9,9 @@
     <div class="row">
         <div class="col-sm-6 col-md-3">
             <div class="card user-profile">
-                <img src="<?php echo $profile['profile_picture_url']; ?>" class="card-img-top profilepicture">
+                <?php if (!empty($profile['profile_picture_url']))  { ?>
+                    <img src="<?php echo $profile['profile_picture_url']; ?>" class="card-img-top profilepicture">
+                <?php } ?>
                 <div class="card-block">
                     <h2><a class="card-title" href="user.php?id=<?php echo $profile['username'];?>"><?php echo $profile['username'];?></a></h2>
                     <p class="card-text">Location: <?php echo $profile['postcode']; ?> (<?php echo $profile['latitude']; ?>, <?php echo $profile['longitude']; ?>)</p>
@@ -25,10 +27,21 @@
             </div>
         </div>
         <div class="col-sm-6 col-md-9">
-            <div class="card">
+            <div class="row">
                 <div class="card-block notifications">
                     <h3>Hey, you!</h3>
-                    Messages to the user (claim notices, etc) would go here...
+                    <?php if ($p->user->hasIncompleteProfile()) { ?>
+                        <div class="alert alert-info alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            Looks like you haven't filled in your profile yet. Visit the <a href="editprofile.php">Edit profile</a> page and enter a location and upload a profile picture!
+                        </div>
+                    <?php } ?>
+                    <?php if (! $p->user->isVerified()) { ?>
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            Please verify your email address (<?php echo $profile["email"]; ?>) by clicking on the link in your email.
+                        </div>
+                    <?php } ?>
                     <?php if (isset($_GET["message"])) { ?>
                         <div class="alert alert-success alert-dismissible" role="alert">
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>

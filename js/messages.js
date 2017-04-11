@@ -3,6 +3,8 @@ var messageSettings = {
     from: 'defaultfrom',
     container: '#message-container'
 }
+function sendMessage() {
+}
 function addMessage(text,timestamp,isOwnMessage = false) {
     $(messageSettings.container).append(
         $("<div>")

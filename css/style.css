@@ -270,6 +270,9 @@ h1,h2,h3,h4,h5,h6 {
  * B O O T S T R A P   M O D S
  *
  **/
+.alert a {
+    font-weight: 800;    
+}
 .jumbotron {
     color: #FFF;
     background: #212a3f;

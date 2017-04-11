@@ -1,6 +1,6 @@
 <?php
 require 'class/Page.class.php';
-$p = new Page("Login");
+$p = new Page("Register");
 
 define('__ROOT__',dirname(__FILE__));
 require_once __ROOT__."/class/User.class.php";
@@ -19,9 +19,7 @@ if (isset($_POST["submitted"])) {
 		$user = new User($_POST["username"]);
 		$user->login($_POST["password"]);
 		if ($user->isLoggedIn()) {
-			header("Location: feed.php");	
-		} else {
-			echo "Incorrect username or password";
+			header("Location: profile.php");	
 		}
 	} else {
 		$errors = $register_success;

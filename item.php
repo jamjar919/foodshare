@@ -78,7 +78,9 @@
             </div>
             <div class="col-md-4">
                 <div class="card inline-userprofile">
-                    <img src="<?php echo $ownerProfile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
+                    <?php if (!empty($ownerProfile["profile_picture_url"]))  { ?>
+                        <img src="<?php echo $ownerProfile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
+                    <?php } ?>
                     <div class="card-block">
                         <h2 class="card-title"><?php echo $food->item["user_username"]; ?><?php if ($isOwner) { ?><small>(you)</small><?php } ?></h2>
                     </div>
