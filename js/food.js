@@ -21,7 +21,7 @@ function printFoodItems(items, element) {
                 )
                 .append(
                     $("<div>")
-                    .addClass("btn-group")
+                    .addClass("btn-group btn-group-fullwidth")
                     .append(
                         $("<a>")
                         .attr("href","item.php?item="+item["id"])
@@ -31,7 +31,7 @@ function printFoodItems(items, element) {
                     .append(
                         $("<a>")
                         .attr("href","edititem.php?item="+item["id"])
-                        .addClass("btn btn-primary")
+                        .addClass("btn btn-warning")
                         .text("Edit")
                     )
                 )

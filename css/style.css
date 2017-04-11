@@ -196,6 +196,15 @@ label {
 .form-control {
     border: 1px solid #DDD;
 }
+.btn-group-fullwidth {
+    display: flex;    
+}
+.btn-group-fullwidth .btn {
+    flex: 1 1;
+}
+.card-title small {
+    color: #999;    
+}
 .food-item img, .narrowimg {
     height: auto;
     display: block;

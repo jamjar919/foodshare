@@ -20,6 +20,7 @@
     }
     $owner = new User($food->item["user_username"]);
     $ownerProfile = $owner->getPublicProfile();
+    $isOwner = $food->item["user_username"] == $p->user->username;
     $p->name = $food->item["name"];
     $p->buildHead();
     $p->buildHeader();
@@ -30,6 +31,12 @@
             <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top">
             <div class="card-block">
                 <a class="btn btn-success btn-block" href="#" role="button">Claim</a>
+            <?php if ($isOwner) { ?>
+                <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
+                    <a class="btn btn-primary" href="edititem.php?item=<?php echo $food->item["id"];?>" role="button">Edit</a>
+                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button">Delete</a>
+                </div>
+            <?php } ?>
             </div>
         </div>
     </div>
@@ -62,7 +69,10 @@
                 <div class="card inline-userprofile">
                     <img src="<?php echo $ownerProfile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
                     <div class="card-block">
-                        <h2 class="card-title"><?php echo $food->item["user_username"]; ?></h2>
+                        <h2 class="card-title"><?php echo $food->item["user_username"]; ?><?php if ($isOwner) { ?><small>(you)</small><?php } ?></h2>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <?php echo $ownerProfile["score"]; ?> points
                     </div>
                 </div>
             </div>
