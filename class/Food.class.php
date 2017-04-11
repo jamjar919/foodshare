@@ -106,9 +106,9 @@ class Food
     /**
     * Create a new tag record, and return the ID of the new tag
     */
-    private function createTag($tag) {
+    private function createNewTag($tag) {
         try {
-            $tag = stripTag($tag);
+            $tag = $this->stripTag($tag);
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
             $stmt = $db->prepare("INSERT INTO `tag` (`id`, `name`) VALUES (NULL, :tag);");
             $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
@@ -128,15 +128,18 @@ class Food
     **/
     private function lookupTag($tag) {
         try {
-            $tag = stripTag($tag);
+            $tag = $this->stripTag($tag);
+            //echo "looking up tag ".$tag;
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
             $stmt = $db->prepare("SELECT * FROM `tag` WHERE name = :tag");
             $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if (sizeof(results) < 1) {
+            if (empty($results)) {
+                //echo "creating new tag ".$tag;
                 return $this->createNewTag($tag);
             }
+            //echo "found id of ".$tag." as ".$results[0]["id"];
             return $results[0]["id"];
         } catch (PDOException $e) {
             return false;
@@ -147,29 +150,30 @@ class Food
     * Inserts the tag connection into the list, if it does not already exist;
     **/
     private function insertTag($tag) {
-        $tagListId = $this->item["tab_list_id"];
+        $tagListId = $this->item["tag_list_id"];
         try {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-            $tag = stripTag($tag);
-            $tagId = lookupTag($tag);
+            $tag = $this->stripTag($tag);
+            $tagId = $this->lookupTag($tag);
             // Check if tag link exists
+            //echo "looking for tag: ".$tag." (".$tagId.") taglistid: ".$tagListId;
             $stmt = $db->prepare("SELECT * FROM `tag_list` WHERE id = :taglistid AND tag_id = :tagid");
             $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
             $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if (sizeof(results) > 0) {
-                // Tag link already exists
+            if (! empty($results)) {
                 return true;
             }
             // Create new tag link
-            $stmt = $db->prepare("INSERT INTO `tag_list` (`id`, `tag_id`) VALUES (:taglistid, :tagid);");
+            $stmt = $db->prepare("INSERT INTO tag_list (id, tag_id) VALUES (:taglistid, :tagid)");
             $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
             $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
             $stmt->execute();
             if ($stmt->rowCount()) {
                 return true;
             }
+            echo "insert failed";
             return false;
         } catch (PDOException $e) {
             return false;
@@ -183,8 +187,8 @@ class Food
         $tagListId = $this->item["tab_list_id"];
         try {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-            $tag = stripTag($tag);
-            $tagId = lookupTag($tag);
+            $tag = $this->stripTag($tag);
+            $tagId = $this->lookupTag($tag);
             $stmt = $db->prepare("DELETE FROM tag_list WHERE id = :taglistid AND tag_id = :tagid");
             $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
             $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
@@ -231,12 +235,20 @@ class Food
             // Else tag is in the current tags and not in the new one, so keep it in the remove list
         }
         // Add all new tags...
+        //echo "tags to add: ";
+        //var_dump($tagsToAdd);
         foreach ($tagsToAdd as $tag) {
-            $this->insertTag($tag);
+            if(!$this->insertTag($tag)) {
+                echo "failed to insert ".$tag;
+            }
         }
+        //echo "tags to remove: ";
+        //var_dump($tagsToRemove);
         // Remove all old ones...
         foreach ($tagsToRemove as $tag) {
-            $this->removeTag($tag);
+            if(!$this->removeTag($tag)) {
+                echo "failed to remove ".$tag;
+            }
         }
         // Return the new tag list!
         return $this->getTags();

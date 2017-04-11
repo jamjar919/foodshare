@@ -26,7 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     try {
         $f = new Food($_POST["id"]);
         $result = $f->update($_COOKIE["username"],$_COOKIE["token"],$_POST["id"],$_POST["title"],$_POST["desc"],$_POST["expiry"],$_POST["lat"],$_POST["long"],$_POST["imageurl"]);
-        echo json_encode(array("success"=>$result));
+        $tags = $f->updateTags($_POST["tags"]);
+        echo json_encode(array("success"=>$result,"tags"=>$tags));
     } catch (PDOException $e) {
         echo json_encode(array("error" => "Database error, please try again later."));
         return;

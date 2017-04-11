@@ -83,7 +83,7 @@
                                 tags.push(tagElements[i].innerText);
                             }
                             console.log(tags)
-                            $.post("api/editfood.php",{id:<?php echo $food->item["id"];?>, title: title, desc: desc, expiry: expiry,lat:lat,long:long,imageurl:imageurl})
+                            $.post("api/editfood.php",{id:<?php echo $food->item["id"];?>, title: title, desc: desc, expiry: expiry,lat:lat,long:long,imageurl:imageurl,tags:tags})
                             .done(function(data) {
                                 if (data.hasOwnProperty("success")) {
                                     if (data.success) {
@@ -198,20 +198,26 @@
                              });
                              $('#tagEntry').keyup(function(e){
                                 if(e.keyCode == 13) {
-                                    var newTag = $('#tagEntry').val();
+                                    var newTag = $('#tagEntry').val().replace(/[^0-9a-z\-]/gi, '');
                                     $('#tagEntry').val("");
-                                    $("#tag-container").append(
-                                        $("<span>")
-                                        .addClass("tag")
-                                        .append('<span class="tagcontent">')
-                                        .text(newTag)
-                                        .append("</span>  <span>&times;</span>")
-                                        .click(function() {
-                                            $(this).fadeOut(500, function() {
-                                                $(this).remove();
-                                            });
-                                        })
-                                    );
+                                    if (newTag) {
+                                        $("#tag-container").append(
+                                            $("<span>")
+                                            .addClass("tag")
+                                            .append(
+                                                $('<span>')
+                                                .addClass("tagcontent")
+                                                .text(newTag)
+                                            )
+                                            .append(" <span>&times;</span>")
+                                            .click(function() {
+                                                $(this).fadeOut(500, function() {
+                                                    $(this).remove();
+                                                });
+                                            })
+                                        )
+                                        .append(" ");
+                                    }
                                 }
                             });
                         });
