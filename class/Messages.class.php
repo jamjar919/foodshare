@@ -41,7 +41,7 @@ class Messages {
                 OR 
                     (conversation.receiver_username = :user1) AND (conversation.sender_username = :user2)
                     )
-            ORDER BY message.time DESC");
+            ORDER BY message.time ASC");
             $stmt->bindValue(':user1', $this->user->username, PDO::PARAM_STR);
             $stmt->bindValue(':user2', $to, PDO::PARAM_STR);
             $stmt->execute();

@@ -12,10 +12,7 @@
                 <div class="card-header text-center">
                     Messenger
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">User 1</li>
-                    <li class="list-group-item">User 2</li>
-                    <li class="list-group-item">User 3</li>
+                <ul class="list-group list-group-flush" id="conversations">
                 </ul>
             </div>
         </div>
@@ -32,10 +29,14 @@
         function sendMessageWrapper() {
             var message = $('#messageBox').val();
             $('#messageBox').val("")
-            addMessage(message, new Date(), true)
+            sendMessage(message)
         }
         $(document).ready(function() {
+            <?php if (isset($_GET["user"])) { ?>
+                messageSettings.sentTo = "<?php echo $_GET["user"]; ?>";
+            <?php } ?>
             messageSettings.from = "<?php echo $profile['username']; ?>";
+            // Bind keypress event
             $('#messageBox').keyup(function(e){
                 if(e.keyCode == 13) {
                     sendMessageWrapper();
@@ -44,8 +45,10 @@
             $('#sendMessage').click(function() {
                 sendMessageWrapper();
             });
-            addMessage("Example message from someone", "2014-11-22 12:45:34", false)
-            addMessage("Example message to someone", "2014-11-22 12:45:34", true)
+            // Load conversations
+            loadConversations();
+            // Load messages
+            loadMessages();
         })
     </script>
     <script src="js/messages.js"></script>
