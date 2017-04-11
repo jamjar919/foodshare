@@ -116,6 +116,7 @@ class Food
         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
         $stmt = $db->prepare("DELETE FROM food WHERE id = :id");
         $stmt->bindValue(":id", intval($this->id), PDO::PARAM_INT);
+        $stmt->execute();
         if ($stmt->rowCount()) {
             return true;
         } else {

@@ -12,7 +12,7 @@
     }
     // D E L E T   T H I S
     if($food->delete()) {
-        header("Location: profile.php");
+        header("Location: profile.php?message=".urlencode("Successfully deleted the item \"".$food->item["name"]."\""));
     } else {
         header("Location: edititem.php?item=".$food->item["id"]);
     }
