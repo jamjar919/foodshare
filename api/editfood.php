@@ -1,0 +1,34 @@
+<?php
+define('__ROOT__',dirname(dirname(__FILE__)));
+require_once __ROOT__.'/db.php';
+require_once __ROOT__.'/class/User.class.php';
+require_once __ROOT__.'/class/Food.class.php';
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    if (!isset($_COOKIE["username"])) {
+        echo json_encode(array("error" => "Username not defined"));
+        return;
+    }
+    if (!isset($_COOKIE["token"])) {
+        echo json_encode(array("error" => "Token not defined"));
+        return;
+    }
+    $user = new User($_COOKIE["username"],$_COOKIE["token"]);
+    if ( ! $user->isLoggedIn()) {
+        echo json_encode(array("error" => "Incorrect token/username combination"));
+        return;
+    }
+    if (!isset($_POST["id"]) || !isset($_POST["title"]) || !isset($_POST["desc"]) || !isset($_POST["expiry"]) || !isset($_POST["lat"]) || !isset($_POST["long"]) || !isset($_POST["imageurl"])) {
+        echo json_encode(array("error" => "You didn't set one of the following: id, title, desc, expiry, lat, long, imageurl"));
+        return;
+    }
+    try {
+        $f = new Food($_POST["id"]);
+        $result = $f->update($_COOKIE["username"],$_COOKIE["token"],$_POST["id"],$_POST["title"],$_POST["desc"],$_POST["expiry"],$_POST["lat"],$_POST["long"],$_POST["imageurl"]);
+        echo json_encode(array("success"=>$result));
+    } catch (PDOException $e) {
+        echo json_encode(array("error" => "Database error, please try again later."));
+        return;
+    }
+}
