@@ -2,20 +2,19 @@
 
 define('__ROOT__',dirname(dirname(__FILE__)));
 require __ROOT__.'/db.php';
+require_once __ROOT__.'/class/Messages.class.php';
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == "GET") {
-    if (isset($_GET['conv_id'])){
-        $conv_id = $_GET['conv_id'];
-        getConversation($conv_id);
-    } else if (isset($_GET['id'])){
-        $id = $_GET['id'];
-        getMessage($id);
-    } else {
-        echo json_encode(array("error" => "no conversation or message id"));
-    }
+$m = new Messages();
 
-}else if($_SERVER['REQUEST_METHOD'] == "POST"){
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+    if (isset($_GET['user'])){
+        $to = $_GET['user'];
+        getConversation($to);
+    } else {
+        echo json_encode(array("error" => "no username"));
+    }
+} else if($_SERVER['REQUEST_METHOD'] == "POST"){
     if (empty($_POST["id"]) || empty($_POST["conversation_id"]) || empty($_POST["text"])  || empty($_POST["read"]) || empty($_POST["message_type"])) {
         echo "Missing parameter(s)";
     } else {
@@ -23,11 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     }
 }
 
-function getConversation($conv_id){
-    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
-    $stmt = $db->prepare("SELECT m.id, m.conversation_id, m.text, m.time, m.read, m.message_type FROM message as m WHERE MATCH(`conversation_id`) AGAINST ('$conv_id*' IN BOOLEAN MODE) ORDER BY m.time");
-    $stmt->execute();
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+function getConversation($user2){
+    global $m;
+    $results = $m->getMessagesWith($user2);
     $messages = array(
         "messages" => $results
     );
