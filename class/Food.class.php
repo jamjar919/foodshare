@@ -90,12 +90,31 @@ class Food
             if ($stmt->rowCount()) {
                 return true;
             } else {
-                var_dump($stmt->rowCount());
                 return false;
             }
         } catch (PDOException $e) {
             return false;
         }
+    }
+    
+    public function getTags() {
+        if (!empty($this->item)) {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT tag.name FROM tag,tag_list WHERE tag_list.id = :id AND tag_list.tag_id = tag.id");
+                $stmt->bindValue(":id", intval($this->item["tag_list_id"]), PDO::PARAM_INT);
+                $stmt->execute();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $tags = array();
+                for ($i = 0; $i < sizeof($results); $i++) {
+                    $tags[] = $results[$i]["name"];
+                }
+                return $tags;
+            } catch (PDOException $e) {
+                return false;
+            }
+        }
+        return array();
     }
     
     public function delete() {

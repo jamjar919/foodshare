@@ -77,7 +77,12 @@
                             var lat = $("#lat").text();
                             var long = $("#long").text();
                             var imageurl = $("#foodimage").attr("src");
-                            console.log(imageurl)
+                            var tagElements = $('.tagcontent').toArray();
+                            var tags = [];
+                            for (var i = 0; i < tagElements.length; i++) {
+                                tags.push(tagElements[i].innerText);
+                            }
+                            console.log(tags)
                             $.post("api/editfood.php",{id:<?php echo $food->item["id"];?>, title: title, desc: desc, expiry: expiry,lat:lat,long:long,imageurl:imageurl})
                             .done(function(data) {
                                 if (data.hasOwnProperty("success")) {
@@ -156,7 +161,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card">
+                <div class="card more-details">
                     <div class="card-header">
                         More Details
                     </div>
@@ -166,6 +171,51 @@
                         Longitude: <strong id="long"><?php echo $food->item["longitude"] ?></strong>
                         <p class="text-muted">Click the map to select a location</p>
                     </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        Tags
+                    </div>
+                    <div class="card-block tags edit-tags" id="tag-container">
+                    <?php 
+                    $tags = $food->getTags();
+                    for ($i = 0; $i < sizeof($tags); $i++) {
+                    ?>
+                        <span class="tag"><span class="tagcontent"><?php echo $tags[$i]; ?></span> <span>&times;</span></span>
+                    <?php } ?>
+                    </div>
+                    <div class="card-block">
+                        <input type="text" class="form-control" placeholder="Enter tag..." id="tagEntry">
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                             $('.tag').each(function(i, obj) {
+                                $(obj).click(function() {
+                                    $(obj).fadeOut(500, function() {
+                                        $(obj).remove();
+                                    });
+                                });
+                             });
+                             $('#tagEntry').keyup(function(e){
+                                if(e.keyCode == 13) {
+                                    var newTag = $('#tagEntry').val();
+                                    $('#tagEntry').val("");
+                                    $("#tag-container").append(
+                                        $("<span>")
+                                        .addClass("tag")
+                                        .append('<span class="tagcontent">')
+                                        .text(newTag)
+                                        .append("</span>  <span>&times;</span>")
+                                        .click(function() {
+                                            $(this).fadeOut(500, function() {
+                                                $(this).remove();
+                                            });
+                                        })
+                                    );
+                                }
+                            });
+                        });
+                    </script>
                 </div>
             </div>
         </div>
