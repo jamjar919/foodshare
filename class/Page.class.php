@@ -47,7 +47,7 @@ class Page
         }
         echo '
         </header>
-        <div class="container">';
+        <div class="container content">';
     }
     public function buildFooter() {
         echo '</div><footer id="footer"><nav class="bottom-navigation">';
@@ -57,6 +57,14 @@ class Page
                     <a href="help.php">Help &amp; FAQ\'s</a>
                 </div>';
         echo '</nav><p>Property of <a href="https://www.dur.ac.uk/">Durham University</a></p></footer>';
+        //check if user is logged in to enable members search
+        if($this->isLoggedIn) {
+            echo '<script>var user = JSON.parse("<?php echo $this->user->getJSON(true)?>");
+                    var memberSearch = true;</script>';
+        }
+        else {
+            echo '<script>var memberSearch = false;</script>';
+        }
         require_once __ROOT__.'/class/template/footer-scripts.html'; 
         echo "</body></html>";
     }

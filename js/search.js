@@ -13,6 +13,7 @@ var markers = [];
 
 //get user's location from browser (non-members only)
 var initialPosition = null;
+console.log(memberSearch);
 if (navigator.geolocation && !memberSearch){
     navigator.geolocation.getCurrentPosition(
         function(position){
@@ -54,9 +55,7 @@ $('document').ready(function() {
 
     if(memberSearch) {
         $("#loc").val(user['postcode']);
-        search("", [user['latitude'], user['longitude']], 15, "Any time", "Any time", "Closest", 10, 0, true);
     }
-    //auto fill with closest food
 
 });
 
@@ -125,6 +124,7 @@ $(function() {
 //advanced search
 $('#searchAdvanced').click(function(e){
     e.preventDefault();
+    addContainers();
     $("#dlDropDown").dropdown("toggle");
     $('#map-container').html('');
     geocode($('#loc').val(), function(pos) {
@@ -151,6 +151,7 @@ $('#searchAdvanced').click(function(e){
 });
 //basic search
 $('#search').click(function() {
+    addContainers();
     $('#map-container').html('');
     var location;
     if(memberSearch) {
@@ -199,6 +200,24 @@ $('.pagination').on('click', '#prev', function() {
     offset = pageNumber * resultsPerPage;
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
+
+function addContainers() {
+    if(!$(".page-content")[0]) {
+        var container = '<div class="row page-content">' +
+            '<div class="col-md-8 col-centered ">' +
+            '<button id="map-button" class="btn btn-custom btn-block active">Close map</button>' +
+            '<div id="map-container">' +
+            '</div>' +
+            '<div id="results">' +
+            '</div>' +
+            '<div class="text-center">' +
+            '<ul class="pagination" ></ul>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        $('.content').html(container);
+    }
+}
 
 /**Update the pagination links
  *
@@ -281,8 +300,6 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                                 "<p class='card-text card-time' style='font-style=italic '>" + timePosted(element['time']) + "</p>" +
                                 "<p >Expiry date: " + expiryDate.getDate() + '/' + (expiryDate.getMonth() + 1) + '/' +
                         expiryDate.getFullYear() + "</p>" +
-                                "<div class='details' style='display:none'><p class='card-text'>" + element['description'] + "</p>" +
-                                "<p class='card-text' >Address: " + address + "</p></div>" +
                                 "<div class='btn-group buttons'>" +
                                 "<a href='#' class='btn btn-custom' onclick=displayDetails(" +element['id']+ ",this)>More</a>" +
                         "</div></div></div>");
@@ -468,19 +485,46 @@ function popupDetails(food, address) {
         '<button class="btn btn-custom btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
 }
 
-function displayDetails(id, button) {
+/**Display all the food details on separate page
+ *
+ * @param food
+ */
+function displayDetails(food) {
+    detailsPage = '<div class="col-sm-3">' +
+            '<div class="card food-item">' +
+            '<img src="' + food['image_url'] + '" class ="card-img-top"' +
+            '<div class="card-block">' +
+            ' <a class="btn btn-success btn-block" href="#" role="button" onclick="claimFood('+ food['id'] +', ' +
+        food['user_username'] + ', ' + user['username'] + ')"</a>' +
+            '</div></div></div>' +
+            '<div class="col-sm-9">' +
+            '<div class="card food-details">' +
+            '<div class="card-block">' +
+            '<h1 class="card-title">' + food['name'] + '</h1>' +
+            '<p class="card-subtitle text-muted">Posted <span class="converttime">' + food['time'] + '</span></p>' +
+            '<p class="card-text">' + food['description'] + '</p></div>' +
+            '<div class="card-footer text-muted">Expires <span class="converttime">' + food['expiry'] + '</span>' +
+            '</div></div>' +
+            '<div class="row">' +
+            '<div class="col-md-8">' +
+            '<div class="card inline-map">' +
+            '<iframe style="height: 500px" frameborder="0" style="border:0" ' +
+            'src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBsIs05rl3R9lbL6q3vluRXERaIVesToRA' +
+            '&q=' + food['latitude'] + ', ' + food['longitude'] + '" allowfullscreen>' +
+            '</iframe>' +
+            '<div class="card-footer text-muted"> Approximate location: Message user for pickup location. </div>' +
+            '</div></div>' +
+            '<div class="col-md-4">' +
+            '<div class="card inline-userprofile">' +
+            '<img src="http://i.imgur.com/48xQKLf.gif" class="card-img-top narrowimg">' +
+            '<div class="card-block">' +
+            '<h2 class="card-title">'+ food['user_username'] + '</h2></div>' +
+            '<div class="card-footer text-muted"> 0 points </div>';
+    $('.content').html(detailsPage);
+}
 
-    if($("#" + id + " .details").is(':visible')) {
-        $("#" + id + " .details").hide('blind',{direction:'up'}, 1000, function() {
-            $(button).text('More');
-        });
+function goBack() {
 
-    }
-    else {
-        $("#" + id + " .details").show('blind',{direction:'up'}, 1000, function() {
-            $(button).text('Less')
-        });
-    }
 }
 /**Convert date time to nice formatting
  *
@@ -521,14 +565,14 @@ function clearMarkers() {
 $("#map-button").on('click', function () {
     if($( "#map").is(':visible')) {
         $('#map').hide('blind',{direction:'up'}, 1000, function() {
-            $('#map-button').removeClass('active')
+            $('#map-button').toggleClass('active')
                 .css('border-radius', '5px')
                 .text('Open map')
         });
     }
     else {
         $('#map').show('blind', {direction: 'up'}, 1000);
-        $('#map-button').addClass('active')
+        $('#map-button').toggleClass('active')
             .css('border-radius', '5px 5px 0 0')
             .text('Close map')
     }

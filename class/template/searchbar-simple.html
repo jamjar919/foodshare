@@ -1,9 +1,62 @@
-<div class="input-group">
-    <input class="form-control" type="text" placeholder="Search food">
-    <div class="input-group-btn">
-    <div class="btn-group" role="group">
-        <div class="dropdown dropdown-lg">
-            <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+<div class="row">
+    <div class="col-md-10 col-md-offset-2">
+        <div class="input-group" id="adv-search">
+            <input class="form-control" type="text" placeholder="Search food" id="q1">
+            <div class="input-group-btn">
+                <div class="btn-group" role="group">
+                    <div class="dropdown dropdown-lg">
+                        <button id="dlDropDown" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Advanced <span class="caret"></span></button>
+                        <div class="dropdown-menu dropdown-menu-right" role="menu">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label for="q2">Key words</label>
+                                    <input class="form-control" type="text" id="q2"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sort">Sort by</label>
+                                    <select class="form-control" id="sort">
+                                        <option>Alphabetical</option>
+                                        <option>Best match</option>
+                                        <option>Most recent</option>
+                                        <option>Expiry</option>
+                                        <option>Closest</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="loc">Location</label>
+                                    <input class="form-control" type="text" id="loc"/>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="radius" class="col-2 col-form-label">Radius</label>
+                                    <div class="col-4">
+                                        <b>0 km</b> <input id="radius" data-slider-id="radiusSlider" type="text" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="15"/>
+                                        <b>30 km</b>
+                                        <span id="radiusCurrentSliderValLabel">Radius: <span id="radiusSliderVal">15</span> km</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expiry"  class="col-2 col-form-label">Expiry date</label>
+                                    <div class="col-4">
+                                        <input class="form-control" id="expiry" name="daterange" type = "text" value="Any time" style="width: 100%">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="time"  class="col-2 col-form-label">Time posted</label>
+                                    <div class="col-4">
+                                        <input class="form-control" id="time" name="datetimerange" type = "text" value="Any time" style="width: 100%">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="resultsPerPage">Results per page</label>
+                                    <input class="form-control" type="text" value="15" id="resultsPerPage">
+                                </div>
+                                <button id="searchAdvanced" class="btn btn-custom">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            </form>
+                        </div>
+                    </div>
+                    <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
