@@ -97,6 +97,151 @@ class Food
         }
     }
     
+    private function stripTag($tag) {
+        $tag = strtolower($tag);
+        $tag = preg_replace("/[^a-z0-9_.@\-]/", '', $tag);
+        return $tag;
+    }
+    
+    /**
+    * Create a new tag record, and return the ID of the new tag
+    */
+    private function createTag($tag) {
+        try {
+            $tag = stripTag($tag);
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("INSERT INTO `tag` (`id`, `name`) VALUES (NULL, :tag);");
+            $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
+            $stmt->execute();
+            if ($stmt->rowCount()) {
+                return $db->lastInsertId();
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+    * Looks up the value of $tag, and if it does not exist, creates it. Returns the new tag id. 
+    **/
+    private function lookupTag($tag) {
+        try {
+            $tag = stripTag($tag);
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("SELECT * FROM `tag` WHERE name = :tag");
+            $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (sizeof(results) < 1) {
+                return $this->createNewTag($tag);
+            }
+            return $results[0]["id"];
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+    * Inserts the tag connection into the list, if it does not already exist;
+    **/
+    private function insertTag($tag) {
+        $tagListId = $this->item["tab_list_id"];
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $tag = stripTag($tag);
+            $tagId = lookupTag($tag);
+            // Check if tag link exists
+            $stmt = $db->prepare("SELECT * FROM `tag_list` WHERE id = :taglistid AND tag_id = :tagid");
+            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (sizeof(results) > 0) {
+                // Tag link already exists
+                return true;
+            }
+            // Create new tag link
+            $stmt = $db->prepare("INSERT INTO `tag_list` (`id`, `tag_id`) VALUES (:taglistid, :tagid);");
+            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount()) {
+                return true;
+            }
+            return false;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+    * Remove the tag connection from the food item
+    **/
+    private function removeTag($tag) {
+        $tagListId = $this->item["tab_list_id"];
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $tag = stripTag($tag);
+            $tagId = lookupTag($tag);
+            $stmt = $db->prepare("DELETE FROM tag_list WHERE id = :taglistid AND tag_id = :tagid");
+            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount()) {
+                return true;
+            }
+            // Tag didn't exist anyway (it's not there)
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    
+    public function updateTags($newTags) {
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return false;
+        }
+        if (! ($username === $this->owner)) {
+            return false;
+        }
+        $currentTags = $this->getTags();
+        $tagsToAdd = array();
+        $tagsToRemove = $currentTags;
+        foreach($newTags as $tag) {
+            $id = array_search($tag, $tagsToRemove);
+            if ($id === false) {
+                // tag is not in current tag list, add to tags to tagsToAdd
+                $tagsToAdd[] = $tag;
+            } else {
+                // Tag is in current tag list and new tag list, do nothing (remove from remove list)
+                unset($tagsToRemove[$id]);
+            }
+            // Else tag is in the current tags and not in the new one, so keep it in the remove list
+        }
+        // Add all new tags...
+        foreach ($tagsToAdd as $tag) {
+            $this->insertTag($tag);
+        }
+        // Remove all old ones...
+        foreach ($tagsToRemove as $tag) {
+            $this->removeTag($tag);
+        }
+        // Return the new tag list!
+        return $this->getTags();
+    }
+    
     public function getTags() {
         if (!empty($this->item)) {
             try {
