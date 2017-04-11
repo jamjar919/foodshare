@@ -5,7 +5,7 @@ var endpoint = "api/profile/update.php";
 * If you don't know what a promise is, you should git gud
 **/
 
-function uploadProfilePicture(file) {
+function uploadPicture(file) {
         var imgurEndpoint = "https://api.imgur.com/3/image";
         var clientID = "dc753be426e679a"; // Is this secret???? not anymore l o l
         var fd = new FormData();
