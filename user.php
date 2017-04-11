@@ -29,6 +29,11 @@
                 <div class="card-block">
                     <h2 class="card-title"><?php echo $profile["username"]; ?></h2>
                 </div>
+                <?php if ($p->user->isLoggedIn()) { ?>
+                    <div class="card-block">
+                        <a class="btn btn-block btn-primary" href="messages.php?user=<?php echo $profile["username"]; ?>">Message</a>
+                    </div>
+                <?php } ?>
                 <div class="card-footer text-muted">
                     <?php echo $profile["score"]; ?> points
                 </div>
@@ -49,7 +54,7 @@
                         printFoodItems(data["food"],selector);
                     })
                     .catch(function(error) {
-                        $(selector).text("There was an error loading your items");
+                        $(selector).text("There was an error loading <?php echo $profile['username'];?>'s items");
                     });
                 });
             </script>
