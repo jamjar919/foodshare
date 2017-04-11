@@ -115,7 +115,7 @@ $profile = $p->user->getPrivateProfile();
         function changeProfilePictureWrapper(id){
             var fileInput = document.getElementById(id.substring(1));
             var file = fileInput.files[0];
-            uploadProfilePicture(file)
+            uploadPicture(file)
             .then(function(result) {
                 // Yay we uploaded, get link and send to our db
                 var link = result["data"]["link"];
