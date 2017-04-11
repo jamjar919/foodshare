@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         $to = $_GET['user'];
         getConversation($to);
     } else {
-        echo json_encode(array("error" => "no username"));
+        getConversationList();
     }
 } else if($_SERVER['REQUEST_METHOD'] == "POST"){
     if (empty($_POST["id"]) || empty($_POST["conversation_id"]) || empty($_POST["text"])  || empty($_POST["read"]) || empty($_POST["message_type"])) {
@@ -27,6 +27,15 @@ function getConversation($user2){
     $results = $m->getMessagesWith($user2);
     $messages = array(
         "messages" => $results
+    );
+    echo json_encode($messages);
+}
+
+function getConversationList() {
+    global $m;
+    $results = $m->getConversations();
+    $messages = array(
+        "conversations" => $results
     );
     echo json_encode($messages);
 }

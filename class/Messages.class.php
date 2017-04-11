@@ -14,6 +14,18 @@ class Messages {
         $this->user = new User($username,$token);
     }
 
+    public function getConversations() {
+        if ($this->user->isLoggedIn()) {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
+            $stmt = $db->prepare("SELECT * FROM conversation WHERE conversation.sender_username = :user OR conversation.receiver_username = :user");
+            $stmt->bindValue(':user', $this->user->username, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $results;
+        }
+        return false;
+    }
+    
     public function send($text,$to) {
     }
 
