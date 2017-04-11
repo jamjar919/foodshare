@@ -4,7 +4,7 @@ require __ROOT__.'/db.php';
 require __ROOT__.'/class/User.class.php';
 header('Content-Type: application/json');
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
     if (!isset($_COOKIE["username"])) {
         echo json_encode(array("error" => "Username not defined"));
         return;
@@ -29,7 +29,5 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         echo json_encode(array("error" => "Database error, please try again later."));
         return;
     }
-} else {
-    echo json_encode(array("error" => "POST requests only."));
 }
 
