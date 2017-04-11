@@ -40,8 +40,8 @@ function getMessage($id){
     $stmt->execute();
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $messages = array(
-                "messages" => $results
-            );
+        "messages" => $results
+    );
     echo json_encode($messages);
 }
 
