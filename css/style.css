@@ -60,14 +60,14 @@ h1,h2,h3,h4,h5,h6 {
     background: #212a3f;
 }
 #header a {
-    color: #8ab839;
+    color: #FFF;
 }
 #header a:hover {
-    color: #df691a;
+    color: #5cb85c;
     text-decoration: none;
 }
 #header .searchbar-container {
-    background-color: #8ab839;
+    background-color: #5cb85c;
 }
 #header .searchbar-container .input-group #search {
     background: #444;
@@ -102,7 +102,7 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 #footer a {
-    color: #8ab839; 
+    color: #5cb85c; 
 }
 #footer a:hover {
     color: #df691a;
@@ -196,11 +196,20 @@ label {
 .form-control {
     border: 1px solid #DDD;
 }
-.food-item img {
+.food-item img, .narrowimg {
+    height: auto;
     display: block;
     width: 100%;
 }
-
+.inline-map {
+    min-height: 500px;
+}
+.food-details, .inline-map, .inline-userprofile {
+    margin-bottom: 2em;    
+}
+.inline-userprofile h2 {
+    margin: 0;    
+}
 /** This is needed else the alerts bugger up **/
 .fade {
     opacity: 1;    

@@ -16,20 +16,30 @@ function printFoodItems(items, element) {
                 )
                 .append(
                     $("<p>")
-                    .addClass("card-subtitle mb-2 text-muted")
-                    .text("Expires "+moment(item["expiry"]).fromNow())
-                )
-                .append(
-                    $("<p>")
                     .addClass("card-text")
                     .text(item["description"].substring(0,300))
                 )
                 .append(
-                    $("<a>")
-                    .attr("href","edititem.php?item="+item["id"])
-                    .addClass("btn btn-primary")
-                    .text("Edit")
+                    $("<div>")
+                    .addClass("btn-group")
+                    .append(
+                        $("<a>")
+                        .attr("href","item.php?item="+item["id"])
+                        .addClass("btn btn-primary")
+                        .text("View")
+                    )
+                    .append(
+                        $("<a>")
+                        .attr("href","edititem.php?item="+item["id"])
+                        .addClass("btn btn-primary")
+                        .text("Edit")
+                    )
                 )
+            )
+            .append(
+                $("<div>")
+                .addClass("card-footer text-muted")
+                .text("Expires "+moment(item["expiry"]).fromNow())
             )
         );
     }
