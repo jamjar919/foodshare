@@ -35,7 +35,17 @@
             <?php if ($isOwner) { ?>
                 <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
                     <a class="btn btn-primary" href="edititem.php?item=<?php echo $food->item["id"];?>" role="button">Edit</a>
-                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button">Delete</a>
+                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button" id="deleteItem">Delete</a>
+                    <script>
+                        $(document).ready(function() {
+                            $("#deleteItem").click(function(e) {
+                                var response = window.confirm("Are you sure you want to delete the item? This is undoable!");
+                                if (response == false) {
+                                    return false;
+                                }
+                            })
+                        });
+                    </script>
                 </div>
             <?php } ?>
             </div>
