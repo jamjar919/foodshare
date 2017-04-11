@@ -69,6 +69,12 @@ h1,h2,h3,h4,h5,h6 {
 #header .searchbar-container {
     background-color: #5cb85c;
 }
+#header .top-header .site-title h1 a {
+    transition: 0.1s;
+}
+#header .top-header .site-title h1 a:hover {
+    opacity: 0.75;
+}
 
 /**
  *

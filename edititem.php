@@ -40,7 +40,7 @@
             <div class="edit-click-trap overlay">
                 <input accept="image/*" type="file" id="editpicture">
             </div>
-            <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top" id="foodimage">
+            <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top" id="foodimage" <?php if (empty($food->item["image_url"])) { ?>style="min-height: 100px;"<?php } ?>)>
             <script>
                 $(document).ready(function() {
                     $('#editpicture').live('change', function(){

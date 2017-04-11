@@ -26,9 +26,10 @@
     $p->buildHeader();
 ?>
     <div class="col-sm-3">
-        
         <div class="card food-item">
-            <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top">
+            <?php if (! empty($food->item["image_url"])) { ?>
+                <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top">
+            <?php } ?>
             <div class="card-block">
                 <a class="btn btn-success btn-block" href="#" role="button">Claim</a>
             <?php if ($isOwner) { ?>
