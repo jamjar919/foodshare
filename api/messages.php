@@ -1,6 +1,6 @@
 <?php
 
-define('__ROOT__',dirname(__FILE__));
+define('__ROOT__',dirname(dirname(__FILE__)));
 require __ROOT__.'/db.php';
 header('Content-Type: application/json');
 
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 	}
 }
 
-function(getConversation($conv_id){
+function getConversation($conv_id){
 	$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
 	$stmt = $db->prepare("SELECT m.id, m.conversation_id, m.text, m.time, m.read, m.message_type FROM message as m WHERE MATCH(`conversation_id`) AGAINST ('$conv_id*' IN BOOLEAN MODE) ORDER BY m.time");
 	$stmt->execute();
@@ -35,7 +35,7 @@ function(getConversation($conv_id){
 	echo json_encode($messages);
 }
 
-function(getMessage($id){
+function getMessage($id){
 	$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
 	$stmt = $db->prepare("SELECT m.id, m.conversation_id, m.text, m.time, m.read, m.message_type FROM message as m WHERE MATCH(`id`) AGAINST ('$id*' IN BOOLEAN MODE)");
 	$stmt->execute();
