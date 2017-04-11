@@ -73,7 +73,7 @@
                             $("#saveItem").html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>')
                             var title = $("#foodTitle").val();
                             var desc = $("#description").val();
-                            var expiry = $("#expiry").val();
+                            var expiry = $("#food-expiry-date").val();
                             var lat = $("#lat").text();
                             var long = $("#long").text();
                             var imageurl = $("#foodimage").attr("src");
@@ -102,10 +102,10 @@
                 <textarea id="description" class="card-text food-description-edit"><?php echo $food->item["description"]; ?></textarea>
             </div>
             <div class="card-footer text-muted">
-                Expires: <input id="expiry" class="datepicker food-expiry-edit" value="<?php echo $food->item["expiry"]; ?>">
+                Expires: <input id="food-expiry-date" class="food-expiry-edit" value="<?php echo $food->item["expiry"]; ?>">
                 <script>
                 $(document).ready(function() {
-                    $('.datepicker').datepicker({
+                    $('.food-expiry-edit').datepicker({
                         dateFormat: 'yy-mm-dd'
                     });
                 });

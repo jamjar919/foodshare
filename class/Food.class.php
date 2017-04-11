@@ -78,8 +78,8 @@ class Food
         }
         try {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-            $stmt = $db->prepare("UPDATE `food` SET `name` = :name, `description` = :desc, `expiry` = :expiry, `time` = NOW(), `latitude` = :lat, `longitude` = :long, `image_url` = :url WHERE `id` = :id;");
-            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $stmt = $db->prepare("UPDATE food SET `name` = :name, `description` = :desc, `expiry` = :expiry, `time` = NOW(), `latitude` = :lat, `longitude` = :long, `image_url` = :url WHERE `id` = :id;");
+            $stmt->bindValue(":id", intval($this->id), PDO::PARAM_INT);
             $stmt->bindValue(":name", $name, PDO::PARAM_STR);
             $stmt->bindValue(":desc", $desc, PDO::PARAM_STR);
             $stmt->bindValue(":expiry", $expiry, PDO::PARAM_STR);
@@ -90,6 +90,7 @@ class Food
             if ($stmt->rowCount()) {
                 return true;
             } else {
+                var_dump($stmt->rowCount());
                 return false;
             }
         } catch (PDOException $e) {
@@ -114,7 +115,7 @@ class Food
         // DELET THIS
         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
         $stmt = $db->prepare("DELETE FROM food WHERE id = :id");
-        $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+        $stmt->bindValue(":id", intval($this->id), PDO::PARAM_INT);
         if ($stmt->rowCount()) {
             return true;
         } else {
