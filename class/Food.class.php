@@ -184,7 +184,7 @@ class Food
     * Remove the tag connection from the food item
     **/
     private function removeTag($tag) {
-        $tagListId = $this->item["tab_list_id"];
+        $tagListId = $this->item["tag_list_id"];
         try {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
             $tag = $this->stripTag($tag);
