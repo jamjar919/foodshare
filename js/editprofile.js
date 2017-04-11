@@ -54,7 +54,7 @@ function changePostcode(newPostcode) {
 		// Also set our new location!
 		auth = Cookies.get('token');
 		user = Cookies.get('username');
-		$.get("http://api.postcodes.io/postcodes/"+newPostcode)
+		$.get("https://api.postcodes.io/postcodes/"+newPostcode)
 		.done(function(data) {
 			if (data.hasOwnProperty("error")) {
 				reject(data);
