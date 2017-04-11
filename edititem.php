@@ -1,7 +1,7 @@
 <?php
     define('__ROOT__',dirname(__FILE__));
-    require __ROOT__.'/class/Page.class.php';
-    require __ROOT__.'/class/Food.class.php';
+    require_once __ROOT__.'/class/Page.class.php';
+    require_once __ROOT__.'/class/Food.class.php';
     $p = new Page("Food", true);
     if (!isset($_GET["item"])) {
         $p->buildHead();
@@ -33,7 +33,6 @@
     $p->buildHeader();
 ?>
     <div class="col-sm-3">
-        
         <div class="card food-item">
             <div class="overlay">
                 <span class="glyphicon glyphicon-edit edit-image-icon" id="edit-image-icon"></span>
@@ -68,13 +67,38 @@
                     <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button">Delete</a>
                 </div>
                 <a class="btn btn-primary btn-block" href="item.php?item=<?php echo $food->item["id"];?>" role="button">View</a>
+                <script>
+                    $(document).ready(function() {
+                        $("#saveItem").click(function() {
+                            $("#saveItem").html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>')
+                            var title = $("#foodTitle").val();
+                            var desc = $("#description").val();
+                            var expiry = $("#expiry").val();
+                            var lat = $("#lat").text();
+                            var long = $("#long").text();
+                            var imageurl = $("#foodimage").attr("src");
+                            console.log(imageurl)
+                            $.post("api/editfood.php",{id:<?php echo $food->item["id"];?>, title: title, desc: desc, expiry: expiry,lat:lat,long:long,imageurl:imageurl})
+                            .done(function(data) {
+                                if (data.hasOwnProperty("success")) {
+                                    if (data.success) {
+                                        $("#saveItem").html('Save')
+                                    }
+                                }
+                            })
+                            .fail(function(data) {
+                                alert("There was an error, and your item was not saved.");
+                            });
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
     <div class="col-sm-9">
         <div class="card food-details">
             <div class="card-block">
-                <input class="card-title food-title-edit" value="<?php echo $food->item["name"]; ?>" placeholder="<?php echo $food->item["name"]; ?>">
+                <input class="card-title food-title-edit" value="<?php echo $food->item["name"]; ?>" placeholder="<?php echo $food->item["name"]; ?>" id="foodTitle">
                 <textarea id="description" class="card-text food-description-edit"><?php echo $food->item["description"]; ?></textarea>
             </div>
             <div class="card-footer text-muted">
