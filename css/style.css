@@ -206,6 +206,54 @@ h1,h2,h3,h4,h5,h6 {
 
 }
 
+/** MESSAGES **/
+.messages {
+    height: 70vh;
+    overflow-y: scroll;
+}
+.messages .message-timestamp {
+    float: right;
+    color: #666;
+}
+.messages .message {
+    margin-bottom: 2em;    
+}
+.messages .message p {
+    margin-bottom: 0;    
+}
+.messages .message.to .card-header {
+    background-color: #4c994c;
+}
+.messages .message.to {
+    background-color: #5cb85c;
+    color: #fff;
+}
+.messages .message.to .card-header .message-timestamp {
+    color: #CCC;
+}
+.messages .message:after {
+    content: ' ';
+    height: 1em;
+    width: 2em;
+    position: absolute;
+    bottom: -1em;
+    border: 1px solid rgba(0,0,0,.125);
+    border-top: none;
+}
+.messages .message.to:after {
+    background: #5cb85c;
+    right: -1px;
+    -webkit-clip-path: polygon(0 0, 100% 100%, 100% 0);
+    clip-path: polygon(0 0, 100% 100%, 100% 0);
+}
+.messages .message.from:after {
+    background: #FFF;
+    left: -1px;
+    -webkit-clip-path: polygon(0 0, 0 100%, 100% 0);
+    clip-path: polygon(0 0, 0 100%, 100% 0);
+}
+
+
 /**
  *
  * B O O T S T R A P   M O D S
