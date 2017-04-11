@@ -24,4 +24,5 @@ function addMessage(text,timestamp,isOwnMessage = false) {
             .text(text)
         )
     );
+    convertTimes();
 }

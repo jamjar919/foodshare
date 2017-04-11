@@ -252,6 +252,17 @@ h1,h2,h3,h4,h5,h6 {
     -webkit-clip-path: polygon(0 0, 0 100%, 100% 0);
     clip-path: polygon(0 0, 0 100%, 100% 0);
 }
+.message-dialog {
+    display: flex;
+    flex-direction: row;
+}
+.message-dialog input[type=text] {
+    flex: 5 5;
+}
+.message-dialog input[type=submit] {
+    flex: 1 1;
+}
+
 
 
 /**
