@@ -96,4 +96,29 @@ class Food
             return false;
         }
     }
+    
+    public function delete() {
+        // Must be auth'ed
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        // DELET THIS
+        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+        $stmt = $db->prepare("DELETE FROM food WHERE id = :id");
+        $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+        if ($stmt->rowCount()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
