@@ -82,7 +82,10 @@
                             .done(function(data) {
                                 if (data.hasOwnProperty("success")) {
                                     if (data.success) {
+                                        success()
                                         $("#saveItem").html('Save')
+                                    } else {
+                                        alert("There was an error, and your item was not saved.");
                                     }
                                 }
                             })

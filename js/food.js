@@ -44,3 +44,29 @@ function printFoodItems(items, element) {
         );
     }
 }
+
+/**
+ * Makes a fancy success checkbox animation.
+ */
+function success() {
+    var id = "success-overlay-"+Math.floor(Math.random() * (10000 - 0)) + 0;
+    $(document.body).append(
+        $("<div>")
+        .attr("id",id)
+        .addClass("overlay success-overlay")
+        .css("opacity",0)
+        .append('<span class="glyphicon glyphicon-ok"></span>')
+        .fadeTo(50,1,function() {
+            id = "#"+id;
+            $(id+" .glyphicon")
+            .addClass("pulsetick-anim")
+            // time here should be equal to the animation length
+            setTimeout(function() {
+                $(id)
+                .fadeTo(100,0,function() {
+                    $(id).remove();
+                })
+            },750)
+        })
+    );
+}
