@@ -223,31 +223,37 @@ class Food
         $currentTags = $this->getTags();
         $tagsToAdd = array();
         $tagsToRemove = $currentTags;
-        foreach($newTags as $tag) {
-            $id = array_search($tag, $tagsToRemove);
-            if ($id === false) {
-                // tag is not in current tag list, add to tags to tagsToAdd
-                $tagsToAdd[] = $tag;
-            } else {
-                // Tag is in current tag list and new tag list, do nothing (remove from remove list)
-                unset($tagsToRemove[$id]);
+        if (!empty($newTags)) {
+            foreach($newTags as $tag) {
+                $id = array_search($tag, $tagsToRemove);
+                if ($id === false) {
+                    // tag is not in current tag list, add to tags to tagsToAdd
+                    $tagsToAdd[] = $tag;
+                } else {
+                    // Tag is in current tag list and new tag list, do nothing (remove from remove list)
+                    unset($tagsToRemove[$id]);
+                }
+                // Else tag is in the current tags and not in the new one, so keep it in the remove list
             }
-            // Else tag is in the current tags and not in the new one, so keep it in the remove list
         }
         // Add all new tags...
         //echo "tags to add: ";
         //var_dump($tagsToAdd);
-        foreach ($tagsToAdd as $tag) {
-            if(!$this->insertTag($tag)) {
-                echo "failed to insert ".$tag;
+        if (!empty($tagsToAdd)) {
+            foreach ($tagsToAdd as $tag) {
+                if(!$this->insertTag($tag)) {
+                    echo "failed to insert ".$tag;
+                }
             }
         }
         //echo "tags to remove: ";
         //var_dump($tagsToRemove);
         // Remove all old ones...
-        foreach ($tagsToRemove as $tag) {
-            if(!$this->removeTag($tag)) {
-                echo "failed to remove ".$tag;
+        if (!empty($tagsToRemove)) {
+            foreach ($tagsToRemove as $tag) {
+                if(!$this->removeTag($tag)) {
+                    echo "failed to remove ".$tag;
+                }
             }
         }
         // Return the new tag list!
