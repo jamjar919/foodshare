@@ -64,7 +64,7 @@
             <div class="card-block">
                 <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
                     <button class="btn btn-success" role="button" id="saveItem">Save</button>
-                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button">Delete</a>
+                    <a class="btn btn-danger"  role="button" id="deleteItem" href="deleteitem.php?item=<?php echo $food->item["id"];?>">Delete</a>
                 </div>
                 <a class="btn btn-primary btn-block" href="item.php?item=<?php echo $food->item["id"];?>" role="button">View</a>
                 <script>
@@ -93,6 +93,12 @@
                                 alert("There was an error, and your item was not saved.");
                             });
                         });
+                        $("#deleteItem").click(function(e) {
+                            var response = window.confirm("Are you sure you want to delete the item? This is undoable!");
+                            if (response == false) {
+                                return false;
+                            }
+                        })
                     });
                 </script>
             </div>
