@@ -17,10 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 	}
 
 }else if($_SERVER['REQUEST_METHOD'] == "POST"){
-	if (empty($_POST["id"]) || empty($_POST["conversation_id"]) || empty($_POST["text"]) || empty($_POST["time"]) || empty($_POST["read"]) || empty($_POST["message_type"])){
+	if (empty($_POST["id"]) || empty($_POST["conversation_id"]) || empty($_POST["text"])  || empty($_POST["read"]) || empty($_POST["message_type"])){
 		echo "Missing parameter(s)";
 	}else{
-		addMessage($_POST["id"],$_POST["conversation_id"],$_POST["text"],$_POST["time"],$_POST["read"],$_POST["message_type"]);
+		addMessage($_POST["id"],$_POST["conversation_id"],$_POST["text"],$_POST["read"],$_POST["message_type"]);
 	}
 }
 
@@ -46,15 +46,14 @@ function getMessage($id){
 	echo json_encode($messages);
 }
 
-function addMessage($id, $conversation_id, $text, $time, $read, $message_type){
+function addMessage($id, $conversation_id, $text, $read, $message_type){
 	try {
 
-			$stmt = $db->prepare("INSERT INTO `message` (`id`, `conversation_id`, `text`, `time`, `read`, `message_type`) VALUES (:id, :conversation_id, :text, :time, :read, :message_type);");
+			$stmt = $db->prepare("INSERT INTO `message` (`id`, `conversation_id`, `text`, `time`, `read`, `message_type`) VALUES (:id, :conversation_id, :text, NOW(), :read, :message_type);");
 			
 			$stmt->bindValue(':id', $id, PDO::PARAM_INT);
 			$stmt->bindValue(':conversation_id', $conversation_id, PDO::PARAM_INT);
 			$stmt->bindValue(':text', $text, PDO::PARAM_STR);
-			$stmt->bindValue(':time', $time, PDO::PARAM_INT);
 			$stmt->bindValue(':read', $read, PDO::PARAM_BOOL);
 			$stmt->bindValue(':message_type', $message_type, PDO::PARAM_INT);
 			$stmt->execute();
