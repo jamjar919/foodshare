@@ -3,6 +3,7 @@
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/class/User.class.php';
+require_once __ROOT__.'/class/UserTools.class.php';
 
 class Food
 {
@@ -173,7 +174,6 @@ class Food
             if ($stmt->rowCount()) {
                 return true;
             }
-            echo "insert failed";
             return false;
         } catch (PDOException $e) {
             return false;
@@ -329,11 +329,14 @@ class Food
             $stmt = $db->prepare("UPDATE food SET claimer_username = :claimer WHERE id = :id");
             $stmt->bindValue(":claimer", $claimer, PDO::PARAM_STR);
             $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
-            return $stmt->execute();
+            $result = $stmt->execute();
         } catch (PDOException $e) {
             return false;
         }
-    }
+        // Send email!
+        mail(UserTools::getEmail($this->owner), "Item claimed!", "Hey! \n \n An item you put up, titled \"".$this->item["title"]."\" has been claimed by the user ".$claimer."! They should be in contact via the messaging system soon to arrange a pickup time. \n Thanks, \n FlavourTown");
+        return $result;
+   }
         
     public function unclaim() {
         // Must be auth'ed as owner!
