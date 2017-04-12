@@ -5,15 +5,19 @@
     require 'class/Page.class.php';
     $p = new Page("Confirm email address");
     if (isset($_GET["username"]) && isset($_GET["key"])) {
-            if (UserTools::validateUserEmail($_GET["username"],$_GET["key"])) {
-                    $p->buildHead();
-                    $p->buildHeader();
-                    echo "<h1>Successfully validated email.</h1>";
-            } else {
-                    $p->buildHead();
-                    $p->buildHeader();
-                    echo "<h1>The key and username you have supplied is incorrect.</h1>";
-            }
+        $result = UserTools::validateUserEmail($_GET["username"],$_GET["key"]);
+        if (true === $result) {
+            $p->buildHead();
+            $p->buildHeader();
+            echo "<h1 class=\"text-center\">Successfully validated email. Redirecting...</h1>";
+            // Redir script
+            echo "<script>$(document).ready(function(){setTimeout(function(){window.location.replace(\"profile.php\");},2000)})</script>";
+        } else {
+            $p->buildHead();
+            $p->buildHeader();
+            echo "<h1 class=\"text-center\">Error validating email</h1>";
+            UserTools::printErrors($result);
+        }
     } else {
         header("Location: index.php");
     }

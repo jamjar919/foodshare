@@ -187,7 +187,7 @@ class User
                         $row = $stmt->fetch();
                         $email = $row["email"];
                         // Send confirmation mail
-                        mail($email, "Email Change", "Hey! \n \n You changed your email to this new address. Click the link below to confirm that you own this email address: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&user=".$this->username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
+                        mail($email, "Email Change", "Hey! \n \n You changed your email to this new address. Click the link below to confirm that you own this email address: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&username=".$this->username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
                         return true;
                 } catch(PDOException $ex) {
                         return false;
