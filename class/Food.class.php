@@ -305,4 +305,59 @@ class Food
             return false;
         }
     }
+    
+    public function claim() {
+        // Must be auth'ed
+        // Log in as the user that wants to claim
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $claimer = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($claimer,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET claimer_username = :claimer WHERE id = :id");
+            $stmt->bindValue(":claimer", $claimer, PDO::PARAM_STR);
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
+        
+    public function unclaim() {
+        // Must be auth'ed as owner!
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        if (! ($username === $this->owner)) {
+            return false;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET claimer_username = '' WHERE id = :id");
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
+    }
 }

@@ -566,7 +566,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                         claimerButton.textContent = "Claim";
                         claimerButton.className = "btn btn-custom rajax";
                         claimerButton.addEventListener('click', function() {
-                            claimFood(element['id'], element['user_username'], user['username']);
+                            document.location = "claim.php?item="+element['id'];
                         }, false);
                         $('#' + element['id'] + ' .buttons').append(
                             claimerButton
