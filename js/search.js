@@ -574,7 +574,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                         $('#' + element['id'] + ' .card-time').text("Posted by " + element['user_username'] + " "
                             + moment(element["time"]).fromNow());
                     }
-                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 '>" +
+                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 search-image-wrap'>" +
                         "<img class='center' src='"+ element['image_url'] + "'>" +
                         "</div>"
                     );
