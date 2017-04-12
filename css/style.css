@@ -69,9 +69,6 @@ h1,h2,h3,h4,h5,h6 {
 #header .searchbar-container {
     background-color: #5cb85c;
 }
-#header .searchbar-container .input-group #search {
-    background: #444;
-}
 
 /**
  *

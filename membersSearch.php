@@ -294,11 +294,6 @@ header("Location: login.php");
     </div>
 </div>
 </body>
-<script>
-    var user = JSON.parse('<?php echo $user->getJSON(true); ?>');
-    var memberSearch = true;
-    console.log(user);
-</script>
 <script src="js/search.js" type="application/javascript"></script>
 
 </html>

@@ -10,33 +10,11 @@ window.totalResults = 0;
 
 var mymap;
 var markers = [];
+var user;
+var memberSearch;
 
 //get user's location from browser (non-members only)
 var initialPosition = null;
-console.log(memberSearch);
-if (navigator.geolocation && !memberSearch){
-    navigator.geolocation.getCurrentPosition(
-        function(position){
-            initialPosition = [position.coords.latitude,position.coords.longitude];
-            console.log("Got initial position as: "+initialPosition);
-            var address = convertGeocode(initialPosition[0], initialPosition[1]);
-            var p = Promise.resolve(address);
-            p.then(function(address) {
-                $("#loc").val(address);
-            });
-        },
-        function(error){
-            // If we don't find the initial position just go L O N D O N
-            initialPosition = [51.5, -0.09];
-            console.log("Error getting pos: "+error);
-            var address = convertGeocode(initialPosition[0], initialPosition[1]);
-            var p = Promise.resolve(address);
-            p.then(function(address) {
-                $("#loc").val(address);
-            });
-        }
-    )
-}
 
 $('document').ready(function() {
     $("#radius").bootstrapSlider( {
@@ -52,10 +30,38 @@ $('document').ready(function() {
             $("#search").click();
         }
     });
-
-    if(memberSearch) {
+    userData = getUser();
+    var p = Promise.resolve(userData);
+    p.then(function(userData) {
+        user = userData;
         $("#loc").val(user['postcode']);
-    }
+        memberSearch = true;
+    },function() {
+        memberSearch = false;
+        if (navigator.geolocation && !memberSearch){
+            navigator.geolocation.getCurrentPosition(
+                function(position){
+                    initialPosition = [position.coords.latitude,position.coords.longitude];
+                    console.log("Got initial position as: "+initialPosition);
+                    var address = convertGeocode(initialPosition[0], initialPosition[1]);
+                    var p = Promise.resolve(address);
+                    p.then(function(address) {
+                        $("#loc").val(address);
+                    });
+                },
+                function(error){
+                    // If we don't find the initial position just go L O N D O N
+                    initialPosition = [51.5, -0.09];
+                    console.log("Error getting pos: "+error);
+                    var address = convertGeocode(initialPosition[0], initialPosition[1]);
+                    var p = Promise.resolve(address);
+                    p.then(function(address) {
+                        $("#loc").val(address);
+                    });
+                }
+            )
+        }
+    })
 
 });
 
@@ -154,6 +160,7 @@ $('#search').click(function() {
     addContainers();
     $('#map-container').html('');
     var location;
+    console.log(memberSearch);
     if(memberSearch) {
         location = [user['latitude'], user['longitude']]
     }
@@ -283,7 +290,7 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
         'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
         var foodInfo = $('<div></div>').addClass('food');
-
+        console.log(data);
         if(data.food.length > 0) {
             initMap(location);
             setMapBounds(location, distance);
@@ -292,16 +299,16 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                 var p = Promise.resolve(address);
                 var expiryDate = new Date(element['expiry']);
                 p.then(function(address) {
+
                     foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
                     "<div class='row'>" +
                         "<div class='col-md-8 col-sm-8 col-xs-7'>" +
                             "<div class='card-block'>" +
                                 "<h4 class='card-title'>" + element['name'] + "</h4>" +
-                                "<p class='card-text card-time' style='font-style=italic '>" + timePosted(element['time']) + "</p>" +
-                                "<p >Expiry date: " + expiryDate.getDate() + '/' + (expiryDate.getMonth() + 1) + '/' +
-                        expiryDate.getFullYear() + "</p>" +
+                                "<p class='card-text card-time' style='font-style=italic '> Posted " +moment(element["time"]).fromNow() + "</p>" +
+                                "<p >Expires "+moment(element["expiry"]).fromNow()+"</p>" +
                                 "<div class='btn-group buttons'>" +
-                                "<a href='#' class='btn btn-custom' onclick=displayDetails(" +element['id']+ ",this)>More</a>" +
+                                "<a href='item.php?item="+element['id'] + "' class='btn btn-custom'>More</a>" +
                         "</div></div></div>");
                     if(memberSearch) {
                         var claimerButton = document.createElement('button');
@@ -313,8 +320,8 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                         $('#' + element['id'] + ' .buttons').append(
                             claimerButton
                         );
-                        $('#' + element['id'] + ' .card-time').text("Posted by: " + element['user_username'] + " "
-                            + timePosted(element['time']));
+                        $('#' + element['id'] + ' .card-time').text("Posted by " + element['user_username'] + " "
+                            + moment(element["time"]).fromNow());
                     }
                     $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 '>" +
                         "<img class='center' src='"+ element['image_url'] + "'>" +
@@ -475,56 +482,15 @@ function initMap(pos) {
  * @returns {string}
  */
 function popupDetails(food, address) {
-    var expiryDate = new Date(food['expiry']);
     return '<div class="food-popup"><h3>'+food["name"]+'</h3>' +
-        '<p>'+food["description"]+'</p>' +
-        '<p>Expiry date: ' + expiryDate.getDate() + '/' + (expiryDate.getMonth() + 1) + '/' +
-    expiryDate.getFullYear() + '</p>' +
-        '<p>Submission date: ' + timePosted(food['time']) + '</p>' +
+        '<p>Posted ' +moment(food["time"]).fromNow() + '</p>' +
+        '<p>Expires '+moment(food["expiry"]).fromNow()+ '</p>' +
         '<p>Address: ' + address + '</p>' +
         '<button class="btn btn-custom btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
 }
 
-/**Display all the food details on separate page
- *
- * @param food
- */
-function displayDetails(food) {
-    detailsPage = '<div class="col-sm-3">' +
-            '<div class="card food-item">' +
-            '<img src="' + food['image_url'] + '" class ="card-img-top"' +
-            '<div class="card-block">' +
-            ' <a class="btn btn-success btn-block" href="#" role="button" onclick="claimFood('+ food['id'] +', ' +
-        food['user_username'] + ', ' + user['username'] + ')"</a>' +
-            '</div></div></div>' +
-            '<div class="col-sm-9">' +
-            '<div class="card food-details">' +
-            '<div class="card-block">' +
-            '<h1 class="card-title">' + food['name'] + '</h1>' +
-            '<p class="card-subtitle text-muted">Posted <span class="converttime">' + food['time'] + '</span></p>' +
-            '<p class="card-text">' + food['description'] + '</p></div>' +
-            '<div class="card-footer text-muted">Expires <span class="converttime">' + food['expiry'] + '</span>' +
-            '</div></div>' +
-            '<div class="row">' +
-            '<div class="col-md-8">' +
-            '<div class="card inline-map">' +
-            '<iframe style="height: 500px" frameborder="0" style="border:0" ' +
-            'src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBsIs05rl3R9lbL6q3vluRXERaIVesToRA' +
-            '&q=' + food['latitude'] + ', ' + food['longitude'] + '" allowfullscreen>' +
-            '</iframe>' +
-            '<div class="card-footer text-muted"> Approximate location: Message user for pickup location. </div>' +
-            '</div></div>' +
-            '<div class="col-md-4">' +
-            '<div class="card inline-userprofile">' +
-            '<img src="http://i.imgur.com/48xQKLf.gif" class="card-img-top narrowimg">' +
-            '<div class="card-block">' +
-            '<h2 class="card-title">'+ food['user_username'] + '</h2></div>' +
-            '<div class="card-footer text-muted"> 0 points </div>';
-    $('.content').html(detailsPage);
-}
-
 function goBack() {
-
+    search(q,storedLocation,radius, expiry, time,sort,resultsPerPage,pageNumber, true)
 }
 /**Convert date time to nice formatting
  *
@@ -562,8 +528,8 @@ function clearMarkers() {
 }
 
 //click event for showing and hiding the map
-$("#map-button").on('click', function () {
-    if($( "#map").is(':visible')) {
+$(document.body).on('click', '#map-button', function () {
+    if($("#map").is(':visible')) {
         $('#map').hide('blind',{direction:'up'}, 1000, function() {
             $('#map-button').toggleClass('active')
                 .css('border-radius', '5px')
@@ -644,3 +610,52 @@ function claimFood(id, poster, claimer) {
         });
     //TODO send notification to poster to say food has been claimed
 }
+
+function getUser() {
+    return new Promise(function(resolve,reject) {
+        $.getJSON('api/profile/private.php')
+            .done(function(data) {
+                if (data.hasOwnProperty("error")) {
+                    reject(data);
+                }
+                else {
+                    resolve(data);
+                }
+            })
+            .fail(function(data) {
+                reject(data);
+            });
+    })
+}
+
+/*history stuff
+
+var links =     //... pagination and sorting links
+var container = //... the region of the page that will be updated with AJAX
+
+// override clicks on the links
+    links.live('click', function() {
+        // grab the link's URL
+        var url = $(this).attr('href');
+        // add a new history entry
+        history.pushState({ path: url }, '', url);
+        // load the page fragment into the container with AJAX
+        container.load(url);
+        // prevent the link click bubbling
+        return false;
+    });
+
+// handle the back and forward buttons
+$(window).bind('popstate', function(event) {
+    // if the event has our history data on it, load the page fragment with AJAX
+    var state = event.originalEvent.state;
+    if (state) {
+        container.load(state.path);
+    }
+});
+
+// when the page first loads update the history entry with the URL
+// needed to recreate the 'first' page with AJAX
+history.replaceState({ path: window.location.href }, '');
+
+*/

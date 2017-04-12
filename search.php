@@ -286,9 +286,6 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
         </div>
     </div>
 </body>
-<script>
-    var memberSearch = false;
-</script>
 <script src="js/search.js" type="application/javascript"></script>
 
 </html>
