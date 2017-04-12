@@ -82,7 +82,7 @@
                         <img src="<?php echo $ownerProfile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
                     <?php } ?>
                     <div class="card-block">
-                        <h2 class="card-title"><?php echo $food->item["user_username"]; ?><?php if ($isOwner) { ?><small>(you)</small><?php } ?></h2>
+                        <h2 class="card-title"><a href="user.php?id=<?php echo $food->item["user_username"]; ?>"><?php echo $food->item["user_username"]; ?></a><?php if ($isOwner) { ?><small>(you)</small><?php } ?></h2>
                     </div>
                     <div class="card-footer text-muted">
                         <?php echo $ownerProfile["score"]; ?> points
