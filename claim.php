@@ -77,6 +77,9 @@
                         claimItem(<?php echo $food->item["id"]; ?>)
                         .then(function(data) {
                             success();
+                            setTimeout(function() {
+                                location.href="messages.php?user=<?php echo $food->item["user_username"]; ?>";
+                            }, 1100);
                         }) 
                         .catch(function(error) {
                             alert("Couldn't claim item.")
