@@ -335,6 +335,7 @@ class Food
         
     public function unclaim() {
         // Must be auth'ed as owner!
+        // Or as food claimer
         if (!isset($_COOKIE["username"])) {
             return null;
         }
@@ -347,7 +348,7 @@ class Food
         if ( ! $user->isLoggedIn()) {
             return null;
         }
-        if (! ($username === $this->owner)) {
+        if ((! ($username === $this->owner)) || ($username === $this->item["claimer_username"])) {
             return false;
         }
         try {

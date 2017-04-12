@@ -60,7 +60,7 @@
             </script>
         </div>
         <?php if (!empty($food->item["claimer_username"])) { ?>
-        <div class="card">
+        <div class="card claim-decide">
             <div class="card-block">
                 <h3>Your item has been claimed!</h3>
                 <p>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a>. They should message you in a bit to organise a pickup time. 
@@ -71,9 +71,25 @@
                     <button class="btn btn-danger" role="button" id="clearClaim">Clear claim</button>
                 </div>
             </div>
+            <script>
+                $(document).ready(function() {
+                    $("#clearClaim").click(function(){
+                        unclaim(<?php echo $food->item["id"]; ?>)
+                        .then(function(data) {
+                            success();
+                            setTimeout(function() {
+                                location.href=location.href;
+                            }, 1100);
+                        })
+                        .catch(function(data) {
+                            alert("Couldn't unclaim the food");
+                        })
+                    })
+                })
+            </script>
         </div>
-        <?php } ?>
         <br>
+        <?php } ?>
         <div class="card">
             <div class="card-block">
                 <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">

@@ -61,6 +61,18 @@ function claimItem(id) {
 }
 
 function unclaim(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/unclaim.php", {id:id})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
 }
 
 /**

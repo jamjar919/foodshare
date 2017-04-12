@@ -54,7 +54,7 @@
                 <?php } ?>
             <?php } ?>
             </div>
-            <?php if (!empty($food->item["claimer_username"])) { ?>
+            <?php if (!empty($food->item["claimer_username"]) && $isOwner) { ?>
                 <div class="card-block"><strong>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a></strong>. They should message you in a bit!</div>
             <?php } ?>
         </div>

@@ -81,7 +81,7 @@ class Page
                     </div>';
         } else {
             echo '  <div class="nav-item">
-                        <a href="profile.php">Dashboard</a>
+                        <a href="profile.php">'.$this->user->username.'</a>
                     </div>
                     <div class="nav-item">
                         <a href="messages.php">Messages</a>
