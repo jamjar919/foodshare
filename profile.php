@@ -57,7 +57,21 @@
             <div id="myitems" class="masonry">
             </div>
             <h2>Items you might be interested in...</h2>
-            Load in via AJAX
+            <div class="masonry" id="exampleitems">
+            </div>
+            <script>
+                $(document).ready(function () {
+                    $.get("api/food.php?q=&location=<?php echo $profile['latitude']; ?>%2C<?php echo $profile['longitude']; ?>&distance=30&expiry=Any%20time&time=Any%20time&sort=Closest&num=10&offset=0")
+                    .then(function(data) {
+                        var food = [];
+                        data["food"].forEach(function(f){
+                            if(f.user_username != "<?php echo $profile['username'];?>"){
+                                printFoodItems([f],"#exampleitems")
+                            }
+                        });
+                    }) 
+                })
+            </script>
         </div>
     </div>
     <script src="js/useritems.js"></script>
@@ -67,7 +81,6 @@
             var selector = "#myitems";
             getUserItems(username)
             .then(function(data) {
-                console.log(data);
                 printFoodItems(data["food"],selector);
             })
             .catch(function(error) {
