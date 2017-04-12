@@ -46,6 +46,27 @@ function printFoodItems(items, element) {
 }
 
 /**
+ * Claim an item for yourself. Uses a cookie and stuff to verify the claimer 
+ **/
+function claimItem(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/claim.php", {id:id})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
+}
+
+function unclaim(id) {
+}
+
+/**
  * Makes a fancy success checkbox animation.
  */
 function success() {

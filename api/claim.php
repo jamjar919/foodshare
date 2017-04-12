@@ -7,11 +7,10 @@ header('Content-Type: application/json');
 
 if($_SERVER['REQUEST_METHOD'] === "POST") {
     $response = array();
-    if (!isset($_POST["id"]) || !isset($_POST["claimer"])) {
-        $response["error"] = "id of food or username of claimer not provided";
+    if (!isset($_POST["id"])) {
+        $response["error"] = "Id of food not provided";
     } else {
         $id = $_POST['id'];
-        $claimer = $_POST['claimer'];
         $f = new Food($id);
         if(empty($f->item["claimer_username"])) {
             if ($f->claim()) {

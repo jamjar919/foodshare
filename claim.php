@@ -52,11 +52,38 @@
                 </ul>
             </div>
             <div class="card-footer">
-                <div class="btn-group btn-group-fullwidth">
-                    <button class="btn btn-success">I understand. Claim!</button>
-                    <a href="item.php?item=<?php echo $food->item["id"]; ?>" class="btn btn-primary">I changed my mind</a>
-                </div>
+            <?php if (!$isOwner) { ?>
+                <?php if (empty($food->item["claimer_username"])) { ?>
+                    <div class="btn-group btn-group-fullwidth">
+                        <button class="btn btn-success" id="claim">I understand. Claim!</button>
+                        <a href="item.php?item=<?php echo $food->item["id"]; ?>" class="btn btn-primary">I changed my mind</a>
+                    </div>
+                <?php } else if ($food->item["claimer_username"] == $p->user->username) { ?>
+                    <strong>You claimed this item! <a href="messages.php?user=<?php echo $food->item["user_username"]; ?>">Message the user</a> to organise pickup.</strong>
+                <?php } else { ?>
+                    <strong>This item was claimed by <?php $food->item["claimer_username"]; ?> already. Sorry!</strong>
+                <?php } ?>
+            <?php } else { ?>
+                <?php if (empty($food->item["claimer_username"])) { ?>
+                    This is your item. You cannot claim it.
+                <?php } else { ?>
+                    <strong>Your item was claimed by <a href="messages.php?user=<?php $food->item["claimer_username"]; ?>"><?php $food->item["claimer_username"]; ?></a>. They should message you in a bit!</strong>
+                <?php } ?>
+            <?php } ?>
             </div>
+            <script>
+                $(document).ready(function() {
+                    $("#claim").click(function() {
+                        claimItem(<?php echo $food->item["id"]; ?>)
+                        .then(function(data) {
+                            success();
+                        }) 
+                        .catch(function(error) {
+                            alert("Couldn't claim item.")
+                        });
+                    })
+                });
+            </script>
         </div>
         <div class="row">
             <div class="col-md-8">
