@@ -294,6 +294,9 @@ class Food
         if ( ! $user->isLoggedIn()) {
             return null;
         }
+        if ( ! ($username === $this->owner)) {
+            return null;
+        }
         // DELET THIS
         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
         $stmt = $db->prepare("DELETE FROM food WHERE id = :id");
@@ -328,7 +331,6 @@ class Food
             $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
-            echo $e->getMessage();
             return false;
         }
     }
@@ -360,7 +362,60 @@ class Food
             $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
-            echo $e->getMessage();
+            return false;
+        }
+    }
+    
+    public function markAsGone() {
+        // Must be auth'ed
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        if ( ! ($username === $this->owner)) {
+            return null;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET item_gone = b'1' WHERE id = :id");
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    public function unmarkAsGone() {
+        // Must be auth'ed
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        if ( ! ($username === $this->owner)) {
+            return null;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET item_gone = b'0' WHERE id = :id");
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
             return false;
         }
     }
