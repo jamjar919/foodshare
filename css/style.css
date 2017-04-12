@@ -61,6 +61,10 @@ h1,h2,h3,h4,h5,h6 {
 #header .searchbar-container .input-group {
     margin: 10px 0;
 }
+.nav-item a.glyphicon {
+    top: -1px;
+    text-decoration: none;
+}
 
 /* Style */
 #header {

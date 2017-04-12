@@ -81,6 +81,9 @@ class Page
                     </div>
                     <div class="nav-item">
                         <a href="profile.php">Profile</a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="logout.php" class="glyphicon glyphicon-log-out"></a>
                     </div>';
         }
     }
