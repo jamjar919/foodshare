@@ -58,6 +58,34 @@
                 <div class="card-block"><strong>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a></strong>. They should message you in a bit!</div>
             <?php } ?>
         </div>
+        <?php if ($food->item["claimer_username"] == $p->user->username) { ?>
+            <div class="card claim-decide">
+                <div class="card-block">
+                    <h3>You claimed this!</h3>
+                    <p>You should message the owner, <a href="messages.php?user=<?php echo $food->item["user_username"]; ?>"><?php echo $food->item["user_username"]; ?></a>, to arrange a pickup ASAP!</p>
+                    <p>If you can no longer pick up the item, <strong>click the button below to remove your claim</strong>.</p>
+                    <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
+                        <button class="btn btn-danger" role="button" id="clearClaim">Clear claim</button>
+                    </div>
+                </div>
+            </div>
+        <script>
+            $(document).ready(function() {
+                $("#clearClaim").click(function(){
+                    unclaim(<?php echo $food->item["id"]; ?>)
+                    .then(function(data) {
+                        success();
+                        setTimeout(function() {
+                            location.href=location.href;
+                        }, 1100);
+                    })
+                    .catch(function(data) {
+                        alert("Couldn't unclaim the food");
+                    })
+                })
+            })
+        </script>
+        <?php } ?>
     </div>
     <div class="col-sm-9">
         <div class="card food-details">

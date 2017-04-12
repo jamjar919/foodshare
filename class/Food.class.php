@@ -348,7 +348,10 @@ class Food
         if ( ! $user->isLoggedIn()) {
             return null;
         }
-        if ((! ($username === $this->owner)) || ($username === $this->item["claimer_username"])) {
+        if ( ! (
+            ($username === $this->owner) ||
+            ($username === $this->item["claimer_username"])
+        ) ) {
             return false;
         }
         try {
