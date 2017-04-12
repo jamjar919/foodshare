@@ -4,6 +4,7 @@
 function printFoodItems(items, element) {
     for (var i = 0; i< items.length; i++) {
         item = items[i];
+        var currentDate = new Date();
         $(element).append(
             $("<div>")
             .addClass("card food-item")
@@ -39,7 +40,7 @@ function printFoodItems(items, element) {
             .append(
                 $("<div>")
                 .addClass("card-footer text-muted")
-                .text("Expires "+moment(item["expiry"]).fromNow())
+                .text(((moment(item["expiry"]).isAfter(currentDate)) ? "Expires ": "Expired ")+moment(item["expiry"]).fromNow())
             )
         );
     }
