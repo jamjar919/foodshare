@@ -31,7 +31,6 @@
                 <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top">
             <?php } ?>
             <div class="card-block">
-                <a class="btn btn-success btn-block" href="#" role="button">Claim</a>
             <?php if ($isOwner) { ?>
                 <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
                     <a class="btn btn-primary" href="edititem.php?item=<?php echo $food->item["id"];?>" role="button">Edit</a>
@@ -47,6 +46,8 @@
                         });
                     </script>
                 </div>
+            <?php } else { ?>
+                <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" role="button">Claim</a>
             <?php } ?>
             </div>
         </div>
