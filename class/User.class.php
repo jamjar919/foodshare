@@ -419,6 +419,32 @@ class User
                         return json_encode($details);
                 } 
                 return json_encode((object) null);
-	}
+        }
+        
+        public function getOwnedClaimedFoods() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username AND claimer_username != ''");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                    return null;
+            }
+        }
+        
+        public function getClaimedFoods() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                return null;
+            }
+        }
 }
 ?>

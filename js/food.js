@@ -1,13 +1,14 @@
 /*
  * Prints items as a card into the specified element
  */
-function printFoodItems(items, element) {
+function printFoodItems(items, element, isOwner = false) {
     for (var i = 0; i< items.length; i++) {
         item = items[i];
         var currentDate = new Date();
         $(element).append(
             $("<div>")
             .addClass("card food-item")
+            .append((item["claimer_username"] != "") ? "<div class=\"card-header\">Claimed by "+((isOwner) ? "<a href=\"messages.php?user="+item["claimer_username"]+"\">"+item["claimer_username"]+"</a>" : item["claimer_username"])+"</div>" : "")
             .append(item["image_url"] ? '<img class="card-img-top" src="'+item["image_url"]+'">' : '')
             .append(
                 $("<div>")
@@ -29,12 +30,7 @@ function printFoodItems(items, element) {
                         .addClass("btn btn-primary")
                         .text("View")
                     )
-                    .append(
-                        $("<a>")
-                        .attr("href","edititem.php?item="+item["id"])
-                        .addClass("btn btn-warning")
-                        .text("Edit")
-                    )
+                    .append((isOwner) ? "<a href=\"edititem.php?item="+item["id"]+"\" class=\"btn btn-warning\">Edit</a>" : "")
                 )
             )
             .append(
