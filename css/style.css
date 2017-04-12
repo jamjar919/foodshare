@@ -12,6 +12,14 @@ h1,h2,h3,h4,h5,h6 {
     font-family: 'Lobster', cursive;
 }
 
+/* 
+ * Make footer stick to bottom 
+ * The px -em shouild be footer height and padding
+ */
+.scale-wrap {
+    min-height: calc(100vh - 135px - 5em);  
+}
+
 /**
  * 
  * H E A D E R

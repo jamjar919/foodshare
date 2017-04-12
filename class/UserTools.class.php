@@ -20,14 +20,14 @@ class UserTools {
 		}
 	}
 	
-	function validateUserEmail($username,$key) {
-		try {
-			$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-		} catch(PDOEXCEPTION $e) {
-			$errors[] = "There was a database error, please try again later.";
-			return $errors;
-		}
-	}
+        public static function validateUserEmail($username,$key) {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            } catch(PDOEXCEPTION $e) {
+                $errors[] = "There was a database error, please try again later.";
+                return $errors;
+            }
+        }
 	
 	/**
 	* Register a user with the database

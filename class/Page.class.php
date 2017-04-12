@@ -27,7 +27,7 @@ class Page
         echo '</head><body>';
     }
     public function buildHeader($includeSearchbar=true) {
-        echo '<header id="header">
+        echo '<div class="scale-wrap"><header id="header">
             <div class="container">
                 <div class="top-header">
                     <div class="site-title">
@@ -50,7 +50,7 @@ class Page
         <div class="container content">';
     }
     public function buildFooter() {
-        echo '</div><footer id="footer"><nav class="bottom-navigation">';
+        echo '</div></div><footer id="footer"><nav class="bottom-navigation">';
         $this->getNavItems();
         // Bottom nav only items
         echo '<div class="nav-item">
