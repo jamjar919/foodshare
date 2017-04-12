@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="col-sm-9">
-        <div class="card">
+        <div class="card claim">
             <div class="card-block">
                 <h1>Claim <?php echo $food->item["name"]; ?></h1>
                 <p>You are claiming the item shown to the left. Please only claim items if you are able to collect them!</p>
@@ -55,6 +55,34 @@
                 <div class="btn-group btn-group-fullwidth">
                     <button class="btn btn-success">I understand. Claim!</button>
                     <a href="item.php?item=<?php echo $food->item["id"]; ?>" class="btn btn-primary">I changed my mind</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card inline-map">
+                    <iframe
+                        style="height: 500px"
+                        frameborder="0" style="border:0"
+                        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBsIs05rl3R9lbL6q3vluRXERaIVesToRA
+                            &q=<?php echo $food->item["latitude"]; ?>,<?php echo $food->item["longitude"]; ?>" allowfullscreen>
+                    </iframe>
+                    <div class="card-footer text-muted">
+                        Approximate location: Message user for pickup location.
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card inline-userprofile">
+                    <?php if (!empty($ownerProfile["profile_picture_url"]))  { ?>
+                        <img src="<?php echo $ownerProfile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
+                    <?php } ?>
+                    <div class="card-block">
+                        <h2 class="card-title"><a href="user.php?id=<?php echo $food->item["user_username"]; ?>"><?php echo $food->item["user_username"]; ?></a><?php if ($isOwner) { ?><small>(you)</small><?php } ?></h2>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <?php echo $ownerProfile["score"]; ?> points
+                    </div>
                 </div>
             </div>
         </div>
