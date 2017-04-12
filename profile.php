@@ -23,6 +23,8 @@
                     <li class="list-group-item"><a href="user.php?id=<?php echo $profile['username'];?>">Your public profile</a></li>
                     <li class="list-group-item"><a href="editprofile.php">Edit profile details</a></li>
                     <li class="list-group-item"><a href="messages.php">Messages</a></li>
+                    <li class="list-group-item"><a href="claimhistory.php">Claim History</a></li>
+                    <li class="list-group-item"><a href="posthistory.php">Post History</a></li>
                 </ul>
             </div>
         </div>

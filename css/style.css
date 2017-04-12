@@ -377,6 +377,13 @@ label {
 .inline-userprofile h2 {
     margin: 0;
 }
+.gone-food-item {
+    opacity: 0.7;
+    transition: 0.25s;
+}
+.gone-food-item:hover {
+     opacity: 1;   
+}
 /** S P I N N I N G   F U N **/
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;

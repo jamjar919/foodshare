@@ -424,7 +424,7 @@ class User
         public function getOwnedClaimedFoods() {
             try {
                 $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username AND claimer_username != ''");
+                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username AND claimer_username != '' AND item_gone = b'0'");
                 $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
                 $stmt->execute();
                 $results = $stmt->fetchAll();
@@ -437,13 +437,39 @@ class User
         public function getClaimedFoods() {
             try {
                 $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username");
+                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username AND item_gone = b'0'");
                 $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
                 $stmt->execute();
                 $results = $stmt->fetchAll();
                 return $results;
             } catch(PDOException $ex) {
                 return null;
+            }
+        }
+        
+        public function getClaimHistory() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                    return null;
+            }
+        }
+        
+        public function getPostHistory() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                    return null;
             }
         }
 }
