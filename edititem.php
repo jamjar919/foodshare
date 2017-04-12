@@ -21,6 +21,7 @@
     $owner = new User($food->item["user_username"]);
     $ownerProfile = $owner->getPublicProfile();
     $isOwner = $food->item["user_username"] == $p->user->username;
+    $gone = $food->item["item_gone"];
     if (!$isOwner) {
         $p->buildHead();
         $p->buildHeader();
@@ -59,7 +60,7 @@
                 })
             </script>
         </div>
-        <?php if (!empty($food->item["claimer_username"])) { ?>
+        <?php if (!empty($food->item["claimer_username"]) && !$gone) { ?>
         <div class="card claim-decide">
             <div class="card-block">
                 <h3>Your item has been claimed!</h3>
@@ -85,6 +86,18 @@
                             alert("Couldn't unclaim the food");
                         })
                     })
+                    $("#gone").click(function(){
+                        markGone(<?php echo $food->item["id"]; ?>)
+                        .then(function(data) {
+                            success();
+                            setTimeout(function() {
+                                location.href="item.php?item=<?php echo $food->item["id"]; ?>";
+                            }, 1100);
+                        })
+                        .catch(function(data) {
+                            alert("Couldn't unclaim the food");
+                        })
+                    })
                 })
             </script>
         </div>
@@ -92,50 +105,71 @@
         <?php } ?>
         <div class="card">
             <div class="card-block">
-                <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
-                    <button class="btn btn-success" role="button" id="saveItem">Save</button>
-                    <a class="btn btn-danger"  role="button" id="deleteItem" href="deleteitem.php?item=<?php echo $food->item["id"];?>">Delete</a>
-                </div>
-                <a class="btn btn-primary btn-block" href="item.php?item=<?php echo $food->item["id"];?>" role="button">View</a>
-                <script>
-                    $(document).ready(function() {
-                        $("#saveItem").click(function() {
-                            $("#saveItem").html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>')
-                            var title = $("#foodTitle").val();
-                            var desc = $("#description").val();
-                            var expiry = $("#food-expiry-date").val();
-                            var lat = $("#lat").text();
-                            var long = $("#long").text();
-                            var imageurl = $("#foodimage").attr("src");
-                            var tagElements = $('.tagcontent').toArray();
-                            var tags = [];
-                            for (var i = 0; i < tagElements.length; i++) {
-                                tags.push(tagElements[i].innerText);
-                            }
-                            console.log(tags)
-                            $.post("api/editfood.php",{id:<?php echo $food->item["id"];?>, title: title, desc: desc, expiry: expiry,lat:lat,long:long,imageurl:imageurl,tags:tags})
-                            .done(function(data) {
-                                if (data.hasOwnProperty("success")) {
-                                    if (data.success) {
-                                        success()
-                                        $("#saveItem").html('Save')
-                                    } else {
-                                        alert("There was an error, and your item was not saved.");
+                <?php if (!$gone) { ?>
+                    <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
+                        <button class="btn btn-success" role="button" id="saveItem">Save</button>
+                        <a class="btn btn-danger"  role="button" id="deleteItem" href="deleteitem.php?item=<?php echo $food->item["id"];?>">Delete</a>
+                    </div>
+                    <a class="btn btn-primary btn-block" href="item.php?item=<?php echo $food->item["id"];?>" role="button">View</a>
+                    <script>
+                        $(document).ready(function() {
+                            $("#saveItem").click(function() {
+                                $("#saveItem").html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>')
+                                var title = $("#foodTitle").val();
+                                var desc = $("#description").val();
+                                var expiry = $("#food-expiry-date").val();
+                                var lat = $("#lat").text();
+                                var long = $("#long").text();
+                                var imageurl = $("#foodimage").attr("src");
+                                var tagElements = $('.tagcontent').toArray();
+                                var tags = [];
+                                for (var i = 0; i < tagElements.length; i++) {
+                                    tags.push(tagElements[i].innerText);
+                                }
+                                console.log(tags)
+                                $.post("api/editfood.php",{id:<?php echo $food->item["id"];?>, title: title, desc: desc, expiry: expiry,lat:lat,long:long,imageurl:imageurl,tags:tags})
+                                .done(function(data) {
+                                    if (data.hasOwnProperty("success")) {
+                                        if (data.success) {
+                                            success()
+                                            $("#saveItem").html('Save')
+                                        } else {
+                                            alert("There was an error, and your item was not saved.");
+                                        }
                                     }
+                                })
+                                .fail(function(data) {
+                                    alert("There was an error, and your item was not saved.");
+                                });
+                            });
+                            $("#deleteItem").click(function(e) {
+                                var response = window.confirm("Are you sure you want to delete the item? This is undoable!");
+                                if (response == false) {
+                                    return false;
                                 }
                             })
-                            .fail(function(data) {
-                                alert("There was an error, and your item was not saved.");
-                            });
                         });
-                        $("#deleteItem").click(function(e) {
-                            var response = window.confirm("Are you sure you want to delete the item? This is undoable!");
-                            if (response == false) {
-                                return false;
-                            }
+                    </script>
+                <?php } else { ?>
+                    <h3>You marked this item as gone</h3>
+                    <button class="btn btn-warning" role="button" id="clearGone">Undo</button>
+                    <script>
+                        $(document).ready(function() {
+                            $("#clearGone").click(function(){
+                                markNotGone(<?php echo $food->item["id"]; ?>)
+                                .then(function(data) {
+                                    success();
+                                    setTimeout(function() {
+                                        location.href="item.php?item=<?php echo $food->item["id"]; ?>";
+                                    }, 1100);
+                                })
+                                .catch(function(data) {
+                                    alert("Couldn't unclaim the food");
+                                })
+                            })
                         })
-                    });
-                </script>
+                    </script>
+                <?php } ?>
             </div>
         </div>
     </div>

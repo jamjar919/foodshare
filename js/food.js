@@ -76,6 +76,39 @@ function unclaim(id) {
 }
 
 /**
+ * Mark a food item as gone or not gone
+ **/
+function markGone(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/gone.php", {id:id, val:true})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
+}
+
+function markNotGone(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/gone.php", {id:id,val:0})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
+}
+
+/**
  * Makes a fancy success checkbox animation.
  */
 function success() {

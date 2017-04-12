@@ -55,10 +55,16 @@
                 <?php } ?>
             <?php } ?>
             </div>
-            <?php if (!empty($food->item["claimer_username"]) && $isOwner) { ?>
-                <div class="card-block"><strong>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a></strong>. They should message you in a bit!</div>
-            <?php } ?>
         </div>
+        <?php if (!empty($food->item["claimer_username"]) && $isOwner && !$gone) { ?>
+            <div class="card claim-decide">
+                <div class="card-block">
+                    <h3>Your item has been claimed!</h3>
+                    <p>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a>. They should message you in a bit to organise a pickup time. 
+                    Once they've picked up the item, you can mark the item as gone on the edit screen.
+                </div>
+            </div>
+        <?php } ?>
         <?php if ($food->item["claimer_username"] == $p->user->username) { ?>
             <div class="card claim-decide">
                 <div class="card-block">

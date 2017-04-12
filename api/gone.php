@@ -30,7 +30,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST") {
         }
     } else {
         if ($f->unmarkAsGone()) {
-            $response['message'] = "Food successfully marked as gone.";
+            $response['message'] = "Food successfully unmarked as gone.";
             $response['success'] = true;
         } else {
             $response['error'] = "Failed to modify food";
