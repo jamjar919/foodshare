@@ -21,6 +21,7 @@
     $owner = new User($food->item["user_username"]);
     $ownerProfile = $owner->getPublicProfile();
     $isOwner = $food->item["user_username"] == $p->user->username;
+    $gone = $food->item["item_gone"];
     $p->name = $food->item["name"];
     $p->buildHead();
     $p->buildHeader();
@@ -62,11 +63,15 @@
             <div class="card claim-decide">
                 <div class="card-block">
                     <h3>You claimed this!</h3>
-                    <p>You should message the owner, <a href="messages.php?user=<?php echo $food->item["user_username"]; ?>"><?php echo $food->item["user_username"]; ?></a>, to arrange a pickup ASAP!</p>
-                    <p>If you can no longer pick up the item, <strong>click the button below to remove your claim</strong>.</p>
-                    <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
-                        <button class="btn btn-danger" role="button" id="clearClaim">Clear claim</button>
-                    </div>
+                    <?php if (!$gone) { ?>
+                        <p>You should message the owner, <a href="messages.php?user=<?php echo $food->item["user_username"]; ?>"><?php echo $food->item["user_username"]; ?></a>, to arrange a pickup ASAP!</p>
+                        <p>If you can no longer pick up the item, <strong>click the button below to remove your claim</strong>.</p>
+                        <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
+                            <button class="btn btn-danger" role="button" id="clearClaim">Clear claim</button>
+                        </div>
+                    <?php } else { ?>
+                        <p>The owner said you picked up the item! Enjoy!</p>
+                    <?php } ?>
                 </div>
             </div>
         <script>
@@ -88,6 +93,9 @@
         <?php } ?>
     </div>
     <div class="col-sm-9">
+        <?php if ($gone) { ?>
+            <div class="alert alert-danger" role="alert">This item has been picked up and can't be claimed!</div>
+        <?php } ?>
         <div class="card food-details">
             <div class="card-block">
                 <h1 class="card-title"><?php echo $food->item["name"]; ?></h1>
