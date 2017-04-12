@@ -59,6 +59,20 @@
                 })
             </script>
         </div>
+        <?php if (!empty($food->item["claimer_username"])) { ?>
+        <div class="card">
+            <div class="card-block">
+                <h3>Your item has been claimed!</h3>
+                <p>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a>. They should message you in a bit to organise a pickup time. 
+                Once they've picked up the item, <strong>click the button below to mark the item as gone</strong>. This will stop it appearing in search results.</p>
+                <p>Alternatively, <strong>click the clear button to dismiss the claim</strong> (If the user had no intent to pick the item up, for example).</p>
+                <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
+                    <button class="btn btn-success" role="button" id="gone">Mark as gone</button>
+                    <button class="btn btn-danger" role="button" id="clearClaim">Clear claim</button>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
         <br>
         <div class="card">
             <div class="card-block">

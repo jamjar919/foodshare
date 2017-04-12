@@ -61,13 +61,13 @@
                 <?php } else if ($food->item["claimer_username"] == $p->user->username) { ?>
                     <strong>You claimed this item! <a href="messages.php?user=<?php echo $food->item["user_username"]; ?>">Message the user</a> to organise pickup.</strong>
                 <?php } else { ?>
-                    <strong>This item was claimed by <?php $food->item["claimer_username"]; ?> already. Sorry!</strong>
+                    <strong>This item was claimed by <?php echo $food->item["claimer_username"]; ?> already. Sorry!</strong>
                 <?php } ?>
             <?php } else { ?>
                 <?php if (empty($food->item["claimer_username"])) { ?>
                     This is your item. You cannot claim it.
                 <?php } else { ?>
-                    <strong>Your item was claimed by <a href="messages.php?user=<?php $food->item["claimer_username"]; ?>"><?php $food->item["claimer_username"]; ?></a>. They should message you in a bit!</strong>
+                    <strong>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a>. They should message you in a bit!</strong>
                 <?php } ?>
             <?php } ?>
             </div>

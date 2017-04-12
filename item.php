@@ -47,9 +47,16 @@
                     </script>
                 </div>
             <?php } else { ?>
-                <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" role="button">Claim</a>
+                <?php if (empty($food->item["claimer_username"])) { ?>
+                    <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" role="button">Claim</a>
+                <?php } else { ?>
+                    <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" disabled="disabled" role="button">Food claimed already :(</a>
+                <?php } ?>
             <?php } ?>
             </div>
+            <?php if (!empty($food->item["claimer_username"])) { ?>
+                <div class="card-block"><strong>Your item was claimed by <a href="messages.php?user=<?php echo $food->item["claimer_username"]; ?>"><?php echo $food->item["claimer_username"]; ?></a></strong>. They should message you in a bit!</div>
+            <?php } ?>
         </div>
     </div>
     <div class="col-sm-9">
