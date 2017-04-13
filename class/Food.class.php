@@ -9,8 +9,53 @@ class Food
     private $id;
     private $owner;
     public $item = null;
-    function __construct($id) {
+    function __construct($id=null) {
+        if ($id===null) {
+            // Create a new item... 
+            // User must be logged in ya dingus
+            if (!isset($_COOKIE["username"])) {
+                return null;
+            }
+            if (!isset($_COOKIE["token"])) {
+                return null;
+            }
+            $username = $_COOKIE["username"];
+            $token = $_COOKIE["token"];
+            $user = new User($username,$token);
+            if ( ! $user->isLoggedIn()) {
+                return null;
+            }
+            $profile = $user->getPrivateProfile();
+            // Do the actual creation
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                // Make a new tag list entry
+                $stmt = $db->prepare("INSERT INTO tag_list(id,tag_id) VALUES (NULL, 0)");
+                $stmt->execute();
+                $taglistid = $db->lastInsertId();
+                // Create the food item with default params
+                $stmt = $db->prepare("INSERT INTO `food` 
+                (`id`, `name`, `description`, `image_url`, `expiry`, `time`, `latitude`, `longitude`, `user_username`, `claimer_username`, `tag_list_id`) 
+                VALUES 
+                (NULL, :name, :desc, '', CURRENT_DATE(), NOW(), :lat, :long, :user, '', :taglistid);");
+                $stmt->bindValue(":name", "New Item", PDO::PARAM_STR);
+                $stmt->bindValue(":desc", "Write a description of your item here. Include helpful things like number of items, weight, and any other important information!", PDO::PARAM_STR);
+                $stmt->bindValue(":user", $username);
+                $stmt->bindValue(":lat", $profile['latitude']);
+                $stmt->bindValue(":long", $profile['longitude']);
+                $stmt->bindValue(":taglistid", $taglistid);
+                $stmt->execute();
+                // Reset id to the id of the row to prepare for loading
+                $id = $db->lastInsertId();
+                if ($stmt->rowCount() < 1) {
+                    return null;
+                }
+            } catch (PDOException $e) {
+                return null;
+            }
+        }
         try {
+            // Load the item
             $this->id = $id;
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
             $stmt = $db->prepare("SELECT * FROM food WHERE id = :id");
@@ -33,8 +78,8 @@ class Food
         }
         try {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-            $stmt = $db->prepare("UPDATE `food` SET `name` = :name, `description` = :desc, `expiry` = :expiry, `time` = NOW(), `latitude` = :lat, `longitude` = :long, `image_url` = :url WHERE `id` = :id;");
-            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $stmt = $db->prepare("UPDATE food SET `name` = :name, `description` = :desc, `expiry` = :expiry, `time` = NOW(), `latitude` = :lat, `longitude` = :long, `image_url` = :url WHERE `id` = :id;");
+            $stmt->bindValue(":id", intval($this->id), PDO::PARAM_INT);
             $stmt->bindValue(":name", $name, PDO::PARAM_STR);
             $stmt->bindValue(":desc", $desc, PDO::PARAM_STR);
             $stmt->bindValue(":expiry", $expiry, PDO::PARAM_STR);
@@ -45,9 +90,36 @@ class Food
             if ($stmt->rowCount()) {
                 return true;
             } else {
+                var_dump($stmt->rowCount());
                 return false;
             }
         } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    public function delete() {
+        // Must be auth'ed
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        // DELET THIS
+        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+        $stmt = $db->prepare("DELETE FROM food WHERE id = :id");
+        $stmt->bindValue(":id", intval($this->id), PDO::PARAM_INT);
+        $stmt->execute();
+        if ($stmt->rowCount()) {
+            return true;
+        } else {
             return false;
         }
     }

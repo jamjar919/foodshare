@@ -26,15 +26,26 @@
     $p->buildHeader();
 ?>
     <div class="col-sm-3">
-        
         <div class="card food-item">
-            <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top">
+            <?php if (! empty($food->item["image_url"])) { ?>
+                <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top">
+            <?php } ?>
             <div class="card-block">
                 <a class="btn btn-success btn-block" href="#" role="button">Claim</a>
             <?php if ($isOwner) { ?>
                 <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
                     <a class="btn btn-primary" href="edititem.php?item=<?php echo $food->item["id"];?>" role="button">Edit</a>
-                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button">Delete</a>
+                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button" id="deleteItem">Delete</a>
+                    <script>
+                        $(document).ready(function() {
+                            $("#deleteItem").click(function(e) {
+                                var response = window.confirm("Are you sure you want to delete the item? This is undoable!");
+                                if (response == false) {
+                                    return false;
+                                }
+                            })
+                        });
+                    </script>
                 </div>
             <?php } ?>
             </div>

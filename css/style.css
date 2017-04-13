@@ -69,6 +69,12 @@ h1,h2,h3,h4,h5,h6 {
 #header .searchbar-container {
     background-color: #5cb85c;
 }
+#header .top-header .site-title h1 a {
+    transition: 0.1s;
+}
+#header .top-header .site-title h1 a:hover {
+    opacity: 0.75;
+}
 
 /**
  *
@@ -293,6 +299,55 @@ label {
 /** This is needed else the alerts bugger up **/
 .fade {
     opacity: 1;
+}
+.success-overlay {
+    position: fixed;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.success-overlay > span {
+    display: inline-block;
+    text-align: center;
+    margin: auto;
+    font-size: 5em;
+    background-color: #222;
+    padding: 0.25em;
+    border-radius: 50%;
+    color: #FFF;
+
+}
+
+.pulsetick-anim {
+    animation: pulsetick 0.75s 1 ease;
+    animation-fill-mode: forwards
+}
+
+@keyframes pulsetick {
+    0% {
+        transform: scale(1);
+        background-color: #222;
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    60% {
+        transform: scale(1);
+    }
+    70% {
+        transform: scale(1.25);
+        background-color: #5cb85c;
+    }
+    80% {
+        transform: scale(1);
+    }
+    90% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        background-color: #5cb85c;
+    }
 }
 
 /**

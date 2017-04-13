@@ -29,11 +29,17 @@
                 <div class="card-block notifications">
                     <h3>Hey, you!</h3>
                     Messages to the user (claim notices, etc) would go here...
+                    <?php if (isset($_GET["message"])) { ?>
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <?php echo strip_tags($_GET["message"]); ?>
+                        </div>
+                    <?php } ?>
                 </div>
             </div>
             <div class="row">
                 <h2 class="col-md-6">Your items</h2>
-                <h2 class="col-md-6 text-right"><small><a href="addfood.php">Add a new item</a></small></h2>
+                <h2 class="col-md-6 text-right"><small><a href="additem.php">Add a new item</a></small></h2>
             </div>
             <div id="myitems" class="masonry">
             </div>

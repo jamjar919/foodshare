@@ -40,7 +40,7 @@
             <div class="edit-click-trap overlay">
                 <input accept="image/*" type="file" id="editpicture">
             </div>
-            <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top" id="foodimage">
+            <img src="<?php echo $food->item["image_url"]; ?>" class="card-img-top" id="foodimage" <?php if (empty($food->item["image_url"])) { ?>style="min-height: 100px;"<?php } ?>)>
             <script>
                 $(document).ready(function() {
                     $('#editpicture').live('change', function(){
@@ -64,7 +64,7 @@
             <div class="card-block">
                 <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
                     <button class="btn btn-success" role="button" id="saveItem">Save</button>
-                    <a class="btn btn-danger" href="deleteitem.php?item=<?php echo $food->item["id"];?>" role="button">Delete</a>
+                    <a class="btn btn-danger"  role="button" id="deleteItem" href="deleteitem.php?item=<?php echo $food->item["id"];?>">Delete</a>
                 </div>
                 <a class="btn btn-primary btn-block" href="item.php?item=<?php echo $food->item["id"];?>" role="button">View</a>
                 <script>
@@ -73,7 +73,7 @@
                             $("#saveItem").html('<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>')
                             var title = $("#foodTitle").val();
                             var desc = $("#description").val();
-                            var expiry = $("#expiry").val();
+                            var expiry = $("#food-expiry-date").val();
                             var lat = $("#lat").text();
                             var long = $("#long").text();
                             var imageurl = $("#foodimage").attr("src");
@@ -82,7 +82,10 @@
                             .done(function(data) {
                                 if (data.hasOwnProperty("success")) {
                                     if (data.success) {
+                                        success()
                                         $("#saveItem").html('Save')
+                                    } else {
+                                        alert("There was an error, and your item was not saved.");
                                     }
                                 }
                             })
@@ -90,6 +93,12 @@
                                 alert("There was an error, and your item was not saved.");
                             });
                         });
+                        $("#deleteItem").click(function(e) {
+                            var response = window.confirm("Are you sure you want to delete the item? This is undoable!");
+                            if (response == false) {
+                                return false;
+                            }
+                        })
                     });
                 </script>
             </div>
@@ -102,10 +111,10 @@
                 <textarea id="description" class="card-text food-description-edit"><?php echo $food->item["description"]; ?></textarea>
             </div>
             <div class="card-footer text-muted">
-                Expires: <input id="expiry" class="datepicker food-expiry-edit" value="<?php echo $food->item["expiry"]; ?>">
+                Expires: <input id="food-expiry-date" class="food-expiry-edit" value="<?php echo $food->item["expiry"]; ?>">
                 <script>
                 $(document).ready(function() {
-                    $('.datepicker').datepicker({
+                    $('.food-expiry-edit').datepicker({
                         dateFormat: 'yy-mm-dd'
                     });
                 });
