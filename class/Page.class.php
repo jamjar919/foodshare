@@ -77,7 +77,7 @@ class Page
                     </div>';
         } else {
             echo '  <div class="nav-item">
-                        <a href="membersSearch.php">Find</a>
+                        <a href="messages.php">Messages</a>
                     </div>
                     <div class="nav-item">
                         <a href="profile.php">Profile</a>

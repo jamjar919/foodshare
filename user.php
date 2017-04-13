@@ -25,7 +25,9 @@
     <div class="row">
         <div class="col-md-3">
             <div class="card inline-userprofile">
-                <img src="<?php echo $profile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
+                <?php if (!empty($profile['profile_picture_url']))  { ?>
+                    <img src="<?php echo $profile["profile_picture_url"]; ?>" class="card-img-top narrowimg">
+                <?php } ?>
                 <div class="card-block">
                     <h2 class="card-title"><?php echo $profile["username"]; ?></h2>
                 </div>

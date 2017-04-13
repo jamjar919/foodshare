@@ -377,6 +377,32 @@ class User
                 return false;
         }
 	
+	public function hasIncompleteProfile() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT username, email, postcode, latitude, longitude, score, profile_picture_url FROM user WHERE username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $row = $stmt->fetch();
+                return (($row["latitude"] == 0) || ($row["longitude"] == 0) || empty($row["postcode"]) || empty($row["profile_picture_url"]));
+            } catch(PDOException $ex) {
+                    return null;
+            }
+	}
+	
+	public function isVerified() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT verified FROM user WHERE username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $row = $stmt->fetch();
+                return $row["verified"];
+            } catch(PDOException $ex) {
+                    return null;
+            }
+	}
+	
 	/**
 	* Generate a javascript object containing user details. 
 	* @param private Default false. Whether to include private data (user has to be logged in)

@@ -84,7 +84,7 @@ class UserTools {
 			// Get hashed password
 			$hash = password_hash($password, PASSWORD_BCRYPT);
 			$key = md5((string)rand(0,100000));
-			$stmt = $db->prepare("INSERT INTO `user` (`username`, `email`, `password`, `postcode`, `verified`, `confirm_email_key`) VALUES (:username, :email, :hash, NULL, 0, :key);");
+			$stmt = $db->prepare("INSERT INTO `user` (`username`, `email`, `password`, `postcode`, `verified`, `confirm_email_key`,`latitude`,`longitude`,`score`,`profile_picture_url`) VALUES (:username, :email, :hash, NULL, 0, :key,0,0,0,'');");
 			$stmt->bindValue(':username', $username, PDO::PARAM_STR);
 			$stmt->bindValue(':email', $email, PDO::PARAM_STR);
 			$stmt->bindValue(':hash', $hash, PDO::PARAM_STR);
@@ -94,9 +94,13 @@ class UserTools {
 			$errors[] = "There was a database error, please try again later.";
 			return $errors;
 		}
-		// Send confirmation email
-		mail($email, "Confirmation of FoodShare signup", "Hey! \n \n You (or an imposter) signed up to foodShare under this email address. If you recieved this email in error, ignore this message. Else, click the link below: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&user=".$username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
-		return true;
+		if ($stmt->rowCount() > 0) {
+                    // Send confirmation email
+                    mail($email, "Confirmation of FoodShare signup", "Hey! \n \n You (or an imposter) signed up to foodShare under this email address. If you recieved this email in error, ignore this message. Else, click the link below: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&user=".$username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
+                    return true;
+                }
+                $errors[] = "Unspecified error inserting into the database";
+                return false;
 	}
 	
 }
