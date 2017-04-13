@@ -6,22 +6,27 @@ header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     //make location required parameter
-    if (!isset($_GET['location'])) {
+    if (!isset($_GET['location']) || $_GET['location'] === "") {
         echo json_encode(array("error" => "Location not defined"));
 } else {
 
         $query = $_GET['q'];
         $sort = $_GET['sort'];
-        $location = $_GET['location'];
+        $location = explode(",", $_GET['location']);
+        if(sizeof($location) != 2) {
+            echo json_encode(array("error" => "Latiduted and longitude required"));
+        }
         $distance = $_GET['distance'];
 
         $expiry = $_GET['expiry'];
         if($expiry != "Any time") {
+            $expiry = explode(",", $expiry);
             $expiry[0] = date("Y-m-d", strtotime(str_replace('/', '-', $expiry[0])));
             $expiry[1] = date("Y-m-d", strtotime(str_replace('/', '-', $expiry[1])));
         }
         $time = $_GET['time'];
         if($time != "Any time") {
+            $time = explode(",", $time);
             $time[0] = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $time[0])));
             $time[1] = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $time[1])));
         }

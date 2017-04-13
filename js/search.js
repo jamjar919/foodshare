@@ -17,6 +17,21 @@ var memberSearch;
 var initialPosition = null;
 
 $('document').ready(function() {
+    console.log(window.location.search);
+    if(window.location.hash) {
+        addContainers();
+        q = getAllUrlParams().q;
+        storedLocation = getAllUrlParams().location;
+        radius = getAllUrlParams().distance;
+        expiry = getAllUrlParams().expiry;
+        time = getAllUrlParams().time;
+        sort = getAllUrlParams().sort;
+        resultsPerPage = getAllUrlParams().num;
+        pageNumber = getAllUrlParams().offset;
+
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, true)
+    }
+
     $("#radius").bootstrapSlider( {
         formatter: function(value) {
             return 'Current value: ' + value;
@@ -108,7 +123,7 @@ $(function() {
             cancelLabel: 'Clear'
         },
         ranges: {
-            'Today': [moment(), moment()],
+            'Today': [moment().startOf('day'), moment().endOf('day')],
             'Last week': [moment().subtract(6, 'days'), moment()],
             'This Month': [moment().startOf('month'), moment()],
             'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
@@ -133,7 +148,15 @@ $('#searchAdvanced').click(function(e){
     addContainers();
     $("#dlDropDown").dropdown("toggle");
     $('#map-container').html('');
-    geocode($('#loc').val(), function(pos) {
+    var address;
+    if($('#loc').val() === "") {
+        address = "-"
+    }
+    else {
+        address = $('#loc').val();
+    }
+
+    geocode(address, function(pos) {
         q = $('#q2').val();
         storedLocation = pos;
         radius = $('#radius').val();
@@ -143,12 +166,12 @@ $('#searchAdvanced').click(function(e){
         resultsPerPage = $('#resultsPerPage').val();
         pageNumber = 0;
         if(expiry != "Any time") {
-            expiry = [expiry.slice(0, 10), expiry.slice(13,23)]
+            expiry = expiry.slice(0, 10) + "," + expiry.slice(13,23)
         }
         if(time != "Any time") {
-            time = [time.slice(0, 16), time.slice(19,35)]
+            time = time.slice(0, 16) + "," + time.slice(19,35)
         }
-
+        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
         search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
         //remove pagination
         $('.pagination').html("");
@@ -159,16 +182,13 @@ $('#searchAdvanced').click(function(e){
 $('#search').click(function() {
     addContainers();
     $('#map-container').html('');
-    var location;
-    console.log(memberSearch);
     if(memberSearch) {
-        location = [user['latitude'], user['longitude']]
+        storedLocation = user['latitude'] + "," +  user['longitude'];
     }
     else {
-        location = initialPosition;
+        storedLocation = initialPosition;
     }
     q = $('#q1').val();
-    storedLocation = location;
     expiry = "Any time";
     time = "Any time";
     radius = 15;
@@ -176,7 +196,11 @@ $('#search').click(function() {
     resultsPerPage = 4;
     pageNumber = 0;
 
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+
+
+
     //remove pagination
     $('.pagination').html("");
 });
@@ -185,26 +209,31 @@ $('#search').click(function() {
 $('.pagination').on('click', '#next', function() {
     pageNumber += 1;
     offset = pageNumber * resultsPerPage;
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
 $('.pagination').on('click', '#link1', function() {
     pageNumber = parseInt($("#link1 a").text()) -1;
     offset = pageNumber * resultsPerPage;
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
 $('.pagination').on('click', '#link2', function() {
     pageNumber = parseInt($("#link2 a").text()) -1;
     offset = pageNumber * resultsPerPage;
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
 $('.pagination').on('click', '#link3', function() {
     pageNumber = parseInt($("#link3 a").text()) -1;
     offset = pageNumber * resultsPerPage;
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
 $('.pagination').on('click', '#prev', function() {
     pageNumber -= 1;
     offset = pageNumber * resultsPerPage;
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
 });
 
@@ -242,7 +271,7 @@ function setPageLinks(page) {
 //dynamically add pagination links
 function addLinks() {
     //make map button visible
-    $('#map-button').css('visibility', 'visible');
+
 
     var totalLinks = Math.ceil(totalResults / resultsPerPage);
     var paginationList = "";
@@ -278,22 +307,29 @@ function addLinks() {
  * @param expiry Array Expiry date of food range
  * @param time Array Time posted range
  * @param sort Sort method
- * @param results Number of results per page
- * @param page Page number
+ * @param resultsPerPage Number of results per page
+ * @param pageNumber Page number
  * @param firstSearch Boolean
  */
-function search(q, location, distance, expiry, time, sort, results, page, firstSearch) {
+function search(q, location, distance, expiry, time, sort, resultsPerPage, page, firstSearch) {
     //reset the markers list
     clearMarkers();
-    var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: results, offset: page};
+    $('#map-container').html("");
+    var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: resultsPerPage, offset: page};
+    console.log(parameters);
     $('#results').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" ' +
         'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
         var foodInfo = $('<div></div>').addClass('food');
         console.log(data);
-        if(data.food.length > 0) {
-            initMap(location);
-            setMapBounds(location, distance);
+        if(data.hasOwnProperty('error')) {
+            $('#map-button').css("visibility", "hidden");
+            foodInfo.append('<p style="text-align: center">No food found</p>');
+        }
+        else if(data.food.length > 0) {
+            $('#map-button').css("visibility", "visible");
+            initMap(location.split(","));
+            setMapBounds(location.split(","), distance);
             $.each(data.food, function (key, element) {
                 var address = convertGeocode(element['latitude'], element['longitude']);
                 var p = Promise.resolve(address);
@@ -313,7 +349,7 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
                     if(memberSearch) {
                         var claimerButton = document.createElement('button');
                         claimerButton.textContent = "Claim";
-                        claimerButton.className = "btn btn-custom";
+                        claimerButton.className = "btn btn-custom rajax";
                         claimerButton.addEventListener('click', function() {
                             claimFood(element['id'], element['user_username'], user['username']);
                         }, false);
@@ -376,6 +412,7 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
             }
         }
         else {
+            $('#map-button').css("visibility", "hidden");
             foodInfo.append('<p style="text-align: center">No food found</p>');
         }
         $('#results').html(foodInfo);
@@ -388,12 +425,7 @@ function search(q, location, distance, expiry, time, sort, results, page, firstS
  * @returns {Promise}
  */
 function convertGeocode(latitude, longitude) {
-    //https://maps.googleapis.com/maps/api/geocode/json?region=uk&address=Durham
     return new Promise(function (resolve, reject) {
-        var params = {
-            "latlng": latitude, longitude,
-            "key": "AIzaSyBSS0BvM51P-qtCBr0o8-Yw25VrPBh5qhg"
-        };
         $.get("https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&sensor=true").done(function (data) {
             data = data["results"][0]["formatted_address"];
             resolve(data);
@@ -408,15 +440,20 @@ function convertGeocode(latitude, longitude) {
  * @param callback
  */
 function geocode(position, callback) {
-    //https://maps.googleapis.com/maps/api/geocode/json?region=uk&address=Durham
     var params = {
         "region": "uk",
         "address": position
     };
     $.get( "https://maps.googleapis.com/maps/api/geocode/json", params).done(function(data) {
-        data = data["results"][0]["geometry"]["location"];
-        callback([data["lat"],data["lng"]]);
-    });
+        if(data['status'] === "ZERO_RESULTS") {
+            callback("")
+        }
+        else {
+            data = data["results"][0]["geometry"]["location"];
+            callback(data["lat"] + "," + data["lng"]);
+        }
+    })
+
 }
 
 //autocomplete for searching keywords
@@ -434,7 +471,7 @@ $(function() {
                 }
             });
         },
-        minLength: 3,
+        minLength: 3
     });
     $( "#q2" ).autocomplete({
         source: function( request, response ) {
@@ -449,7 +486,7 @@ $(function() {
                 }
             });
         },
-        minLength: 3,
+        minLength: 3
     });
 });
 
@@ -472,7 +509,7 @@ function initMap(pos) {
         zoom: 15,
         center: myLatlng,
         scrollwheel: false,
-        disableDoubleClickZoom: true,
+        disableDoubleClickZoom: true
     });
 }
 /**Create details for pop up of a food item
@@ -489,9 +526,6 @@ function popupDetails(food, address) {
         '<button class="btn btn-custom btn-sm" onClick=loadFullFood('+food["id"]+',this)>More</button></div>';
 }
 
-function goBack() {
-    search(q,storedLocation,radius, expiry, time,sort,resultsPerPage,pageNumber, true)
-}
 /**Convert date time to nice formatting
  *
  * @param dateString Datetime string
@@ -628,34 +662,107 @@ function getUser() {
     })
 }
 
-/*history stuff
 
-var links =     //... pagination and sorting links
-var container = //... the region of the page that will be updated with AJAX
+//history stuff
 
-// override clicks on the links
-    links.live('click', function() {
-        // grab the link's URL
-        var url = $(this).attr('href');
-        // add a new history entry
-        history.pushState({ path: url }, '', url);
-        // load the page fragment into the container with AJAX
-        container.load(url);
-        // prevent the link click bubbling
-        return false;
-    });
+var pushed = false;
 
-// handle the back and forward buttons
+//save the state containing the ajax content
+function saveState(q, location, distance, expiry, time, sort, resultsPerPage, offset) {
+    var url = "#q=" + q.replace(/\s+/g, '+') + "&location=" +  location + "&distance="
+        + distance + "&expiry=" + expiry.replace(/\s+/g, '+') + "&time=" + time.replace(/\s+/g, '+') + "&sort="
+        + sort.replace(/\s+/g, '+') + "&num=" + resultsPerPage + "&offset=" + offset;
+    var parameters = {
+        q: q,
+        location: location,
+        distance: distance,
+        expiry: expiry,
+        time: time,
+        sort: sort,
+        num: resultsPerPage,
+        offset: offset
+    };
+    history.pushState(parameters, '', url);
+
+
+}
+
+
 $(window).bind('popstate', function(event) {
-    // if the event has our history data on it, load the page fragment with AJAX
-    var state = event.originalEvent.state;
-    if (state) {
-        container.load(state.path);
+
+    var parameters = event.originalEvent.state;
+    //if state exists then reload page with search
+    if(parameters !== null) {
+        addContainers();
+        search(parameters['q'], parameters['location'], parameters['distance'], parameters['expiry'], parameters['time'],
+        parameters['sort'], parameters['num'], parameters['offset'], true)
     }
+    else {
+        location.reload();
+    }
+
 });
 
-// when the page first loads update the history entry with the URL
-// needed to recreate the 'first' page with AJAX
-history.replaceState({ path: window.location.href }, '');
 
-*/
+history.replaceState(null, '', window.location.href);
+
+function getAllUrlParams(url) {
+
+    // get query string from url (optional) or window
+    var queryString = url ? url.split('?')[1].split('+').join(' ') : window.location.hash.slice(1).split('+').join(' ');
+
+    // we'll store the parameters here
+    var obj = {};
+
+    // if query string exists
+    if (queryString) {
+
+        // stuff after # is not part of query string, so get rid of it
+        queryString = queryString.split('#')[0];
+
+        // split our query string into its component parts
+        var arr = queryString.split('&');
+
+        for (var i=0; i<arr.length; i++) {
+            // separate the keys and the values
+            var a = arr[i].split('=');
+
+            // in case params look like: list[]=thing1&list[]=thing2
+            var paramNum = undefined;
+            var paramName = a[0].replace(/\[\d*\]/, function(v) {
+                paramNum = v.slice(1,-1);
+                return '';
+            });
+
+            // set parameter value (use 'true' if empty)
+            var paramValue = typeof(a[1])==='undefined' ? true : a[1];
+
+            // (optional) keep case consistent
+            paramName = paramName.toLowerCase();
+            // if parameter name already exists
+            if (obj[paramName]) {
+                // convert value to array (if still string)
+                if (typeof obj[paramName] === 'string') {
+                    obj[paramName] = [obj[paramName]];
+                }
+                // if no array index number specified...
+                if (typeof paramNum === 'undefined') {
+                    // put the value on the end of the array
+                    obj[paramName].push(paramValue);
+                }
+                // if array index number specified...
+                else {
+                    // put the value at that index number
+                    obj[paramName][paramNum] = paramValue;
+                }
+            }
+            // if param name doesn't exist yet, set it
+            else {
+                obj[paramName] = paramValue;
+            }
+        }
+    }
+
+
+    return obj;
+}

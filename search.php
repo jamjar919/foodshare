@@ -262,11 +262,11 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
                                             <label for="resultsPerPage">Results per page</label>
                                             <input class="form-control" type="text" value="15" id="resultsPerPage">
                                         </div>
-                                        <button id="searchAdvanced" class="btn btn-custom">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                                        <button id="searchAdvanced" class="btn btn-custom rajax">Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                                     </form>
                                 </div>
                             </div>
-                            <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                            <button id="search" class="btn btn-custom rajax"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                         </div>
                     </div>
                 </div>
@@ -286,6 +286,9 @@ if (isset($_COOKIE["username"]) && isset($_COOKIE["token"])) {
         </div>
     </div>
 </body>
+<script>
+    var memberSearch = false;
+</script>
 <script src="js/search.js" type="application/javascript"></script>
 
 </html>
