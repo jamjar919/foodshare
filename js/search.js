@@ -15,11 +15,15 @@ var memberSearch;
 
 //get user's location from browser (non-members only)
 var initialPosition = null;
+var initialAddress = "";
 
 $('document').ready(function() {
     console.log(window.location.search);
     if(window.location.hash) {
+        console.log("exectuingt");
         addContainers();
+        configureBootstrap();
+
         q = getAllUrlParams().q;
         storedLocation = getAllUrlParams().location;
         radius = getAllUrlParams().distance;
@@ -29,17 +33,16 @@ $('document').ready(function() {
         resultsPerPage = getAllUrlParams().num;
         pageNumber = getAllUrlParams().offset;
 
-        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, true)
+        var address = convertGeocode(storedLocation.split(',')[0],storedLocation.split(',')[1] );
+        var p = Promise.resolve(address);
+        p.then(function(address) {
+            updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
+            search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, true)
+        });
+
     }
 
-    $("#radius").bootstrapSlider( {
-        formatter: function(value) {
-            return 'Current value: ' + value;
-        }
-    });
-    $("#radius").on("slide", function(slideEvt) {
-        $("#radiusSliderVal").text(slideEvt.value);
-    });
+
     $("#q1").keyup(function(event){
         if(event.keyCode == 13){
             $("#search").click();
@@ -49,29 +52,31 @@ $('document').ready(function() {
     var p = Promise.resolve(userData);
     p.then(function(userData) {
         user = userData;
-        $("#loc").val(user['postcode']);
         memberSearch = true;
+        loadSearch();
     },function() {
         memberSearch = false;
         if (navigator.geolocation && !memberSearch){
             navigator.geolocation.getCurrentPosition(
                 function(position){
-                    initialPosition = [position.coords.latitude,position.coords.longitude];
+                    initialPosition = position.coords.latitude + "," +position.coords.longitude;
                     console.log("Got initial position as: "+initialPosition);
-                    var address = convertGeocode(initialPosition[0], initialPosition[1]);
+                    var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
                     var p = Promise.resolve(address);
                     p.then(function(address) {
-                        $("#loc").val(address);
+                        initialAddress = address;
+                        loadSearch();
                     });
                 },
                 function(error){
                     // If we don't find the initial position just go L O N D O N
-                    initialPosition = [51.5, -0.09];
+                    initialPosition = 51.5 + "," -0.09;
                     console.log("Error getting pos: "+error);
-                    var address = convertGeocode(initialPosition[0], initialPosition[1]);
+                    var address = convertGeocode(initialPosition.split('')[0], initialPosition.split()[1]);
                     var p = Promise.resolve(address);
                     p.then(function(address) {
-                        $("#loc").val(address);
+                        initialAddress = address;
+                        loadSearch();
                     });
                 }
             )
@@ -80,113 +85,59 @@ $('document').ready(function() {
 
 });
 
+function loadSearch() {
+    //basic search
+    $('#search').click(function() {
+        addContainers();
+        configureBootstrap();
+        $('#map-container').html('');
+
+        var address;
+        if(memberSearch) {
+            storedLocation = user['latitude'] + "," +  user['longitude'];
+            address = user['postcode'];
+        }
+        else {
+            storedLocation = initialPosition;
+            address = initialAddress;
+            console.log(storedLocation);
+        }
+        q = $('#q1').val();
+        expiry = "Any time";
+        time = "Any time";
+        radius = 15;
+        sort = "Best match";
+        resultsPerPage = 4;
+        pageNumber = 0;
+
+        updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
+        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+
+        //remove pagination
+        $('.pagination').html("");
+    });
+}
+
 var today = new Date();
 var monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
-//daterangepicker setup for expiry date
-$(function() {
-    $('input[name="daterange"]').daterangepicker({
-        autoUpdateInput: false,
-        locale: {
-            cancelLabel: 'Clear'
-        },
-        ranges: {
-            'Today': [moment(), moment()],
-            'This Week': [moment(), moment().add(6, 'days')],
-            'This Month': [moment(), moment().endOf('month')],
-            'This Year': [moment(), moment().endOf('year')],
-        },
-        autoclose: false
-    }).on('click', function () {
-        $('.daterangepicker').click(function (e) {
-            e.stopPropagation(); // prevent clicks on datepicker from collapsing 'parent'
-        });
-    });
-    $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-    });
-    $('input[name="daterange"]').on('cancel.daterangepicker', function() {
-        $(this).val('Any time');
-    });
-});
 
-//datetimerange setup for time posted
-$(function() {
-    $('input[name="datetimerange"]').daterangepicker({
-        timePicker: true,
-        timePicker24Hour: true,
-        timePickerIncrement: 30,
-        autoUpdateInput: false,
-        locale: {
-            cancelLabel: 'Clear'
-        },
-        ranges: {
-            'Today': [moment().startOf('day'), moment().endOf('day')],
-            'Last week': [moment().subtract(6, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment()],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
-        },
-        autoclose: false
-    }).on('click', function () {
-        $('.daterangepicker').click(function (e) {
-            e.stopPropagation(); // prevent clicks on datepicker from collapsing 'parent'
-        });
-    });
-    $('input[name="datetimerange"]').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ' - ' + picker.endDate.format('DD/MM/YYYY HH:mm'));
-    });
-    $('input[name="datetimerange"]').on('cancel.daterangepicker', function() {
-        $(this).val('Any time');
-    });
-});
 
-//advanced search
-$('#searchAdvanced').click(function(e){
-    e.preventDefault();
-    addContainers();
-    $("#dlDropDown").dropdown("toggle");
-    $('#map-container').html('');
+$('#advanced').click(function() {
+    $('.content').html(addSideSearchbar(6));
+    configureBootstrap();
+    $('.advancedSearchbar').addClass('col-centered');
     var address;
-    if($('#loc').val() === "") {
-        address = "-"
-    }
-    else {
-        address = $('#loc').val();
-    }
-
-    geocode(address, function(pos) {
-        q = $('#q2').val();
-        storedLocation = pos;
-        radius = $('#radius').val();
-        expiry = $('#expiry').val();
-        time = $('#time').val();
-        sort = $('#sort').val();
-        resultsPerPage = $('#resultsPerPage').val();
-        pageNumber = 0;
-        if(expiry != "Any time") {
-            expiry = expiry.slice(0, 10) + "," + expiry.slice(13,23)
-        }
-        if(time != "Any time") {
-            time = time.slice(0, 16) + "," + time.slice(19,35)
-        }
-        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
-        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
-        //remove pagination
-        $('.pagination').html("");
-    });
-
-});
-//basic search
-$('#search').click(function() {
-    addContainers();
-    $('#map-container').html('');
     if(memberSearch) {
         storedLocation = user['latitude'] + "," +  user['longitude'];
+        address = user['postcode'];
     }
     else {
         storedLocation = initialPosition;
+        address = initialAddress;
     }
     q = $('#q1').val();
     expiry = "Any time";
@@ -195,15 +146,52 @@ $('#search').click(function() {
     sort = "Best match";
     resultsPerPage = 4;
     pageNumber = 0;
+    updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
+    history.pushState('advancedSearch', "", '');
 
-    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
-
-
-
-    //remove pagination
-    $('.pagination').html("");
 });
+
+//advanced search
+$(document.body).on('click', '#advancedSearch', function(e) {
+    e.preventDefault();
+    var address;
+    console.log($('#loc').val());
+    if($('#loc').val() === "") {
+        address = "-"
+    }
+    else {
+        address = $('#loc').val();
+    }
+    q = $('#q2').val();
+    radius = $('#radius').val();
+    expiry = $('#expiry').val();
+    time = $('#time').val();
+    sort = $('#sort').val();
+    resultsPerPage = $('#resultsPerPage').val();
+    addContainers();
+    configureBootstrap();
+    $('#map-container').html('');
+
+
+    geocode(address, function(pos) {
+        storedLocation = pos;
+        pageNumber = 0;
+        if(expiry != "Any time") {
+            expiry = expiry.slice(0, 10) + "," + expiry.slice(13,23)
+        }
+        if(time != "Any time") {
+            time = time.slice(0, 16) + "," + time.slice(19,35)
+        }
+        console.log(address);
+        updateSideBar(q, address, radius,expiry, time, sort, resultsPerPage);
+        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+        //remove pagination
+        $('.pagination').html("");
+    });
+});
+
+
 
 //pagination links
 $('.pagination').on('click', '#next', function() {
@@ -239,20 +227,233 @@ $('.pagination').on('click', '#prev', function() {
 
 function addContainers() {
     if(!$(".page-content")[0]) {
-        var container = '<div class="row page-content">' +
-            '<div class="col-md-8 col-centered ">' +
-            '<button id="map-button" class="btn btn-custom btn-block active">Close map</button>' +
-            '<div id="map-container">' +
-            '</div>' +
-            '<div id="results">' +
-            '</div>' +
-            '<div class="text-center">' +
-            '<ul class="pagination" ></ul>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
+        var container = $('<div>')
+            .addClass("row page-content")
+            .append(
+                addSideSearchbar(4)
+            )
+            .append(
+                '<div class="col-md-7">' +
+                '<button id="map-button" class="btn btn-custom btn-block active">Close map</button>' +
+                '<div id="map-container">' +
+                '</div>' +
+                '<div id="results">' +
+                '</div>' +
+                '<div class="text-center">' +
+                '<ul class="pagination" ></ul>' +
+                '</div>' +
+                '</div>' +
+                '</div>'
+            );
         $('.content').html(container);
     }
+}
+
+//create search bar
+function addSideSearchbar(colwidth) {
+    return   $("<div>")
+        .addClass("col-md-" + colwidth + " advancedSearchbar")
+        .append(
+            $("<div>")
+                .addClass("card")
+                .append(
+                    $("<div>")
+                        .addClass("card-block")
+                        .append(
+                            $("<h3>").text("Advanced search")
+                        )
+                        .append(
+                            $("<form>")
+                                .addClass("form-horizontal")
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='q2'>Key words</label>"
+                                        )
+                                        .append(
+                                            "<input class='form-control' type='text' id='q2'/>"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='sort'>Sort by</label>"
+                                        )
+                                        .append(
+                                            "<select class='form-control' id='sort' >" +
+                                                "<option>Alphabetical</option>" +
+                                                "<option>Best match</option>" +
+                                                "<option>Most recent</option>" +
+                                                "<option>Expiry</option>" +
+                                                "<option>Closest</option>" +
+                                            "</select>"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='loc'>Location</label>"
+                                        )
+                                        .append(
+                                            "<input class='form-control' type='text' id='loc'/>"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='radius' class='col-2 col-form-label'>Radius (km)</label>"
+                                        )
+                                        .append(
+                                            "<div class='col- " + colwidth + " col-centered'>" +
+                                            "<b>0</b> <input style='width: 85%' id='radius' data-slider-id='radiusSlider' type='text' data-slider-min='0' " +
+                                            "data-slider-max='30' data-slider-step='1' data-slider-value='10'/>" +
+                                            "<b>30</b>" +
+                                            "<p id='radiusCurrentSliderValLabel'>Radius: <span id='radiusSliderVal'>10</span></p>" +
+                                            "</div>"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='expiry'>Expiry date</label>"
+                                        )
+                                        .append(
+                                            "<div class='col-4'>" +
+                                            "<input class='form-control' id='expiry' name='daterange' type = 'text' value='Any time' style='width: 100%'>" +
+                                            "</div>"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='time'>Time posted</label>"
+                                        )
+                                        .append(
+                                            "<div class='col-4'>" +
+                                            "<input class='form-control' id='time' name='daterange' type = 'text' value='Any time' style='width: 100%'>" +
+                                            "</div>"
+                                        )
+                                )
+                                .append(
+                                    $("<div>")
+                                        .addClass("form-group")
+                                        .append(
+                                            "<label for='resultsPerPage'>Results per page</label>"
+                                        )
+                                        .append(
+                                            "<input class='form-control' type='text' id='resultsPerPage'/>"
+                                        )
+                                )
+                                .append(
+                                    "<a type='button' class='btn btn-custom btn-block' id='advancedSearch'>Search <span class='glyphicon glyphicon-search' " +
+                                    "aria-hidden='true'></span></a>"
+                                )
+                        )
+                )
+
+        )
+
+}
+
+function updateSideBar(q, location, distance, expiry, time, sort, resultsPerPage) {
+    $('#q2').val(q);
+    $('#loc').val(location);
+    $('#radius').val(distance);
+    $('#expiry').val(expiry);
+    $('#time').val(time);
+    $('#sort').val(sort);
+    $('#resultsPerPage').val(resultsPerPage);
+}
+
+function configureBootstrap() {
+    $("#radius").bootstrapSlider({
+        formatter: function (value) {
+            return 'Current value: ' + value;
+        }
+    });
+    $("#radius").on("slide", function (slideEvt) {
+        $("#radiusSliderVal").text(slideEvt.value);
+    });
+
+    //daterangepicker setup for expiry date
+
+    $(function () {
+        $('input[name="daterange"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            },
+            ranges: {
+                'Today': [moment(), moment()],
+                'This Week': [moment(), moment().add(6, 'days')],
+                'This Month': [moment(), moment().endOf('month')],
+                'This Year': [moment(), moment().endOf('year')],
+            },
+            autoclose: false
+        }).on('click', function () {
+            $('.daterangepicker').click(function (e) {
+                e.stopPropagation(); // prevent clicks on datepicker from collapsing 'parent'
+            });
+        });
+        $('input[name="daterange"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+        $('input[name="daterange"]').on('cancel.daterangepicker', function () {
+            $(this).val('Any time');
+        });
+    });
+
+//datetimerange setup for time posted
+    $(function () {
+        $('input[name="datetimerange"]').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 30,
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            },
+            ranges: {
+                'Today': [moment().startOf('day'), moment().endOf('day')],
+                'Last week': [moment().subtract(6, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment()],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            },
+            autoclose: false
+        }).on('click', function () {
+            $('.daterangepicker').click(function (e) {
+                e.stopPropagation(); // prevent clicks on datepicker from collapsing 'parent'
+            });
+        });
+        $('input[name="datetimerange"]').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY HH:mm') + ' - ' + picker.endDate.format('DD/MM/YYYY HH:mm'));
+        });
+        $('input[name="datetimerange"]').on('cancel.daterangepicker', function () {
+            $(this).val('Any time');
+        });
+    });
+    //configure autocomplete
+    $("#q2").autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: "api/getTag.php",
+                dataType: "json",
+                data: {
+                    q: request.term
+                },
+                success: function (data) {
+                    return response(data.tags)
+                }
+            });
+        },
+        minLength: 3
+    });
 }
 
 /**Update the pagination links
@@ -473,21 +674,6 @@ $(function() {
         },
         minLength: 3
     });
-    $( "#q2" ).autocomplete({
-        source: function( request, response ) {
-            $.ajax({
-                url: "api/getTag.php",
-                dataType: "json",
-                data: {
-                    q: request.term
-                },
-                success: function( data ) {
-                    return response(data.tags)
-                }
-            });
-        },
-        minLength: 3
-    });
 });
 
 //map stuff
@@ -689,13 +875,25 @@ function saveState(q, location, distance, expiry, time, sort, resultsPerPage, of
 
 
 $(window).bind('popstate', function(event) {
-
+    console.log("here");
     var parameters = event.originalEvent.state;
     //if state exists then reload page with search
-    if(parameters !== null) {
+    if(parameters === "advancedSearch") {
+        addSideSearchbar(6);
+        configureBootstrap();
+    }
+    else if(parameters !== null) {
         addContainers();
-        search(parameters['q'], parameters['location'], parameters['distance'], parameters['expiry'], parameters['time'],
-        parameters['sort'], parameters['num'], parameters['offset'], true)
+        configureBootstrap();
+        var address = convertGeocode(parameters['location'].split(',')[0],parameters['location'].split(',')[1] );
+        var p = Promise.resolve(address);
+        p.then(function(address) {
+            updateSideBar(parameters['q'],address , parameters['distance'], parameters['expiry'], parameters['time'],
+                parameters['sort'], parameters['num']);
+            search(parameters['q'], parameters['location'], parameters['distance'], parameters['expiry'], parameters['time'],
+                parameters['sort'], parameters['num'], parameters['offset'], true)
+        });
+
     }
     else {
         location.reload();
@@ -762,7 +960,5 @@ function getAllUrlParams(url) {
             }
         }
     }
-
-
     return obj;
 }

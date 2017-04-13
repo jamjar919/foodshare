@@ -137,6 +137,7 @@ h1,h2,h3,h4,h5,h6 {
     margin-bottom: 1.5em;
 }
 
+
 /** USER STUFF **/
 .user-profile {
     margin-bottom: 2em;
@@ -421,7 +422,6 @@ Search bar bootstrap mods
     margin: 0 auto;
 }
 #map-button {
-    margin-top: 20px;
     text-align: center;
     visibility: hidden;
     border-radius: 5px 5px 0 0;
@@ -466,18 +466,6 @@ Search bar bootstrap mods
     border-bottom-left-radius: 4px;
 }
 
-@media screen and (min-width: 768px) {
-    #adv-search {
-        width: 500px;
-        margin: 0 auto;
-    }
-    .dropdown.dropdown-lg {
-        position: static !important;
-    }
-    .dropdown.dropdown-lg .dropdown-menu {
-        min-width: 500px;
-    }
-}
 
 /**
 Food cards and pagination styling
@@ -565,3 +553,23 @@ fieldset[disabled] .btn-custom.active {
     border: 1px solid lightgray !important;
 }
 
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+    border-color: rgba(34, 60, 130, 0.8) !important;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(36, 65, 151, 0.6) !important;
+    outline: 0 none !important;
+}

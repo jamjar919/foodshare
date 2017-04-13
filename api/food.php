@@ -14,8 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         $sort = $_GET['sort'];
         $location = explode(",", $_GET['location']);
         if(sizeof($location) != 2) {
-            echo json_encode(array("error" => "Latiduted and longitude required"));
+            echo json_encode(array("error" => "Latitude and longitude required"));
         }
+
         $distance = $_GET['distance'];
 
         $expiry = $_GET['expiry'];
