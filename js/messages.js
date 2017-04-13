@@ -59,7 +59,7 @@ function loadConversations() {
 }
 function loadMessages() {
     if (messageSettings.sentTo == null) {
-        $(container).text("Select a recipient from the list to the left.")
+        $(messageSettings.container).text("Select a recipient from the list to the left.")
     }
     $.get(endpoint, {user: messageSettings.sentTo})
     .then(function(data) {
