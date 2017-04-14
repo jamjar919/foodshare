@@ -590,3 +590,7 @@ input[type="color"]:focus,
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(36, 65, 151, 0.6) !important;
     outline: 0 none !important;
 }
+
+.advancedSearchbar {
+    padding-bottom: 20px;
+}

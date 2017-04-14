@@ -1,4 +1,4 @@
-var q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, totalResults;
+var q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, totalResults, address;
 window.storedLocation= [];
 window.radius = 20;
 window.expiry = "Any time";
@@ -7,6 +7,7 @@ window.sort = "Best match";
 window.resultsPerPage = 15;
 window.pageNumber = 0;
 window.totalResults = 0;
+window.address = "";
 
 var mymap;
 var markers = [];
@@ -18,9 +19,7 @@ var initialPosition = null;
 var initialAddress = "";
 
 $('document').ready(function() {
-    console.log(window.location.search);
     if(window.location.hash) {
-        console.log("exectuingt");
         addContainers();
         configureBootstrap();
 
@@ -31,13 +30,16 @@ $('document').ready(function() {
         time = getAllUrlParams().time;
         sort = getAllUrlParams().sort;
         resultsPerPage = getAllUrlParams().num;
-        pageNumber = getAllUrlParams().offset;
+        offset = getAllUrlParams().offset;
+        pageNumber = (offset/resultsPerPage);
 
-        var address = convertGeocode(storedLocation.split(',')[0],storedLocation.split(',')[1] );
-        var p = Promise.resolve(address);
-        p.then(function(address) {
-            updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
-            search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, true)
+        newaddress = convertGeocode(storedLocation.split(',')[0],storedLocation.split(',')[1] );
+        var p = Promise.resolve(newaddress);
+        p.then(function(newaddress) {
+            address = newaddress;
+            updateSideBar(q, newaddress, radius, expiry, time, sort, resultsPerPage);
+            saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset,newaddress);
+            search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber)
         });
 
     }
@@ -92,7 +94,6 @@ function loadSearch() {
         configureBootstrap();
         $('#map-container').html('');
 
-        var address;
         if(memberSearch) {
             storedLocation = user['latitude'] + "," +  user['longitude'];
             address = user['postcode'];
@@ -100,22 +101,23 @@ function loadSearch() {
         else {
             storedLocation = initialPosition;
             address = initialAddress;
-            console.log(storedLocation);
         }
         q = $('#q1').val();
         expiry = "Any time";
         time = "Any time";
-        radius = 15;
-        sort = "Best match";
-        resultsPerPage = 4;
+        radius = 10;
+        sort = "Closest";
+        resultsPerPage = 8;
         pageNumber = 0;
-
-        updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
-        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
-        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
 
         //remove pagination
         $('.pagination').html("");
+
+        updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
+        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, address);
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, 0);
+
+
     });
 }
 
@@ -130,7 +132,6 @@ $('#advanced').click(function() {
     $('.content').html(addSideSearchbar(6));
     configureBootstrap();
     $('.advancedSearchbar').addClass('col-centered');
-    var address;
     if(memberSearch) {
         storedLocation = user['latitude'] + "," +  user['longitude'];
         address = user['postcode'];
@@ -155,7 +156,6 @@ $('#advanced').click(function() {
 $(document.body).on('click', '#advancedSearch', function(e) {
     e.preventDefault();
     var address;
-    console.log($('#loc').val());
     if($('#loc').val() === "") {
         address = "-"
     }
@@ -182,47 +182,53 @@ $(document.body).on('click', '#advancedSearch', function(e) {
         if(time != "Any time") {
             time = time.slice(0, 16) + "," + time.slice(19,35)
         }
-        console.log(address);
-        updateSideBar(q, address, radius,expiry, time, sort, resultsPerPage);
-        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0);
-        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, true);
+
         //remove pagination
         $('.pagination').html("");
+
+        updateSideBar(q, address, radius,expiry, time, sort, resultsPerPage);
+        saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, address);
+        search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, 0, 0);
     });
 });
 
 
 
 //pagination links
-$('.pagination').on('click', '#next', function() {
+$(document.body).on('click', '#next', function(e) {
+    e.preventDefault();
     pageNumber += 1;
     offset = pageNumber * resultsPerPage;
-    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
 });
-$('.pagination').on('click', '#link1', function() {
+$(document.body).on('click', '#link1', function(e) {
+    e.preventDefault();
     pageNumber = parseInt($("#link1 a").text()) -1;
     offset = pageNumber * resultsPerPage;
-    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
 });
-$('.pagination').on('click', '#link2', function() {
+$(document.body).on('click', '#link2', function(e) {
+    e.preventDefault();
     pageNumber = parseInt($("#link2 a").text()) -1;
     offset = pageNumber * resultsPerPage;
-    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
 });
-$('.pagination').on('click', '#link3', function() {
+$(document.body).on('click', '#link3', function(e) {
+    e.preventDefault();
     pageNumber = parseInt($("#link3 a").text()) -1;
     offset = pageNumber * resultsPerPage;
-    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
 });
-$('.pagination').on('click', '#prev', function() {
+$(document.body).on('click', '#prev', function(e) {
+    e.preventDefault();
     pageNumber -= 1;
     offset = pageNumber * resultsPerPage;
-    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset);
-    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, false);
+    saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset,address);
+    search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
 });
 
 function addContainers() {
@@ -285,8 +291,10 @@ function addSideSearchbar(colwidth) {
                                             "<select class='form-control' id='sort' >" +
                                                 "<option>Alphabetical</option>" +
                                                 "<option>Best match</option>" +
-                                                "<option>Most recent</option>" +
-                                                "<option>Expiry</option>" +
+                                                "<option>Time: newest first</option>" +
+                                                "<option>Time: oldest first</option>" +
+                                                "<option>Expiry: earliest</option>" +
+                                                "<option>Expiry: latest</option>" +
                                                 "<option>Closest</option>" +
                                             "</select>"
                                         )
@@ -512,38 +520,44 @@ function addLinks() {
  * @param pageNumber Page number
  * @param firstSearch Boolean
  */
-function search(q, location, distance, expiry, time, sort, resultsPerPage, page, firstSearch) {
+function search(q, location, distance, expiry, time, sort, resultsPerPage, offset, pageNumber) {
     //reset the markers list
+    $('#map-button').css("visibility", "hidden");
     clearMarkers();
     $('#map-container').html("");
-    var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: resultsPerPage, offset: page};
-    console.log(parameters);
+    var parameters = { q:q,  location: location, distance: distance, expiry: expiry, time: time, sort: sort, num: resultsPerPage, offset: offset};
     $('#results').html('<img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" ' +
         'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
         var foodInfo = $('<div></div>').addClass('food');
-        console.log(data);
         if(data.hasOwnProperty('error')) {
-            $('#map-button').css("visibility", "hidden");
+
             foodInfo.append('<p style="text-align: center">No food found</p>');
         }
         else if(data.food.length > 0) {
             $('#map-button').css("visibility", "visible");
             initMap(location.split(","));
             setMapBounds(location.split(","), distance);
+            var expiryString;
             $.each(data.food, function (key, element) {
+
                 var address = convertGeocode(element['latitude'], element['longitude']);
                 var p = Promise.resolve(address);
-                var expiryDate = new Date(element['expiry']);
                 p.then(function(address) {
-
+                    if(moment(element["expiry"]).diff(moment()) < 0) {
+                        expiryString = "Expired ";
+                    }
+                    else {
+                        expiryString = "Expires ";
+                    }
+                    console.log(expiryString);
                     foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
                     "<div class='row'>" +
                         "<div class='col-md-8 col-sm-8 col-xs-7'>" +
                             "<div class='card-block'>" +
                                 "<h4 class='card-title'>" + element['name'] + "</h4>" +
                                 "<p class='card-text card-time' style='font-style=italic '> Posted " +moment(element["time"]).fromNow() + "</p>" +
-                                "<p >Expires "+moment(element["expiry"]).fromNow()+"</p>" +
+                                "<p >" + expiryString + moment(element["expiry"]).fromNow()+"</p>" +
                                 "<div class='btn-group buttons'>" +
                                 "<a href='item.php?item="+element['id'] + "' class='btn btn-custom'>More</a>" +
                         "</div></div></div>");
@@ -589,7 +603,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, page,
                 });
             });
             //only display the pagination links on initial search
-            if(firstSearch) {
+            if(!$('.page-item')[0]) {
                 totalResults = data.resultsCount;
                 addLinks();
             }
@@ -694,8 +708,7 @@ function initMap(pos) {
     mymap = new google.maps.Map(document.getElementById('map'), {
         zoom: 15,
         center: myLatlng,
-        scrollwheel: false,
-        disableDoubleClickZoom: true
+        scrollwheel: false
     });
 }
 /**Create details for pop up of a food item
@@ -854,7 +867,7 @@ function getUser() {
 var pushed = false;
 
 //save the state containing the ajax content
-function saveState(q, location, distance, expiry, time, sort, resultsPerPage, offset) {
+function saveState(q, location, distance, expiry, time, sort, resultsPerPage, offset, address) {
     var url = "#q=" + q.replace(/\s+/g, '+') + "&location=" +  location + "&distance="
         + distance + "&expiry=" + expiry.replace(/\s+/g, '+') + "&time=" + time.replace(/\s+/g, '+') + "&sort="
         + sort.replace(/\s+/g, '+') + "&num=" + resultsPerPage + "&offset=" + offset;
@@ -866,8 +879,10 @@ function saveState(q, location, distance, expiry, time, sort, resultsPerPage, of
         time: time,
         sort: sort,
         num: resultsPerPage,
-        offset: offset
+        offset: offset,
+        address: address
     };
+    console.log(url);
     history.pushState(parameters, '', url);
 
 
@@ -875,24 +890,23 @@ function saveState(q, location, distance, expiry, time, sort, resultsPerPage, of
 
 
 $(window).bind('popstate', function(event) {
-    console.log("here");
+
     var parameters = event.originalEvent.state;
+    console.log(parameters);
     //if state exists then reload page with search
     if(parameters === "advancedSearch") {
-        addSideSearchbar(6);
+        $('.content').html(addSideSearchbar(6));
+        $('.advancedSearchbar').addClass('col-centered');
         configureBootstrap();
     }
     else if(parameters !== null) {
         addContainers();
         configureBootstrap();
-        var address = convertGeocode(parameters['location'].split(',')[0],parameters['location'].split(',')[1] );
-        var p = Promise.resolve(address);
-        p.then(function(address) {
-            updateSideBar(parameters['q'],address , parameters['distance'], parameters['expiry'], parameters['time'],
-                parameters['sort'], parameters['num']);
-            search(parameters['q'], parameters['location'], parameters['distance'], parameters['expiry'], parameters['time'],
-                parameters['sort'], parameters['num'], parameters['offset'], true)
-        });
+        pageNumber = (parameters['offset']/parameters['num']);
+        updateSideBar(parameters['q'],parameters['address'] , parameters['distance'], parameters['expiry'], parameters['time'],
+            parameters['sort'], parameters['num']);
+        search(parameters['q'], parameters['location'], parameters['distance'], parameters['expiry'], parameters['time'],
+            parameters['sort'], parameters['num'], parameters['offset'], pageNumber)
 
     }
     else {
