@@ -90,12 +90,194 @@ class Food
             if ($stmt->rowCount()) {
                 return true;
             } else {
-                var_dump($stmt->rowCount());
                 return false;
             }
         } catch (PDOException $e) {
             return false;
         }
+    }
+    
+    private function stripTag($tag) {
+        $tag = strtolower($tag);
+        $tag = preg_replace("/[^a-z0-9_.@\-]/", '', $tag);
+        return $tag;
+    }
+    
+    /**
+    * Create a new tag record, and return the ID of the new tag
+    */
+    private function createNewTag($tag) {
+        try {
+            $tag = $this->stripTag($tag);
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("INSERT INTO `tag` (`id`, `name`) VALUES (NULL, :tag);");
+            $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
+            $stmt->execute();
+            if ($stmt->rowCount()) {
+                return $db->lastInsertId();
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+    * Looks up the value of $tag, and if it does not exist, creates it. Returns the new tag id. 
+    **/
+    private function lookupTag($tag) {
+        try {
+            $tag = $this->stripTag($tag);
+            //echo "looking up tag ".$tag;
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("SELECT * FROM `tag` WHERE name = :tag");
+            $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (empty($results)) {
+                //echo "creating new tag ".$tag;
+                return $this->createNewTag($tag);
+            }
+            //echo "found id of ".$tag." as ".$results[0]["id"];
+            return $results[0]["id"];
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+    * Inserts the tag connection into the list, if it does not already exist;
+    **/
+    private function insertTag($tag) {
+        $tagListId = $this->item["tag_list_id"];
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $tag = $this->stripTag($tag);
+            $tagId = $this->lookupTag($tag);
+            // Check if tag link exists
+            //echo "looking for tag: ".$tag." (".$tagId.") taglistid: ".$tagListId;
+            $stmt = $db->prepare("SELECT * FROM `tag_list` WHERE id = :taglistid AND tag_id = :tagid");
+            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if (! empty($results)) {
+                return true;
+            }
+            // Create new tag link
+            $stmt = $db->prepare("INSERT INTO tag_list (id, tag_id) VALUES (:taglistid, :tagid)");
+            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount()) {
+                return true;
+            }
+            echo "insert failed";
+            return false;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    /**
+    * Remove the tag connection from the food item
+    **/
+    private function removeTag($tag) {
+        $tagListId = $this->item["tag_list_id"];
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $tag = $this->stripTag($tag);
+            $tagId = $this->lookupTag($tag);
+            $stmt = $db->prepare("DELETE FROM tag_list WHERE id = :taglistid AND tag_id = :tagid");
+            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->execute();
+            if ($stmt->rowCount()) {
+                return true;
+            }
+            // Tag didn't exist anyway (it's not there)
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    
+    public function updateTags($newTags) {
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return false;
+        }
+        if (! ($username === $this->owner)) {
+            return false;
+        }
+        $currentTags = $this->getTags();
+        $tagsToAdd = array();
+        $tagsToRemove = $currentTags;
+        if (!empty($newTags)) {
+            foreach($newTags as $tag) {
+                $id = array_search($tag, $tagsToRemove);
+                if ($id === false) {
+                    // tag is not in current tag list, add to tags to tagsToAdd
+                    $tagsToAdd[] = $tag;
+                } else {
+                    // Tag is in current tag list and new tag list, do nothing (remove from remove list)
+                    unset($tagsToRemove[$id]);
+                }
+                // Else tag is in the current tags and not in the new one, so keep it in the remove list
+            }
+        }
+        // Add all new tags...
+        //echo "tags to add: ";
+        //var_dump($tagsToAdd);
+        if (!empty($tagsToAdd)) {
+            foreach ($tagsToAdd as $tag) {
+                if(!$this->insertTag($tag)) {
+                    echo "failed to insert ".$tag;
+                }
+            }
+        }
+        //echo "tags to remove: ";
+        //var_dump($tagsToRemove);
+        // Remove all old ones...
+        if (!empty($tagsToRemove)) {
+            foreach ($tagsToRemove as $tag) {
+                if(!$this->removeTag($tag)) {
+                    echo "failed to remove ".$tag;
+                }
+            }
+        }
+        // Return the new tag list!
+        return $this->getTags();
+    }
+    
+    public function getTags() {
+        if (!empty($this->item)) {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT tag.name FROM tag,tag_list WHERE tag_list.id = :id AND tag_list.tag_id = tag.id");
+                $stmt->bindValue(":id", intval($this->item["tag_list_id"]), PDO::PARAM_INT);
+                $stmt->execute();
+                $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $tags = array();
+                for ($i = 0; $i < sizeof($results); $i++) {
+                    $tags[] = $results[$i]["name"];
+                }
+                return $tags;
+            } catch (PDOException $e) {
+                return false;
+            }
+        }
+        return array();
     }
     
     public function delete() {

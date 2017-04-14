@@ -204,7 +204,24 @@ h1,h2,h3,h4,h5,h6 {
 }
 .edit-click-trap:hover {
     background-color: rgba(0,0,0,0.6)
-
+}
+.tags .tag {
+    background-color: #f7f7f9;
+    padding: 0.2em 0.75em;
+    border-radius: 0.2em;
+    border: 1px solid rgba(0,0,0,.125);
+    white-space: nowrap;
+    line-height: 2em;
+    transition: 0.5s;
+}
+.tags .tag:hover {
+    background-color: #ebebeb;
+}
+.tags.edit-tags {
+    padding-bottom: 0;    
+}
+.more-details {
+    margin-bottom: 30px;    
 }
 
 /** MESSAGES **/

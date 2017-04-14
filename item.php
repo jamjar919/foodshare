@@ -88,6 +88,19 @@
                         <?php echo $ownerProfile["score"]; ?> points
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-header">
+                        Tags
+                    </div>
+                    <div class="card-block tags">
+                    <?php 
+                    $tags = $food->getTags();
+                    for ($i = 0; $i < sizeof($tags); $i++) {
+                    ?>
+                        <span class="tag"><?php echo $tags[$i]; ?></span>
+                    <?php } ?>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
