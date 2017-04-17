@@ -54,6 +54,25 @@ class UserTools {
     }
     
     /**
+    *   Utility function for getting a user's email from their username. If unverified, returns FALSE.
+    **/
+    public static function getEmail($username) {
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare('SELECT * FROM user WHERE username = :username');
+            $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch();
+            if ($result["verified"]) {
+                return $result["email"];
+            }
+            return false;
+        } catch(PDOEXCEPTION $e) {
+            return false;
+        }
+    }
+    
+    /**
     * Register a user with the database
     *
     * @param $username The desired username

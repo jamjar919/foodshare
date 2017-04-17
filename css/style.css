@@ -61,6 +61,10 @@ h1,h2,h3,h4,h5,h6 {
 #header .searchbar-container .input-group {
     margin: 10px 0;
 }
+.nav-item a.glyphicon {
+    top: -1px;
+    text-decoration: none;
+}
 
 /* Style */
 #header {
@@ -356,6 +360,9 @@ label {
 .card-block h3 {
     margin-top: 0;
 }
+.food-item {
+    margin-bottom: 2em;    
+}
 .food-item img, .narrowimg {
     height: auto;
     display: block;
@@ -364,11 +371,18 @@ label {
 .inline-map {
     min-height: 500px;
 }
-.food-details, .inline-map, .inline-userprofile {
+.food-details, .inline-map, .inline-userprofile, .claim {
     margin-bottom: 2em;
 }
 .inline-userprofile h2 {
     margin: 0;
+}
+.gone-food-item {
+    opacity: 0.7;
+    transition: 0.25s;
+}
+.gone-food-item:hover {
+     opacity: 1;   
 }
 /** S P I N N I N G   F U N **/
 .glyphicon-refresh-animate {

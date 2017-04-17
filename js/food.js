@@ -1,12 +1,14 @@
 /*
  * Prints items as a card into the specified element
  */
-function printFoodItems(items, element) {
+function printFoodItems(items, element, isOwner = false) {
     for (var i = 0; i< items.length; i++) {
         item = items[i];
+        var currentDate = new Date();
         $(element).append(
             $("<div>")
             .addClass("card food-item")
+            .append((item["claimer_username"] != "") ? "<div class=\"card-header\">Claimed by "+((isOwner) ? "<a href=\"messages.php?user="+item["claimer_username"]+"\">"+item["claimer_username"]+"</a>" : item["claimer_username"])+"</div>" : "")
             .append(item["image_url"] ? '<img class="card-img-top" src="'+item["image_url"]+'">' : '')
             .append(
                 $("<div>")
@@ -28,21 +30,82 @@ function printFoodItems(items, element) {
                         .addClass("btn btn-primary")
                         .text("View")
                     )
-                    .append(
-                        $("<a>")
-                        .attr("href","edititem.php?item="+item["id"])
-                        .addClass("btn btn-warning")
-                        .text("Edit")
-                    )
+                    .append((isOwner) ? "<a href=\"edititem.php?item="+item["id"]+"\" class=\"btn btn-warning\">Edit</a>" : "")
                 )
             )
             .append(
                 $("<div>")
                 .addClass("card-footer text-muted")
-                .text("Expires "+moment(item["expiry"]).fromNow())
+                .text(((moment(item["expiry"]).isAfter(currentDate)) ? "Expires ": "Expired ")+moment(item["expiry"]).fromNow())
             )
         );
     }
+}
+
+/**
+ * Claim an item for yourself. Uses a cookie and stuff to verify the claimer 
+ **/
+function claimItem(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/claim.php", {id:id})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
+}
+
+function unclaim(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/unclaim.php", {id:id})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
+}
+
+/**
+ * Mark a food item as gone or not gone
+ **/
+function markGone(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/gone.php", {id:id, val:true})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
+}
+
+function markNotGone(id) {
+    return new Promise(function(resolve,reject) {
+        $.post("api/gone.php", {id:id,val:0})
+        .done(function(data) {
+            if (data.hasOwnProperty("error")) {
+                reject(data);
+            }
+            resolve(data);
+        })
+        .fail(function(data) {
+            reject(data);
+        });
+    });
 }
 
 /**
