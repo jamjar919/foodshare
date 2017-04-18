@@ -553,7 +553,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                     console.log(expiryString);
                     foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
                     "<div class='row'>" +
-                        "<div class='col-md-8 col-sm-8 col-xs-7'>" +
+                        "<div class='col-md-8 col-sm-8'>" +
                             "<div class='card-block'>" +
                                 "<h4 class='card-title'>" + element['name'] + "</h4>" +
                                 "<p class='card-text card-time' style='font-style=italic '> Posted " +moment(element["time"]).fromNow() + "</p>" +
@@ -574,7 +574,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                         $('#' + element['id'] + ' .card-time').text("Posted by " + element['user_username'] + " "
                             + moment(element["time"]).fromNow());
                     }
-                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 search-image-wrap'>" +
+                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 search-image-wrap'>" +
                         "<img class='center' src='"+ element['image_url'] + "'>" +
                         "</div>"
                     );
