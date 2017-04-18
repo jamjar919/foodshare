@@ -1,7 +1,8 @@
 /*
  * Prints items as a card into the specified element
  */
-function printFoodItems(items, element, isOwner = false) {
+function printFoodItems(items, element, isOwner) {
+    isOwner = isOwner || false;
     for (var i = 0; i< items.length; i++) {
         item = items[i];
         var currentDate = new Date();

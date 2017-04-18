@@ -21,7 +21,8 @@ function sendMessage(message) {
         addMessage(message, new Date(), true);
     }
 }
-function addMessage(text,timestamp,isOwnMessage = false) {
+function addMessage(text,timestamp,isOwnMessage) {
+    isOwnMessage = isOwnMessage || false;
     $(messageSettings.container).append(
         $("<div>")
         .addClass("card message")
