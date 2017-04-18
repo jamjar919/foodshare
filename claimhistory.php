@@ -29,6 +29,9 @@
                         </div>
                     <?php } ?>
                 <?php } ?>
+                <?php if (sizeof($history) < 1) { ?>
+                    <p class="no-items-text">No items to display</p>
+                <?php } ?>
             </div>
         </div>
         <div class="col-sm-6">
@@ -50,6 +53,9 @@
                             </div>
                         </div>
                     <?php } ?>
+                <?php } ?>
+                <?php if (sizeof($history) < 1) { ?>
+                    <p class="no-items-text">No items to display</p>
                 <?php } ?>
             </div>
         </div>

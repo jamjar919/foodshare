@@ -110,6 +110,9 @@
                                 printFoodItems([f],"#exampleitems")
                             }
                         });
+                        if (data["food"].length < 1) {
+                            $("#exampleitems").append('<p class="no-items-text">No items to display</p>')
+                        }
                     }) 
                 })
             </script>

@@ -3,43 +3,47 @@
  */
 function printFoodItems(items, element, isOwner) {
     isOwner = isOwner || false;
-    for (var i = 0; i< items.length; i++) {
-        item = items[i];
-        var currentDate = new Date();
-        $(element).append(
-            $("<div>")
-            .addClass("card food-item")
-            .append((item["claimer_username"] != "") ? "<div class=\"card-header\">Claimed by "+((isOwner) ? "<a href=\"messages.php?user="+item["claimer_username"]+"\">"+item["claimer_username"]+"</a>" : item["claimer_username"])+"</div>" : "")
-            .append(item["image_url"] ? '<img class="card-img-top" src="'+item["image_url"]+'">' : '')
-            .append(
+    if (items.length > 0) {
+        for (var i = 0; i< items.length; i++) {
+            item = items[i];
+            var currentDate = new Date();
+            $(element).append(
                 $("<div>")
-                .addClass("card-block")
+                .addClass("card food-item")
+                .append((item["claimer_username"] != "") ? "<div class=\"card-header\">Claimed by "+((isOwner) ? "<a href=\"messages.php?user="+item["claimer_username"]+"\">"+item["claimer_username"]+"</a>" : item["claimer_username"])+"</div>" : "")
+                .append(item["image_url"] ? '<img class="card-img-top" src="'+item["image_url"]+'">' : '')
                 .append(
-                    $("<h4>").text(item["name"])
-                )
-                .append(
-                    $("<p>")
-                    .addClass("card-text")
-                    .text(item["description"].substring(0,300))
+                    $("<div>")
+                    .addClass("card-block")
+                    .append(
+                        $("<h4>").text(item["name"])
+                    )
+                    .append(
+                        $("<p>")
+                        .addClass("card-text")
+                        .text(item["description"].substring(0,300))
+                    )
+                    .append(
+                        $("<div>")
+                        .addClass("btn-group btn-group-fullwidth")
+                        .append(
+                            $("<a>")
+                            .attr("href","item.php?item="+item["id"])
+                            .addClass("btn btn-primary")
+                            .text("View")
+                        )
+                        .append((isOwner) ? "<a href=\"edititem.php?item="+item["id"]+"\" class=\"btn btn-warning\">Edit</a>" : "")
+                    )
                 )
                 .append(
                     $("<div>")
-                    .addClass("btn-group btn-group-fullwidth")
-                    .append(
-                        $("<a>")
-                        .attr("href","item.php?item="+item["id"])
-                        .addClass("btn btn-primary")
-                        .text("View")
-                    )
-                    .append((isOwner) ? "<a href=\"edititem.php?item="+item["id"]+"\" class=\"btn btn-warning\">Edit</a>" : "")
+                    .addClass("card-footer text-muted")
+                    .text(((moment(item["expiry"]).isAfter(currentDate)) ? "Expires ": "Expired ")+moment(item["expiry"]).fromNow())
                 )
-            )
-            .append(
-                $("<div>")
-                .addClass("card-footer text-muted")
-                .text(((moment(item["expiry"]).isAfter(currentDate)) ? "Expires ": "Expired ")+moment(item["expiry"]).fromNow())
-            )
-        );
+            );
+        }
+    } else {
+        $(element).append('<p class="no-items-text">No items to display</p>')
     }
 }
 
