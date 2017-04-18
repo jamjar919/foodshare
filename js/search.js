@@ -72,7 +72,7 @@ $('document').ready(function() {
                 },
                 function(error){
                     // If we don't find the initial position just go L O N D O N
-                    initialPosition = 51.5 + "," -0.09;
+                    initialPosition = "51.5 , -0.09";
                     console.log("Error getting pos: "+error);
                     var address = convertGeocode(initialPosition.split('')[0], initialPosition.split()[1]);
                     var p = Promise.resolve(address);
