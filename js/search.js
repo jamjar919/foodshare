@@ -61,9 +61,9 @@ $('document').ready(function() {
         if (navigator.geolocation && !memberSearch){
             navigator.geolocation.getCurrentPosition(
                 function(position){
-                    initialPosition = position.coords.latitude + "," +position.coords.longitude;
+                    initialPosition = String(position.coords.latitude + "," +position.coords.longitude);
                     console.log("Got initial position as: "+initialPosition);
-                    var address = convertGeocode(String(initialPosition).split(',')[0], initialPosition.split(',')[1]);
+                    var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
                     var p = Promise.resolve(address);
                     p.then(function(address) {
                         initialAddress = address;
