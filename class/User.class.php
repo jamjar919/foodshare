@@ -128,7 +128,7 @@ class User
 				$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 				$stmt = $db->prepare("UPDATE user SET postcode = :postcode WHERE username = :username");
 				$stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-				$stmt->bindValue(":postcode", $newPostcode, PDO::PARAM_STR);
+				$stmt->bindValue(":postcode", htmlspecialchars($newPostcode, ENT_QUOTES), PDO::PARAM_STR);
 				$stmt->execute();
 				if ($stmt->rowCount()) {
 					return true;
@@ -153,8 +153,8 @@ class User
 					$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
 					$stmt = $db->prepare("UPDATE user SET latitude = :lat, longitude = :long WHERE username = :username");
 					$stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-					$stmt->bindValue(":lat", $latitude, PDO::PARAM_STR); // Yes, I know they are decimals but PDO uses stringy magic 
-					$stmt->bindValue(":long", $longitude, PDO::PARAM_STR);
+					$stmt->bindValue(":lat", htmlspecialchars($latitude, ENT_QUOTES), PDO::PARAM_STR); // Yes, I know they are decimals but PDO uses stringy magic 
+					$stmt->bindValue(":long", htmlspecialchars($longitude, ENT_QUOTES), PDO::PARAM_STR);
 					$stmt->execute();
 					if ($stmt->rowCount()) {
 						return true;
@@ -205,7 +205,7 @@ class User
                                         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
                                         $stmt = $db->prepare("UPDATE user SET verified = 0, email = :email WHERE username = :username");
                                         $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                                        $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+                                        $stmt->bindValue(":email", htmlspecialchars($email, ENT_QUOTES), PDO::PARAM_STR);
                                         $stmt->execute();
                                         if ($stmt->rowCount()) {
                                                 $this->reverifyEmail();
@@ -328,7 +328,7 @@ class User
                                         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
                                         $stmt = $db->prepare("UPDATE user SET profile_picture_url = :url WHERE username = :username");
                                         $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                                        $stmt->bindValue(":url", $url, PDO::PARAM_STR);
+                                        $stmt->bindValue(":url", htmlspecialchars($url, ENT_QUOTES), PDO::PARAM_STR);
                                         $stmt->execute();
                                         if ($stmt->rowCount()) {
                                                 return true;

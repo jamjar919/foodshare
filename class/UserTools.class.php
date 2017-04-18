@@ -89,6 +89,11 @@ class UserTools {
             $errors[] = "There was a database error, please try again later.";
             return $errors;
         }
+        $stripped_username = strip_tags($username);
+        $stripped_username = preg_replace("/[^A-Za-z0-9_.@\-]/", '', $stripped_username);
+        if ($username !== $stripped_username) {
+            $errors[] = "Invalid characters in username (Please use only A-Z, a-z, 0-9 and dash)";
+        }
         // Are all fields filled in?
         if (empty($username) || empty($password) || empty($email) || empty($confirmpassword)) {
             $errors[] = "All fields must not be empty.";
