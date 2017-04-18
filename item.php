@@ -48,11 +48,15 @@
                     </script>
                 </div>
             <?php } else { ?>
-                <?php if (empty($food->item["claimer_username"])) { ?>
-                    <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" role="button">Claim</a>
+                <?php if (!empty($p->user->username)) { ?>
+                    <?php if (empty($food->item["claimer_username"])) { ?>
+                        <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" role="button">Claim</a>
+                    <?php } else { ?>
+                        <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" disabled="disabled" role="button">Food claimed already :(</a>
+                    <?php } ?>
                 <?php } else { ?>
-                    <a class="btn btn-success btn-block" href="claim.php?item=<?php echo $food->item["id"];?>" disabled="disabled" role="button">Food claimed already :(</a>
-                <?php } ?>
+                    <a class="btn btn-success btn-block" href="#" disabled="disabled" role="button">Create an account to claim!</a>
+                <?php }?>
             <?php } ?>
             </div>
         </div>
@@ -65,7 +69,7 @@
                 </div>
             </div>
         <?php } ?>
-        <?php if ($food->item["claimer_username"] == $p->user->username) { ?>
+        <?php if (($food->item["claimer_username"] == $p->user->username) && (!empty($p->user->username))) { ?>
             <div class="card claim-decide">
                 <div class="card-block">
                     <h3>You claimed this!</h3>

@@ -2,7 +2,7 @@
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';
     require __ROOT__.'/class/Food.class.php';
-    $p = new Page("Food", false);
+    $p = new Page("Food", true);
     if (!isset($_GET["item"])) {
         $p->buildHead();
         $p->buildHeader();
