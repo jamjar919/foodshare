@@ -330,6 +330,9 @@ h1,h2,h3,h4,h5,h6 {
     margin-bottom: 40px;
 }
 .masonry-two .card {
+    -webkit-break-inside: avoid-column;
+    -moz-break-inside: avoid-column;
+    break-inside: avoid-column;
     margin-bottom: 20px;
 }
 .list-group-item {
@@ -617,4 +620,70 @@ input[type="color"]:focus,
 
 .advancedSearchbar {
     padding-bottom: 20px;
+}
+
+/*** 
+ * 
+ * M O B I L E
+ * 
+ ***/
+
+/**
+ * Small screens
+ **/
+@media screen and (max-width: 990px) {
+    .col-sm-9 .masonry {
+        -webkit-columns-count: 2;
+        column-count: 2; 
+    }
+}
+
+
+/* Tablets in portrait mode */
+@media screen and (max-width: 660px) {
+    #header .top-header {
+        flex-direction: column;        
+    }
+    #header .top-header .main-navigation {
+        justify-content: center;        
+        margin-bottom: 2em;
+    }
+    #header .top-header .site-title h1 {
+        width: 100%;
+        text-align: center;        
+    }
+    .masonry {
+        -webkit-columns-count: 2;
+        column-count: 2;        
+    }
+    .user-profile-links, .edit-buttons, .login-form, .claim-decide {
+        margin-bottom: 2em;        
+    }
+    #ui-datepicker-div {
+        width: 100%;
+        left: 0 !important;
+    }
+}
+
+/* Phones and really tiny computers */
+@media screen and (max-width: 500px) {
+    .masonry, .masonry-two, .col-sm-9 .masonry {
+        -webkit-columns-count: 1;
+        column-count: 1;        
+    }
+}
+
+/* I don't actually know if anything is this small but who knows maybe a mouse has a computer or something */
+@media screen and (max-width: 320px) {
+    #header .top-header .main-navigation, #footer .bottom-navigation {
+        flex-direction: column;    
+    }
+    #header .top-header .main-navigation .nav-item a {
+        width: 100%;
+        padding: 0.5em;
+        text-align: center;
+    }
+    #header .top-header .site-title h1 {
+        font-size: 3em;        
+    }
 }

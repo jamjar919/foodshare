@@ -7,7 +7,7 @@
     $profile = $p->user->getPrivateProfile();
 ?>
     <div class="row">
-        <div class="col-sm-6 col-md-3">
+        <div class="col-sm-3">
             <div class="card user-profile">
                 <?php if (!empty($profile['profile_picture_url']))  { ?>
                     <img src="<?php echo $profile['profile_picture_url']; ?>" class="card-img-top profilepicture">
@@ -28,7 +28,7 @@
                 </ul>
             </div>
         </div>
-        <div class="col-sm-6 col-md-9">
+        <div class="col-sm-9">
             <div class="row">
                 <div class="card-block notifications">
                     <h3>Hey, you!</h3>
@@ -86,8 +86,8 @@
                 </div>
             </div>
             <div class="row">
-                <h2 class="col-md-6">Your items</h2>
-                <h2 class="col-md-6 text-right"><small><a href="additem.php">Add a new item</a></small></h2>
+                <h2 class="col-xs-6">Your items</h2>
+                <h2 class="col-xs-6 text-right"><small><a href="additem.php">Add a new item</a></small></h2>
             </div>
             <div id="myitems" class="masonry">
             </div>
