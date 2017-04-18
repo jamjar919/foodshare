@@ -16,12 +16,12 @@ function printFoodItems(items, element, isOwner) {
                     $("<div>")
                     .addClass("card-block")
                     .append(
-                        $("<h4>").text(item["name"])
+                        $("<h4>").text(decodeEntities(item["name"]))
                     )
                     .append(
                         $("<p>")
                         .addClass("card-text")
-                        .text(item["description"].substring(0,300))
+                        .text(decodeEntities(item["description"].substring(0,300)))
                     )
                     .append(
                         $("<div>")
@@ -45,6 +45,12 @@ function printFoodItems(items, element, isOwner) {
     } else {
         $(element).append('<p class="no-items-text">No items to display</p>')
     }
+}
+
+function decodeEntities(encodedString) {
+    var textArea = document.createElement('textarea');
+    textArea.innerHTML = encodedString;
+    return textArea.value;
 }
 
 /**

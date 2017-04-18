@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
     if (isset($_GET['num'])) {
         $num = intval($_GET['num']);
     }
-    $query = "SELECT * FROM food WHERE user_username = :user";
+    $query = "SELECT * FROM food WHERE user_username = :user AND item_gone = b'0'";
     switch($sort) {
         case 'Expiry':
             $query .= " ORDER BY expiry DESC";
