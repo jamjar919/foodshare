@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         getConversationList();
     }
 } else if($_SERVER['REQUEST_METHOD'] == "POST"){
-    if (empty($_POST["id"]) || empty($_POST["conversation_id"]) || empty($_POST["text"])  || empty($_POST["read"]) || empty($_POST["message_type"])) {
+    if (empty($_POST["conversation_id"]) || empty($_POST["text"])  || empty($_POST["read"]) || empty($_POST["message_type"])) {
         echo "Missing parameter(s)";
     } else {
         addMessage($_POST["conversation_id"],$_POST["text"],$_POST["read"],$_POST["message_type"]);
