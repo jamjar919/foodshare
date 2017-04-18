@@ -257,20 +257,21 @@ function addContainers() {
 
 //create search bar
 function addSideSearchbar(colwidth) {
-    return   $("<div>")
+    var sidebar = $("<div>")
         .addClass("col-md-" + colwidth + " advancedSearchbar")
         .append(
             $("<div>")
                 .addClass("card")
                 .append(
                     $("<div>")
-                        .addClass("card-block")
+                        .addClass("card-block collapsible-panels-mob")
                         .append(
-                            $("<h3>").text("Advanced search")
+                            $("<h3>").text("Advanced search").addClass("panel-control")
+                            .append('&nbsp;<span class="glyphicon glyphicon-collapse-down mobileonly" style="font-size: 0.75em;float:right;padding-top:0.25em"></span>')
                         )
                         .append(
                             $("<form>")
-                                .addClass("form-horizontal")
+                                .addClass("form-horizontal panel-content")
                                 .append(
                                     $("<div>")
                                         .addClass("form-group")
@@ -366,7 +367,8 @@ function addSideSearchbar(colwidth) {
                 )
 
         )
-
+        bindCollapse();
+        return sidebar;
 }
 
 function updateSideBar(q, location, distance, expiry, time, sort, resultsPerPage) {
@@ -462,6 +464,8 @@ function configureBootstrap() {
         },
         minLength: 3
     });
+    // Bind toogle for mobile
+    bindCollapse();
 }
 
 /**Update the pagination links
