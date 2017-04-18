@@ -707,6 +707,12 @@ input[type="color"]:focus,
         -webkit-columns-count: 1;
         column-count: 1;        
     }
+    #adv-search.input-group {
+        display: block;        
+    }
+    #adv-search.input-group #advanced {
+        width: 100%;        
+    }
 }
 
 /* I don't actually know if anything is this small but who knows maybe a mouse has a computer or something */
