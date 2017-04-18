@@ -74,7 +74,7 @@ $('document').ready(function() {
                     // If we don't find the initial position just go L O N D O N
                     initialPosition = 51.5 + "," -0.09;
                     console.log("Error getting pos: "+error);
-                    var address = convertGeocode(initialPosition.split('')[0], initialPosition.split()[1]);
+                    var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
                     var p = Promise.resolve(address);
                     p.then(function(address) {
                         initialAddress = address;
@@ -483,6 +483,8 @@ function addLinks() {
 
 
     var totalLinks = Math.ceil(totalResults / resultsPerPage);
+    console.log("totalResults = " + totalResults);
+    console.log("resultsPerPage = " + resultsPerPage);
     var paginationList = "";
 
     if(totalLinks > 1) {
@@ -530,6 +532,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
         'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
         var foodInfo = $('<div></div>').addClass('food');
+        console.log(data);
         if(data.hasOwnProperty('error')) {
 
             foodInfo.append('<p style="text-align: center">No food found</p>');
@@ -550,7 +553,6 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                     else {
                         expiryString = "Expires ";
                     }
-                    console.log(expiryString);
                     foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
                     "<div class='row'>" +
                         "<div class='col-md-8 col-sm-8 col-xs-7'>" +

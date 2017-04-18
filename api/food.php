@@ -10,30 +10,30 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         echo json_encode(array("error" => "Location not defined"));
 } else {
 
-        $query = $_GET['q'];
-        $sort = $_GET['sort'];
-        $location = explode(",", $_GET['location']);
+        $query = strip_tags($_GET['q']);
+        $sort = strip_tags($_GET['sort']);
+        $location = explode(",", strip_tags($_GET['location']));
         if(sizeof($location) != 2) {
             echo json_encode(array("error" => "Latitude and longitude required"));
         }
 
-        $distance = $_GET['distance'];
+        $distance = strip_tags($_GET['distance']);
 
-        $expiry = $_GET['expiry'];
+        $expiry = strip_tags($_GET['expiry']);
         if($expiry != "Any time") {
             $expiry = explode(",", $expiry);
             $expiry[0] = date("Y-m-d", strtotime(str_replace('/', '-', $expiry[0])));
             $expiry[1] = date("Y-m-d", strtotime(str_replace('/', '-', $expiry[1])));
         }
-        $time = $_GET['time'];
+        $time = strip_tags($_GET['time']);
         if($time != "Any time") {
             $time = explode(",", $time);
             $time[0] = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $time[0])));
             $time[1] = date("Y-m-d H:i:s", strtotime(str_replace('/', '-', $time[1])));
         }
 
-        $num = (int)$_GET['num'];
-        $offset = (int)$_GET['offset'];
+        $num = (int)strip_tags($_GET['num']);
+        $offset = (int)strip_tags($_GET['offset']);
         getFoodListing($query, $location, $distance, $expiry, $time, $sort, $num, $offset);
     }
 }
@@ -85,7 +85,10 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         $query .= "INNER JOIN tag_list ON tag_list.id = f.id
         INNER JOIN tag t ON t.id = tag_list.tag_id
         WHERE MATCH(f.name, f.description, t.name) 
-        AGAINST ('$q' IN BOOLEAN MODE) AND (f.claimer_username = NULL OR f.claimer_username = '')";
+        AGAINST ('$q' IN BOOLEAN MODE) AND (f.claimer_username = NULL OR f.claimer_username = '') ";
+    }
+    else {
+        $query .= "WHERE (f.claimer_username = NULL OR f.claimer_username = '') ";
     }
 
     if(!$expiry == "Any time") {
@@ -95,7 +98,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         $query .= "AND f.time BETWEEN '$time[0]' AND '$time[1]'";
     }
     $query .= "HAVING distance < :distance ";
-    $countQuery = str_replace("SELECT DISTINCT", "SELECT COUNT(DISTINCT f.id) AS resultsCount, ", $query);
+    $countQuery = "SELECT COUNT(*) AS resultsCount FROM (" . $query . ") countTable";
 
     switch ($sort) {
         //alphabetical
