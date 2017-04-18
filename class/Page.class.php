@@ -27,12 +27,16 @@ class Page
         echo '</head><body>';
     }
     public function buildHeader($includeSearchbar=true) {
-        echo '<header id="header">
+        echo '<div class="scale-wrap"><header id="header">
             <div class="container">
                 <div class="top-header">
-                    <div class="site-title">
-                        <h1><a href="index.php">FlavourTown</a></h1>
-                    </div>
+                    <div class="site-title">';
+        if ($this->isLoggedIn) {
+        echo '            <h1><a href="profile.php">FlavourTown</a></h1>';
+        } else {
+        echo '            <h1><a href="index.php">FlavourTown</a></h1>';
+        }
+        echo '       </div>
                     <nav class="main-navigation">';
         $this->getNavItems();
         echo '      </nav>
@@ -50,7 +54,7 @@ class Page
         <div class="container content">';
     }
     public function buildFooter() {
-        echo '</div><footer id="footer"><nav class="bottom-navigation">';
+        echo '</div></div><footer id="footer"><nav class="bottom-navigation">';
         $this->getNavItems();
         // Bottom nav only items
         echo '<div class="nav-item">
@@ -62,13 +66,13 @@ class Page
         echo "</body></html>";
     }
     public function getNavItems() {
-        echo '  <div class="nav-item">
-                    <a href="index.php">Home</a>
-                </div>
-                <div class="nav-item">
-                    <a href="about.php">About</a>
-                </div>';
         if (! $this->isLoggedIn) {
+            echo '  <div class="nav-item">
+                        <a href="index.php">Home</a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="about.php">About</a>
+                    </div>';
             echo '  <div class="nav-item">
                         <a href="login.php">Login</a>
                     </div>
@@ -77,10 +81,13 @@ class Page
                     </div>';
         } else {
             echo '  <div class="nav-item">
+                        <a href="profile.php">'.$this->user->username.'</a>
+                    </div>
+                    <div class="nav-item">
                         <a href="messages.php">Messages</a>
                     </div>
                     <div class="nav-item">
-                        <a href="profile.php">Profile</a>
+                        <a href="logout.php" class="glyphicon glyphicon-log-out"></a>
                     </div>';
         }
     }

@@ -12,6 +12,14 @@ h1,h2,h3,h4,h5,h6 {
     font-family: 'Lobster', cursive;
 }
 
+/* 
+ * Make footer stick to bottom 
+ * The px -em shouild be footer height and padding
+ */
+.scale-wrap {
+    min-height: calc(100vh - 135px - 5em);  
+}
+
 /**
  * 
  * H E A D E R
@@ -52,6 +60,10 @@ h1,h2,h3,h4,h5,h6 {
 }
 #header .searchbar-container .input-group {
     margin: 10px 0;
+}
+.nav-item a.glyphicon {
+    top: -1px;
+    text-decoration: none;
 }
 
 /* Style */
@@ -348,6 +360,9 @@ label {
 .card-block h3 {
     margin-top: 0;
 }
+.food-item {
+    margin-bottom: 2em;    
+}
 .food-item img, .narrowimg {
     height: auto;
     display: block;
@@ -356,11 +371,18 @@ label {
 .inline-map {
     min-height: 500px;
 }
-.food-details, .inline-map, .inline-userprofile {
+.food-details, .inline-map, .inline-userprofile, .claim {
     margin-bottom: 2em;
 }
 .inline-userprofile h2 {
     margin: 0;
+}
+.gone-food-item {
+    opacity: 0.7;
+    transition: 0.25s;
+}
+.gone-food-item:hover {
+     opacity: 1;   
 }
 /** S P I N N I N G   F U N **/
 .glyphicon-refresh-animate {
@@ -467,8 +489,8 @@ Search bar bootstrap mods
     margin-left: -1px;
 }
 .btn-group .btn:last-child {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
 }
 .btn-group .form-horizontal .btn[type="submit"] {
     border-top-left-radius: 4px;
@@ -516,8 +538,15 @@ Food cards and pagination styling
     flex-direction: column;
 }
 
-#results .card .row img {
-    height: 25vh;
+#results .search-image-wrap {
+    display: flex;    
+    padding-right: 0;
+}
+#results .search-image-wrap img {
+    flex: 1 1;    
+    margin: auto;
+    max-width: 100%;
+    border-radius: 0 .25rem .25rem 0;
 }
 
 .center {
@@ -525,11 +554,6 @@ Food cards and pagination styling
     margin: auto;
     vertical-align: middle;
 }
-
-#results .card-block {
-    border-right: 1px solid rgba(0,0,0,.125);
-}
-
 
 .btn-custom {
     background-color: #212a3f;

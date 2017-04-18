@@ -1,0 +1,5 @@
+1. Verify email reminder still on the profile page even after email verification
+2. Calendar for adding new item opens behind the search bar
+3. "new item" cards in profile page
+4. The page stays on the add item page after a new item has been added, should be redirected to profile page.
+5. Expired items still on display

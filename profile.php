@@ -23,6 +23,8 @@
                     <li class="list-group-item"><a href="user.php?id=<?php echo $profile['username'];?>">Your public profile</a></li>
                     <li class="list-group-item"><a href="editprofile.php">Edit profile details</a></li>
                     <li class="list-group-item"><a href="messages.php">Messages</a></li>
+                    <li class="list-group-item"><a href="claimhistory.php">Claim History</a></li>
+                    <li class="list-group-item"><a href="posthistory.php">Post History</a></li>
                 </ul>
             </div>
         </div>
@@ -48,6 +50,39 @@
                             <?php echo strip_tags($_GET["message"]); ?>
                         </div>
                     <?php } ?>
+                    <?php 
+                        $ownedClaimedItems = $p->user->getOwnedClaimedFoods();
+                        if (!empty($ownedClaimedItems)) {
+                            ?>
+                            <div class="alert alert-success">
+                                <p><strong>Some of your items have been claimed!</strong> They are listed below. The user who claimed the item should message you soon. If any of these items are gone, you should mark them as such.</p>
+                                <ul>
+                                    <?php
+                                        foreach($ownedClaimedItems as $item) {
+                                    ?>
+                                        <li>"<?php echo $item["name"]; ?>" claimed by <a href="messages.php?user=<?php echo $item["claimer_username"]; ?>"><?php echo $item["claimer_username"]; ?></a>. <a href="edititem.php?item=<?php echo $item["id"]; ?>">(Mark as gone)</a></li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                            <?php
+                            
+                        }
+                        $claimedItems = $p->user->getClaimedFoods();
+                        if (!empty($claimedItems)) {
+                            ?>
+                            <div class="alert alert-warning">
+                                <p><strong>You've claimed the following items.</strong> Message the user to organise pickup times and remind them to mark the item as gone after you've picked it up.</p>
+                                <ul>
+                                    <?php
+                                        foreach($claimedItems as $item) {
+                                    ?>
+                                        <li>"<?php echo $item["name"]; ?>" owned by <a href="messages.php?user=<?php echo $item["user_username"]; ?>"><?php echo $item["user_username"]; ?></a>. <a href="item.php?item=<?php echo $item["id"]; ?>">(View)</a></li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                            <?php
+                        }
+                    ?>
                 </div>
             </div>
             <div class="row">
@@ -57,7 +92,21 @@
             <div id="myitems" class="masonry">
             </div>
             <h2>Items you might be interested in...</h2>
-            Load in via AJAX
+            <div class="masonry" id="exampleitems">
+            </div>
+            <script>
+                $(document).ready(function () {
+                    $.get("api/food.php?q=&location=<?php echo $profile['latitude']; ?>%2C<?php echo $profile['longitude']; ?>&distance=30&expiry=Any%20time&time=Any%20time&sort=Closest&num=10&offset=0")
+                    .then(function(data) {
+                        var food = [];
+                        data["food"].forEach(function(f){
+                            if(f.user_username != "<?php echo $profile['username'];?>"){
+                                printFoodItems([f],"#exampleitems")
+                            }
+                        });
+                    }) 
+                })
+            </script>
         </div>
     </div>
     <script src="js/useritems.js"></script>
@@ -67,8 +116,7 @@
             var selector = "#myitems";
             getUserItems(username)
             .then(function(data) {
-                console.log(data);
-                printFoodItems(data["food"],selector);
+                printFoodItems(data["food"],selector,true);
             })
             .catch(function(error) {
                 $(selector).text("There was an error loading your items");

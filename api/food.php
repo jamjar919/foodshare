@@ -37,27 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
         getFoodListing($query, $location, $distance, $expiry, $time, $sort, $num, $offset);
     }
 }
-else if($_SERVER['REQUEST_METHOD'] === "POST") {
-    $response = array();
-    if (!isset($_POST["id"]) || !isset($_POST["claimer"])) {
-        $response["error"] = "id of food or username of claimer not provided";
-    }
-    else {
-        $id = $_POST['id'];
-        $claimer = $_POST['claimer'];
-        if(!isClaimed($id)) {
-            if (setFoodtoClaimed($id, $claimer)) {
-                $response['message'] = "Food successfully claimed";
-            } else {
-                $response['error'] = "Failed to claim food";
-            }
-        }
-        else {
-            $response['claimed'] = "Sorry, the food has already been claimed";
-        }
-    }
-    echo json_encode($response);
-}
 
 /**
  * Return json object containing food items sorted and filtered based on the user's search
@@ -183,38 +162,6 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         echo json_encode($food);
     }catch (PDOException $e) {
         echo $e->getMessage();
-    }
-}
-
-function isClaimed($id) {
-    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-    try {
-        $stmt = $db->prepare("SELECT claimer_username FROM food WHERE id = :id");
-        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetch();
-        if($result['claimer_username'] != "" || $result['claimer_username'] != null) {
-            return true;
-        }
-        return false;
-
-    }catch (PDOException $e) {
-        echo $e->getMessage();
-        return false;
-    }
-}
-
-function setFoodtoClaimed($id, $claimer) {
-    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-    try {
-        $stmt = $db->prepare("UPDATE food SET claimer_username = :claimer WHERE id = :id");
-        $stmt->bindValue(":claimer", $claimer, PDO::PARAM_STR);
-        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
-        return $stmt->execute();
-
-    }catch (PDOException $e) {
-        echo $e->getMessage();
-        return false;
     }
 }
 

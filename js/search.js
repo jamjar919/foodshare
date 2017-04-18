@@ -568,7 +568,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                         claimerButton.textContent = "Claim";
                         claimerButton.className = "btn btn-custom rajax";
                         claimerButton.addEventListener('click', function() {
-                            claimFood(element['id'], element['user_username'], user['username']);
+                            document.location = "claim.php?item="+element['id'];
                         }, false);
                         $('#' + element['id'] + ' .buttons').append(
                             claimerButton
@@ -576,7 +576,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                         $('#' + element['id'] + ' .card-time').text("Posted by " + element['user_username'] + " "
                             + moment(element["time"]).fromNow());
                     }
-                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 '>" +
+                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 search-image-wrap'>" +
                         "<img class='center' src='"+ element['image_url'] + "'>" +
                         "</div>"
                     );

@@ -10,67 +10,16 @@
         <p><a class="btn btn-primary btn-lg" href="register.php" role="button">Sign up now!</a></p>
     </div>
     <h2>See what's on offer...</h2>
-    <div class="inline-searchbar">
-        <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search food">
-            <div class="input-group-btn">
-                <div class="btn-group" role="group">
-                    <div class="dropdown dropdown-lg">
-                        <button id="search" class="btn btn-custom"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="masonry" id="frontpageitems">
     </div>
-    <div class="masonry">
-        <div class="card">
-            <img class="card-img-top" src="http://lorempixel.com/400/200/food/">
-            <div class="card-block">
-                <h4 class="card-title">Card title</h4>
-                <p class="card-text">Some quick example text to build on the card title.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card">
-            <img class="card-img-top" src="http://lorempixel.com/400/200/food/">
-            <div class="card-block">
-                <h4 class="card-title">Card title really really really really really really really really really really long</h4>
-                <p class="card-text">This defines the alignment along the main axis. It helps distribute extra free space left over when either all the flex items on a line are inflexible, or are flexible but have reached their maximum size. It also exerts some control over the alignment of items when they overflow the line..</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card">
-            <img class="card-img-top" src="http://lorempixel.com/400/200/food/">
-            <div class="card-block">
-                <h4 class="card-title">Card title</h4>
-                <p class="card-text">This allows the default alignment (or the one specified by align-items) to be overridden for individual flex items.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card">
-            <img class="card-img-top" src="http://lorempixel.com/400/200/food/">
-            <div class="card-block">
-                <h4 class="card-title">Card title</h4>
-                <p class="card-text">Note that visually the spaces aren't equal, since all the items have equal space on both sides. The first item will have one unit of space against the container edge, but two units of space between the next item because that next item has its own spacing that applies.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-block">
-                <h4 class="card-title">Card without an image header</h4>
-                <p class="card-text">This defines the default behaviour for how flex items are laid out along the cross axis on the current line. Think of it as the justify-content version for the cross-axis (perpendicular to the main-axis).</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-        <div class="card">
-            <img class="card-img-top" src="http://lorempixel.com/400/200/food/">
-            <div class="card-block">
-                <h4 class="card-title">Card title</h4>
-                <p class="card-text">stretch (default): stretch to fill the container (still respect min-width/max-width)</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-    </div>
+    <script>
+        $(document).ready(function () {
+            $.get("api/food.php?q=&location=54.7786523%2C-1.5614863&distance=30&expiry=Any%20time&time=Any%20time&sort=Closest&num=10&offset=0")
+            .then(function(data) {
+                printFoodItems(data["food"],"#frontpageitems")
+            }) 
+        })
+    </script>
 <?php
     $p->buildFooter();
 ?>

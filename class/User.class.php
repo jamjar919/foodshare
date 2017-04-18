@@ -187,7 +187,7 @@ class User
                         $row = $stmt->fetch();
                         $email = $row["email"];
                         // Send confirmation mail
-                        mail($email, "Email Change", "Hey! \n \n You changed your email to this new address. Click the link below to confirm that you own this email address: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&user=".$this->username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
+                        mail($email, "Email Change", "Hey! \n \n You changed your email to this new address. Click the link below to confirm that you own this email address: \n \n <a href=\"".DOMAIN."confirm.php?key=".$key."&username=".$this->username."\">Confirm registration</a> \n \n Thanks, \n The FoodShare Team");
                         return true;
                 } catch(PDOException $ex) {
                         return false;
@@ -419,6 +419,58 @@ class User
                         return json_encode($details);
                 } 
                 return json_encode((object) null);
-	}
+        }
+        
+        public function getOwnedClaimedFoods() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username AND claimer_username != '' AND item_gone = b'0'");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                    return null;
+            }
+        }
+        
+        public function getClaimedFoods() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username AND item_gone = b'0'");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                return null;
+            }
+        }
+        
+        public function getClaimHistory() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                    return null;
+            }
+        }
+        
+        public function getPostHistory() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $results = $stmt->fetchAll();
+                return $results;
+            } catch(PDOException $ex) {
+                    return null;
+            }
+        }
 }
 ?>

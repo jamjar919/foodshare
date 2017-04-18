@@ -3,6 +3,7 @@
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/class/User.class.php';
+require_once __ROOT__.'/class/UserTools.class.php';
 
 class Food
 {
@@ -173,7 +174,6 @@ class Food
             if ($stmt->rowCount()) {
                 return true;
             }
-            echo "insert failed";
             return false;
         } catch (PDOException $e) {
             return false;
@@ -294,6 +294,9 @@ class Food
         if ( ! $user->isLoggedIn()) {
             return null;
         }
+        if ( ! ($username === $this->owner)) {
+            return null;
+        }
         // DELET THIS
         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
         $stmt = $db->prepare("DELETE FROM food WHERE id = :id");
@@ -302,6 +305,120 @@ class Food
         if ($stmt->rowCount()) {
             return true;
         } else {
+            return false;
+        }
+    }
+    
+    public function claim() {
+        // Must be auth'ed
+        // Log in as the user that wants to claim
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $claimer = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($claimer,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET claimer_username = :claimer WHERE id = :id");
+            $stmt->bindValue(":claimer", $claimer, PDO::PARAM_STR);
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $result = $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+        // Send email!
+        mail(UserTools::getEmail($this->owner), "Item claimed!", "Hey! \n \n An item you put up, titled \"".$this->item["title"]."\" has been claimed by the user ".$claimer."! They should be in contact via the messaging system soon to arrange a pickup time. \n Thanks, \n FlavourTown");
+        return $result;
+   }
+        
+    public function unclaim() {
+        // Must be auth'ed as owner!
+        // Or as food claimer
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        if ( ! (
+            ($username === $this->owner) ||
+            ($username === $this->item["claimer_username"])
+        ) ) {
+            return false;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET claimer_username = '' WHERE id = :id");
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    public function markAsGone() {
+        // Must be auth'ed
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        if ( ! ($username === $this->owner)) {
+            return null;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET item_gone = b'1' WHERE id = :id");
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    public function unmarkAsGone() {
+        // Must be auth'ed
+        if (!isset($_COOKIE["username"])) {
+            return null;
+        }
+        if (!isset($_COOKIE["token"])) {
+            return null;
+        }
+        $username = $_COOKIE["username"];
+        $token = $_COOKIE["token"];
+        $user = new User($username,$token);
+        if ( ! $user->isLoggedIn()) {
+            return null;
+        }
+        if ( ! ($username === $this->owner)) {
+            return null;
+        }
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("UPDATE food SET item_gone = b'0' WHERE id = :id");
+            $stmt->bindValue(":id", $this->id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
             return false;
         }
     }
