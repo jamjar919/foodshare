@@ -20,6 +20,15 @@ h1,h2,h3,h4,h5,h6 {
     min-height: calc(100vh - 135px - 5em);  
 }
 
+.mobileonly {
+    display: none;
+}
+@media screen and (max-width: 660px) {
+    .mobileonly {
+        display: initial;
+    }
+}
+
 /**
  * 
  * H E A D E R
@@ -387,6 +396,18 @@ label {
 .gone-food-item:hover {
      opacity: 1;   
 }
+.glyphicon-collapse-down.mobileonly {
+    transition: 0.5s; 
+    display: inline-block;
+    -moz-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+.glyphicon-collapse-down.mobileonly.flipx {
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
 /** S P I N N I N G   F U N **/
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
@@ -637,7 +658,6 @@ input[type="color"]:focus,
         column-count: 2; 
     }
 }
-
 
 /* Tablets in portrait mode */
 @media screen and (max-width: 660px) {

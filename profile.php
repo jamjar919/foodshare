@@ -85,14 +85,20 @@
                     ?>
                 </div>
             </div>
-            <div class="row">
-                <h2 class="col-xs-6">Your items</h2>
-                <h2 class="col-xs-6 text-right"><small><a href="additem.php">Add a new item</a></small></h2>
+            <div class="collapsible-panels-mob">
+                <div class="row panel-control">
+                    <h2 class="col-xs-6">Your items &nbsp;<span class="glyphicon glyphicon-collapse-down mobileonly" style="font-size: 0.75em"></span></h2>
+                    <h2 class="col-xs-6 text-right"><small><a href="additem.php">Add a new item</a></small></h2>
+                </div>
+                <div id="myitems" class="masonry panel-content">
+                </div>
             </div>
-            <div id="myitems" class="masonry">
-            </div>
-            <h2>Items you might be interested in...</h2>
-            <div class="masonry" id="exampleitems">
+            <div class="collapsible-panels-mob">
+                <div class="row panel-control">
+                    <h2 class="col-xs-12">Items you might be interested in... &nbsp;<span class="glyphicon glyphicon-collapse-down mobileonly" style="font-size: 0.75em"></span></h2>
+                </div>
+                <div class="masonry panel-content" id="exampleitems">
+                </div>
             </div>
             <script>
                 $(document).ready(function () {
