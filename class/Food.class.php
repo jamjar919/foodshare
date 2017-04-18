@@ -36,9 +36,9 @@ class Food
                 $taglistid = $db->lastInsertId();
                 // Create the food item with default params
                 $stmt = $db->prepare("INSERT INTO `food` 
-                (`id`, `name`, `description`, `image_url`, `expiry`, `time`, `latitude`, `longitude`, `user_username`, `claimer_username`, `tag_list_id`) 
+                (`id`, `name`, `description`, `image_url`, `expiry`, `time`, `latitude`, `longitude`, `user_username`, `claimer_username`, `tag_list_id`, `item_gone`) 
                 VALUES 
-                (NULL, :name, :desc, '', CURRENT_DATE(), NOW(), :lat, :long, :user, '', :taglistid);");
+                (NULL, :name, :desc, '', CURRENT_DATE(), NOW(), :lat, :long, :user, '', :taglistid, 0);");
                 $stmt->bindValue(":name", "New Item", PDO::PARAM_STR);
                 $stmt->bindValue(":desc", "Write a description of your item here. Include helpful things like number of items, weight, and any other important information!", PDO::PARAM_STR);
                 $stmt->bindValue(":user", $username);
