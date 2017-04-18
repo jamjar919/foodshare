@@ -32,7 +32,7 @@ $p->buildHeader();
 ?>
 <?php UserTools::printErrors($errors); ?>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 login-form">
         <form action="#" method="POST">
             <div class="form">
                 <h2>Login</h2>
