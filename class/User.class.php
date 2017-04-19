@@ -472,5 +472,70 @@ class User
                     return null;
             }
         }
+        
+        /**
+        * Calculate the new user score based on items posted and collected. A item posted gets 10 points. A item posted that has been claimed gets an additional 10 points. 
+        * A posted item, that has been claimed, that has been picked up gets another 30 points! No points for just claiming items though (As this could lead to abuse)
+        * If you collect an item that someone else posted, you get 25 points. There is also a one time bonus of 25 points each for filling in a location or a profile picture.
+        * This total is then stored in the database.
+        *
+        * @returns  array Point bonus totals ["history"][BONUS_TYPE], and the total score ["score"] as a dictionary.
+        */
+        public function updateScore() {
+            try {
+                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username  OR claimer_username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $foodResults = $stmt->fetchAll();
+                $stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
+                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                $stmt->execute();
+                $userInfo = $stmt->fetch();
+            } catch(PDOException $ex) {
+                return false;
+            }
+            $score = 0;
+            $return = array();
+            $return["OWN"] = 0;
+            $return["OWN_CLAIMED"] = 0;
+            $return["OWN_GONE"] = 0;
+            $return["PICKEDUP"] = 0;
+            $return["PROFILE"] = 0;
+            foreach($foodResults as $result) {
+                $historyRow = $result;
+                if ($result["user_username"] == $this->username) {
+                    // User owns this item
+                    $return["OWN"] += 10;
+                    $score += 10;
+                    if (!empty($result["claimer_username"])) {
+                        $return["OWN_CLAIMED"] += 10;
+                        $score += 10
+                        if ($result["item_gone"]) {
+                            $return["OWN_GONE"] += 30;
+                            $score += 30;
+                        }
+                    }
+                } else if($result["claimer_username"] == $this->username) {
+                    // User claimed this item
+                    // No points for just claiming
+                    if ($result["item_gone"]) {
+                        $return["PICKEDUP"] += 25;
+                        $score += 25;
+                    }
+                }
+            }
+            // Calculate one time bonuses
+            if (!empty($userInfo["postcode"])) {
+                $return["PROFILE"] += 25;
+                $score += 25;
+            }
+            if (!empty($userInfo["profile_picture_url"])) {
+                $return["PROFILE"] += 25;
+                $score += 25;
+            }
+            $return["score"] = $score;
+            return $return;
+        }
 }
 ?>
