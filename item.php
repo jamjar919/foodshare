@@ -19,6 +19,7 @@
         return;
     }
     $owner = new User($food->item["user_username"]);
+    $owner->updateScore();
     $ownerProfile = $owner->getPublicProfile();
     $isOwner = $food->item["user_username"] == $p->user->username;
     $gone = $food->item["item_gone"];
