@@ -7,6 +7,9 @@ var messageSettings = {
 var endpoint = "api/messages.php";
 function sendMessage(message) {
 	
+<<<<<<< HEAD
+	 
+=======
 	// var formData = new FormData();
 	// formData.append("conversation_id", 3);
 	// formData.append("text", message);
@@ -15,10 +18,14 @@ function sendMessage(message) {
 	// var request = new XMLHttpRequest();
 	// request.open("POST", endpoint);
 	// request.send(formData)
+>>>>>>> 68fb6548c37bed40d30fa75e89541c11fbfb995e
 	
     // this should ajax the endpoint to update the database
     // but for now it just adds the message to the DOM
+	console.log(messageSettings.from);
+	console.log(messageSettings.sentTo);
     if (messageSettings.sentTo != null) {
+		$.post(endpoint, {from: messageSettings.from, sendTo: messageSettings.sentTo, text: message, read: 0, message_type: 1})
         addMessage(message, new Date(), true);
     }
 }

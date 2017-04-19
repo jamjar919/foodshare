@@ -25,6 +25,7 @@
             </div>
         </div>
     </div>
+
     <script>
         function sendMessageWrapper() {
             var message = $('#messageBox').val();

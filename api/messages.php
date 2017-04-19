@@ -1,4 +1,3 @@
-
 <?php
 
 define('__ROOT__',dirname(dirname(__FILE__)));
@@ -16,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
         getConversationList();
     }
 } else if($_SERVER['REQUEST_METHOD'] == "POST"){
-    if (empty($_POST["conversation_id"]) || empty($_POST["text"])  || empty($_POST["read"]) || empty($_POST["message_type"])) {
+    if (!isset($_POST["from"]) ||!isset($_POST["sendTo"]) || !isset($_POST["text"])  || !isset($_POST["read"]) || !isset($_POST["message_type"])) {
         echo "Missing parameter(s)";
     } else {
-        addMessage($_POST["conversation_id"],$_POST["text"],$_POST["read"],$_POST["message_type"]);
+        addMessage($_POST["from"],$_POST["sendTo"],$_POST["text"],$_POST["read"],$_POST["message_type"]);
     }
 }
 
@@ -52,8 +51,36 @@ function getMessage($id){
     echo json_encode($messages);
 }
 
-function addMessage($conversation_id, $text, $read, $message_type){
-    try {
+function getConversationID($from, $to){
+	//if conversation exists get the id, else create the conversation
+	$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+	$stmt = $db->prepare("
+	SELECT conversation.id FROM `conversation` WHERE (conversation.sender_username = :user1) AND (conversation.receiver_username = :user2)
+	");
+	$stmt->bindValue(':user1', $from, PDO::PARAM_STR);
+    $stmt->bindValue(':user2', $to, PDO::PARAM_STR);
+	$stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if (isset($results[0])){
+		return $results[0]['id'];
+	}else{
+			try {
+			$stmt = $db->prepare("INSERT INTO `conversation` (`id`, `sender_username`, `receiver_username`) VALUES (NULL, :sender_username, :receiver_username);");
+			$stmt->bindValue(':sender_username', $from, PDO::PARAM_STR);
+			$stmt->bindValue(':receiver_username', $to, PDO::PARAM_STR);
+			$stmt->execute();
+		} catch(PDOEXCEPTION $e) {
+			echo "There was a database error, please try again later.";
+		}
+		$conversation_id = getConversationID($from, $to);
+		echo $conversation_id;
+		return $conversation_id;
+	}
+}
+
+function addMessage($from, $to, $text, $read, $message_type){
+    $conversation_id = getConversationID($from, $to);
+	try {
 		$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
         $stmt = $db->prepare("INSERT INTO `message` (`id`, `conversation_id`, `text`, `time`, `read`, `message_type`) VALUES (NULL, :conversation_id, :text, NOW(), :read, :message_type);");
         $stmt->bindValue(':conversation_id', $conversation_id, PDO::PARAM_INT);
