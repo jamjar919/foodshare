@@ -534,7 +534,16 @@ class User
                 $return["PROFILE"] += 25;
                 $score += 25;
             }
+            if ($userInfo["verified"]) {
+                $return["PROFILE"] += 25;
+                $score += 25;
+            }
             $return["score"] = $score;
+            // Update the database with the new score
+            $stmt = $db->prepare("UPDATE user SET score = :score WHERE username = :username");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->bindValue(":score", $score, PDO::PARAM_INT);
+            $stmt->execute();
             return $return;
         }
 }
