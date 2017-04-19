@@ -61,7 +61,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
     //check if expiry date and time is empty for any time filter
 
     if (($q != "" && !ctype_space($q)) || $sort == "Best match") {
-        $query .= "INNER JOIN tag_list ON tag_list.id = f.id
+        $query .= "INNER JOIN tag_list ON tag_list.id = f.tag_list_id
         INNER JOIN tag t ON t.id = tag_list.tag_id
         WHERE MATCH(f.name, f.description, t.name) 
         AGAINST ('$q' IN BOOLEAN MODE) AND (f.claimer_username = NULL OR f.claimer_username = '') ";
