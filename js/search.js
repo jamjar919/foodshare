@@ -483,8 +483,6 @@ function addLinks() {
 
 
     var totalLinks = Math.ceil(totalResults / resultsPerPage);
-    console.log("totalResults = " + totalResults);
-    console.log("resultsPerPage = " + resultsPerPage);
     var paginationList = "";
 
     if(totalLinks > 1) {
@@ -532,7 +530,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
         'style="display: block; margin: 0 auto; width: 200px; height: auto;"/>');
     $.getJSON("api/food.php", parameters, function(data) {
         var foodInfo = $('<div></div>').addClass('food');
-        console.log(data);
+        var currentDate = new Date();
         if(data.hasOwnProperty('error')) {
 
             foodInfo.append('<p style="text-align: center">No food found</p>');
@@ -541,32 +539,24 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
             $('#map-button').css("visibility", "visible");
             initMap(location.split(","));
             setMapBounds(location.split(","), distance);
-            var expiryString;
             $.each(data.food, function (key, element) {
-
                 var address = convertGeocode(element['latitude'], element['longitude']);
                 var p = Promise.resolve(address);
                 p.then(function(address) {
-                    if(moment(element["expiry"]).diff(moment()) < 0) {
-                        expiryString = "Expired ";
-                    }
-                    else {
-                        expiryString = "Expires ";
-                    }
                     foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
                     "<div class='row'>" +
                         "<div class='col-md-8 col-sm-8 col-xs-7'>" +
                             "<div class='card-block'>" +
                                 "<h4 class='card-title'>" + element['name'] + "</h4>" +
                                 "<p class='card-text card-time' style='font-style=italic '> Posted " +moment(element["time"]).fromNow() + "</p>" +
-                                "<p >" + expiryString + moment(element["expiry"]).fromNow()+"</p>" +
+                                "<p>" + ((moment(element["expiry"]).isAfter(currentDate)) ? "Expires ": "Expired ")+moment(element["expiry"]).fromNow()+"</p>" +
                                 "<div class='btn-group buttons'>" +
                                 "<a href='item.php?item="+element['id'] + "' class='btn btn-custom'>More</a>" +
                         "</div></div></div>");
                     if(memberSearch) {
                         var claimerButton = document.createElement('button');
                         claimerButton.textContent = "Claim";
-                        claimerButton.className = "btn btn-custom rajax";
+                        claimerButton.className = "btn btn-custom";
                         claimerButton.addEventListener('click', function() {
                             document.location = "claim.php?item="+element['id'];
                         }, false);
@@ -822,29 +812,6 @@ $( '.page-content' ).click(function(e) {
     });
     return false;
 });
-/**Send post request to set food item to claimed then send notification to poster
- *
- *
- * @param id ID of food item
- * @param poster Poster's username
- * @param claimer Claimer's username
- */
-function claimFood(id, poster, claimer) {
-    var parameters = {id: id, claimer: claimer};
-    $.post("api/food.php", parameters)
-        .done(function(data) {
-            if(data.hasOwnProperty("error")) {
-                console.log(data.error);
-            }
-            else if (data.hasOwnProperty("claimed")){
-                alert(data.claimed);
-            }
-            else {
-                alert(data.message);
-            }
-        });
-    //TODO send notification to poster to say food has been claimed
-}
 
 function getUser() {
     return new Promise(function(resolve,reject) {
@@ -884,7 +851,6 @@ function saveState(q, location, distance, expiry, time, sort, resultsPerPage, of
         offset: offset,
         address: address
     };
-    console.log(url);
     history.pushState(parameters, '', url);
 
 
@@ -894,7 +860,6 @@ function saveState(q, location, distance, expiry, time, sort, resultsPerPage, of
 $(window).bind('popstate', function(event) {
 
     var parameters = event.originalEvent.state;
-    console.log(parameters);
     //if state exists then reload page with search
     if(parameters === "advancedSearch") {
         $('.content').html(addSideSearchbar(6));
