@@ -510,7 +510,7 @@ class User
                     $score += 10;
                     if (!empty($result["claimer_username"])) {
                         $return["OWN_CLAIMED"] += 10;
-                        $score += 10
+                        $score += 10;
                         if ($result["item_gone"]) {
                             $return["OWN_GONE"] += 30;
                             $score += 30;

@@ -413,6 +413,9 @@ label {
 .collapsible-panels-mob:not(.active) h3 {
     margin: 0;
 }
+.score-details h1 {
+    margin: 0.25em 0;
+}
 /** S P I N N I N G   F U N **/
 .glyphicon-refresh-animate {
     -animation: spin .7s infinite linear;
