@@ -36,15 +36,15 @@ class Food
                 $taglistid = $db->lastInsertId();
                 // Create the food item with default params
                 $stmt = $db->prepare("INSERT INTO `food` 
-                (`id`, `name`, `description`, `image_url`, `expiry`, `time`, `latitude`, `longitude`, `user_username`, `claimer_username`, `tag_list_id`) 
+                (`id`, `name`, `description`, `image_url`, `expiry`, `time`, `latitude`, `longitude`, `user_username`, `claimer_username`, `tag_list_id`, `item_gone`) 
                 VALUES 
-                (NULL, :name, :desc, '', CURRENT_DATE(), NOW(), :lat, :long, :user, '', :taglistid);");
+                (NULL, :name, :desc, '', CURRENT_DATE(), NOW(), :lat, :long, :user, '', :taglistid, 0);");
                 $stmt->bindValue(":name", "New Item", PDO::PARAM_STR);
                 $stmt->bindValue(":desc", "Write a description of your item here. Include helpful things like number of items, weight, and any other important information!", PDO::PARAM_STR);
-                $stmt->bindValue(":user", $username);
-                $stmt->bindValue(":lat", $profile['latitude']);
-                $stmt->bindValue(":long", $profile['longitude']);
-                $stmt->bindValue(":taglistid", $taglistid);
+                $stmt->bindValue(":user", htmlspecialchars($username, ENT_QUOTES));
+                $stmt->bindValue(":lat", htmlspecialchars($profile['latitude'], ENT_QUOTES));
+                $stmt->bindValue(":long", htmlspecialchars($profile['longitude'], ENT_QUOTES));
+                $stmt->bindValue(":taglistid", htmlspecialchars($taglistid, ENT_QUOTES));
                 $stmt->execute();
                 // Reset id to the id of the row to prepare for loading
                 $id = $db->lastInsertId();
@@ -81,12 +81,12 @@ class Food
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
             $stmt = $db->prepare("UPDATE food SET `name` = :name, `description` = :desc, `expiry` = :expiry, `time` = NOW(), `latitude` = :lat, `longitude` = :long, `image_url` = :url WHERE `id` = :id;");
             $stmt->bindValue(":id", intval($this->id), PDO::PARAM_INT);
-            $stmt->bindValue(":name", $name, PDO::PARAM_STR);
-            $stmt->bindValue(":desc", $desc, PDO::PARAM_STR);
-            $stmt->bindValue(":expiry", $expiry, PDO::PARAM_STR);
-            $stmt->bindValue(":lat", $lat, PDO::PARAM_STR);
-            $stmt->bindValue(":long", $long, PDO::PARAM_STR);
-            $stmt->bindValue(":url", $imageurl, PDO::PARAM_STR);
+            $stmt->bindValue(":name", htmlspecialchars($name, ENT_QUOTES), PDO::PARAM_STR);
+            $stmt->bindValue(":desc", htmlspecialchars($desc, ENT_QUOTES), PDO::PARAM_STR);
+            $stmt->bindValue(":expiry", htmlspecialchars($expiry, ENT_QUOTES), PDO::PARAM_STR);
+            $stmt->bindValue(":lat", htmlspecialchars($lat, ENT_QUOTES), PDO::PARAM_STR);
+            $stmt->bindValue(":long", htmlspecialchars($long, ENT_QUOTES), PDO::PARAM_STR);
+            $stmt->bindValue(":url", htmlspecialchars($imageurl, ENT_QUOTES), PDO::PARAM_STR);
             $stmt->execute();
             if ($stmt->rowCount()) {
                 return true;
@@ -112,7 +112,7 @@ class Food
             $tag = $this->stripTag($tag);
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
             $stmt = $db->prepare("INSERT INTO `tag` (`id`, `name`) VALUES (NULL, :tag);");
-            $stmt->bindValue(":tag", $tag, PDO::PARAM_STR);
+            $stmt->bindValue(":tag", htmlspecialchars($tag, ENT_QUOTES), PDO::PARAM_STR);
             $stmt->execute();
             if ($stmt->rowCount()) {
                 return $db->lastInsertId();
@@ -168,8 +168,8 @@ class Food
             }
             // Create new tag link
             $stmt = $db->prepare("INSERT INTO tag_list (id, tag_id) VALUES (:taglistid, :tagid)");
-            $stmt->bindValue(":tagid", $tagId, PDO::PARAM_INT);
-            $stmt->bindValue(":taglistid", $tagListId, PDO::PARAM_INT);
+            $stmt->bindValue(":tagid", htmlspecialchars($tagId, ENT_QUOTES), PDO::PARAM_INT);
+            $stmt->bindValue(":taglistid", htmlspecialchars($tagListId, ENT_QUOTES), PDO::PARAM_INT);
             $stmt->execute();
             if ($stmt->rowCount()) {
                 return true;
@@ -334,7 +334,7 @@ class Food
             return false;
         }
         // Send email!
-        mail(UserTools::getEmail($this->owner), "Item claimed!", "Hey! \n \n An item you put up, titled \"".$this->item["title"]."\" has been claimed by the user ".$claimer."! They should be in contact via the messaging system soon to arrange a pickup time. \n Thanks, \n FlavourTown");
+        mail(UserTools::getEmail($this->owner), "Item claimed!", "Hey! \n \n An item you put up, titled \"".$this->item["name"]."\" has been claimed by the user ".$claimer."! They should be in contact via the messaging system soon to arrange a pickup time. \n\n Thanks, \n FlavourTown");
         return $result;
    }
         

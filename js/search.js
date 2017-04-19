@@ -61,7 +61,7 @@ $('document').ready(function() {
         if (navigator.geolocation && !memberSearch){
             navigator.geolocation.getCurrentPosition(
                 function(position){
-                    initialPosition = position.coords.latitude + "," +position.coords.longitude;
+                    initialPosition = String(position.coords.latitude + "," +position.coords.longitude);
                     console.log("Got initial position as: "+initialPosition);
                     var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
                     var p = Promise.resolve(address);
@@ -72,7 +72,7 @@ $('document').ready(function() {
                 },
                 function(error){
                     // If we don't find the initial position just go L O N D O N
-                    initialPosition = 51.5 + "," -0.09;
+                    initialPosition = "51.5 , -0.09";
                     console.log("Error getting pos: "+error);
                     var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
                     var p = Promise.resolve(address);
@@ -257,20 +257,21 @@ function addContainers() {
 
 //create search bar
 function addSideSearchbar(colwidth) {
-    return   $("<div>")
+    var sidebar = $("<div>")
         .addClass("col-md-" + colwidth + " advancedSearchbar")
         .append(
             $("<div>")
                 .addClass("card")
                 .append(
                     $("<div>")
-                        .addClass("card-block")
+                        .addClass("card-block collapsible-panels-mob")
                         .append(
-                            $("<h3>").text("Advanced search")
+                            $("<h3>").text("Advanced search").addClass("panel-control")
+                            .append('&nbsp;<span class="glyphicon glyphicon-collapse-down mobileonly" style="font-size: 0.75em;float:right;padding-top:0.25em"></span>')
                         )
                         .append(
                             $("<form>")
-                                .addClass("form-horizontal")
+                                .addClass("form-horizontal panel-content")
                                 .append(
                                     $("<div>")
                                         .addClass("form-group")
@@ -366,7 +367,8 @@ function addSideSearchbar(colwidth) {
                 )
 
         )
-
+        bindCollapse();
+        return sidebar;
 }
 
 function updateSideBar(q, location, distance, expiry, time, sort, resultsPerPage) {
@@ -462,6 +464,8 @@ function configureBootstrap() {
         },
         minLength: 3
     });
+    // Bind toogle for mobile
+    bindCollapse();
 }
 
 /**Update the pagination links
@@ -545,7 +549,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                 p.then(function(address) {
                     foodInfo.append("<div class='card' id='" + element['id'] + "'>" +
                     "<div class='row'>" +
-                        "<div class='col-md-8 col-sm-8 col-xs-7'>" +
+                        "<div class='col-md-8 col-sm-8'>" +
                             "<div class='card-block'>" +
                                 "<h4 class='card-title'>" + element['name'] + "</h4>" +
                                 "<p class='card-text card-time' style='font-style=italic '> Posted " +moment(element["time"]).fromNow() + "</p>" +
@@ -566,7 +570,7 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                         $('#' + element['id'] + ' .card-time').text("Posted by " + element['user_username'] + " "
                             + moment(element["time"]).fromNow());
                     }
-                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 col-xs-5 search-image-wrap'>" +
+                    $('#' + element['id'] + ' .row').append("<div class='col-md-4 col-sm-4 search-image-wrap'>" +
                         "<img class='center' src='"+ element['image_url'] + "'>" +
                         "</div>"
                     );

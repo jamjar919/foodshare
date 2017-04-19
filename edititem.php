@@ -103,7 +103,7 @@
         </div>
         <br>
         <?php } ?>
-        <div class="card">
+        <div class="card edit-buttons">
             <div class="card-block">
                 <?php if (!$gone) { ?>
                     <div class="btn-group btn-group-fullwidth" role="group" aria-label="...">
