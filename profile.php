@@ -5,6 +5,7 @@
     $p->buildHead();
     $p->buildHeader();
     $profile = $p->user->getPrivateProfile();
+    $p->user->updateScore();
 ?>
     <div class="row">
         <div class="col-sm-3">
