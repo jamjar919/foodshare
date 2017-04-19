@@ -19,7 +19,7 @@ var initialPosition = null;
 var initialAddress = "";
 
 $('document').ready(function() {
-    if(window.location.hash) {
+    if(window.location.hash.length > 1) {
         addContainers();
         configureBootstrap();
 
