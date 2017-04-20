@@ -1,3 +1,8 @@
+<?php 
+/**
+ * The page for displaying individual user details, and the associated food items
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

@@ -1,3 +1,8 @@
+<?php 
+/**
+ * The homepage of the site.
+ */
+?>
 <?php
     require 'class/Page.class.php';
     $p = new Page("Home");

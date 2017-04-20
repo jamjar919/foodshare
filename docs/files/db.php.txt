@@ -1,0 +1,6 @@
+<?php
+define("DOMAIN", "http://community.dur.ac.uk/cs.seg01/foodshare/");
+define("DBUSER","root");
+define("DBPASS","indyleia");
+define("DBSERV","localhost");
+define("DBNAME","Xdcs8s01_FlavorTown");

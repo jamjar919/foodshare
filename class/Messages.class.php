@@ -8,7 +8,8 @@ require_once __ROOT__.'/class/User.class.php';
  *  This class is used to add and retrieve a set of messages between two users.
  */
 class Messages {
-
+    
+    /** The user who is loading messages */
     public $user = null;
 
     /**

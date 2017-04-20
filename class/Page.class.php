@@ -9,9 +9,13 @@ require_once __ROOT__.'/class/User.class.php';
  */
 class Page
 {
+    /** The name of the page. Goes in the <title> tags **/
     public $name;
+    /** The username of the logged in user (if there is one). Null otherwise */
     public $username;
+    /** The user object of the logged in user (if there is one). Null otherwise */
     public $user;
+    /** Boolean reperesenting whether the current user is logged in */
     private $isLoggedIn;
 
     /**

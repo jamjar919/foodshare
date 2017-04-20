@@ -1,3 +1,8 @@
+<?php 
+/**
+ * The page for authorising a claim. Redirects to the messaging page on claiming item.
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

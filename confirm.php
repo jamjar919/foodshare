@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Page that verifies an email address using the get parameters ?username=val and ?key=val
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require_once __ROOT__."/class/User.class.php";

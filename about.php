@@ -1,3 +1,8 @@
+<?php 
+/**
+ * About page explaining the mission of Flavourtown
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

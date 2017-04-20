@@ -1,3 +1,8 @@
+<?php 
+/**
+ * The page for viewing an individual item. Pass the get parameter ?item=val to view that item.
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

@@ -1,0 +1,64 @@
+<?php
+
+define('__ROOT__',dirname(__FILE__));
+require __ROOT__.'/db.php';
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] == "GET") {
+	if (isset($_GET['sname'])){
+        $sname = $_GET['sname'];
+		getConversationsFrom($sname);
+	}else if (isset($_GET['rname'])){
+		$rname = $_GET['rname'];
+		getConversationsTo($rname);
+        
+	} else	{
+		echo json_encode(array("error" => "no Sender or reciever name defined"));
+	}
+
+}else if($_SERVER['REQUEST_METHOD'] == "POST"){
+	if (empty($_POST["id"] || empty($_POST["sender_username"] || empty($_POST["receiver_username"]){
+		echo "Missing parameter(s)";
+	}else{
+		addConversation($_POST["id"],$_POST["sender_username"],$_POST["receiver_username"]);
+	}
+}
+
+
+function getConversationsFrom($sname){
+	$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
+	$stmt = $db->prepare("SELECT c.id, c.sender_username, c.receiver_username FROM conversation as c WHERE MATCH(`sender_username`) AGAINST ('$sname*' IN BOOLEAN MODE)");
+	$stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$conversations = array(
+                    "conversations" => $results
+                );
+	echo json_encode($conversations);
+}
+
+function getConversationsTo($rname){
+	$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
+	$stmt = $db->prepare("SELECT c.id, c.sender_username, c.receiver_username FROM conversation as c WHERE MATCH(`receiver_username`) AGAINST ('$rname*' IN BOOLEAN MODE)");
+	$stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$conversations = array(
+                    "conversations" => $results
+                );
+	echo json_encode($conversations);
+}
+
+function addConversation($id, $sname, $rname){
+	try {
+
+			$stmt = $db->prepare("INSERT INTO `conversation` (`id`, `sender_username`, `receiver_username`) VALUES (:id, :sender_username, :receiver_username);");
+			
+			$stmt->bindValue(':id', $id, PDO::PARAM_INT);
+			$stmt->bindValue(':sender_username', $sname, PDO::PARAM_STR);
+			$stmt->bindValue(':receiver_username', $rname, PDO::PARAM_STR);
+			$stmt->execute();
+		} catch(PDOEXCEPTION $e) {
+			echo "There was a database error, please try again later.";
+		}
+}
+
+?>

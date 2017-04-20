@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Deletes the item and returns to the profile page with a message.
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Food.class.php';

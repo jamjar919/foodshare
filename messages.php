@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Displays messages. Use the parameter ?user=val to view messages between the currently logged in user and val.
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

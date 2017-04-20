@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Displays the claim history for the currently logged in user
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

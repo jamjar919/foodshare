@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Page allowing the current user to edit their profile with AJAX requests to the API.
+ */
+?>
 <?php
 define('__ROOT__',dirname(__FILE__));
 require __ROOT__.'/class/Page.class.php';

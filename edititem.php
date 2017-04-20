@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Page allowing editing of the item specified in the ?item=val parameter. Must be logged in and own the item specified!
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require_once __ROOT__.'/class/Page.class.php';

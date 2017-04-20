@@ -5,14 +5,16 @@ require_once __ROOT__.'/class/User.class.php';
 require_once __ROOT__.'/class/UserTools.class.php';
 
 /**
-*  This class represents a food object.
 *  This class represents a food object. It can be loaded by any user - However it must be loaded by the owner with the correct cookie set in order to access methods that
 *  modify database data. Constructing the object with a null reference will create a new food item and you must be logged in for this.
 */
 class Food
 {
+    /** The unique database ID of the food item */
     private $id;
+    /** The username of the owner */
     private $owner;
+    /** The saved database details of the item as a dictionary */
     public $item = null;
 
     /**

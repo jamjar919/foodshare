@@ -1,3 +1,8 @@
+<?php 
+/**
+ * The nerve center of a logged in user. Displays their items, links to other pages, profile summary, and suggested items
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

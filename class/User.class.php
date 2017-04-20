@@ -9,8 +9,11 @@ require_once __ROOT__.'/lib/password.php'; // Password hashing library
  */
 class User
 {
+    /** The username of the user */
     public $username;
+    /** The auth token of the user, if it exists. Null otherwise */
     public $authtoken;
+    /** Whether the current user is logged in **/
     private $isLoggedIn = false;
 
     /**
@@ -54,6 +57,9 @@ class User
 		}
         }
 
+        /**
+         * Helper function to set cookies to expected values
+         */
 	public function setUserCookie() {
 		setcookie("token", $this->authtoken);
 		setcookie("username", $this->username);

@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Frequently asked questions page.
+ */
+?>
 <?php
     define('__ROOT__',dirname(__FILE__));
     require __ROOT__.'/class/Page.class.php';

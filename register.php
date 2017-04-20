@@ -1,3 +1,9 @@
+<?php 
+/**
+ * The page to register a new user to the site. Calls on the register methods in usertools, and will redirect
+ * the user to their profile page if they're already logged in 
+ */
+?>
 <?php
 require 'class/Page.class.php';
 $p = new Page("Register");

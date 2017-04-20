@@ -1,3 +1,8 @@
+<?php 
+/**
+ * Login page, displaying a login form. Contains code for creating new auth tokens using the user object
+ */
+?>
 <?php
 ob_start();
 require 'class/Page.class.php';
