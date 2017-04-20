@@ -1,0 +1,58 @@
+<?php
+    define('__ROOT__',dirname(__FILE__));
+    require __ROOT__.'/class/Page.class.php';
+    $p = new Page("User Home", true);
+    $p->buildHead();
+    $p->buildHeader();
+    $profile = $p->user->getPrivateProfile();
+    $scoreDetails = $p->user->updateScore();
+?>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-block text-center score-details">
+                    <h1>Score: <?php echo $scoreDetails["score"]; ?> </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-block">
+                    <h3>From posting items: <?php echo $scoreDetails["OWN"] + $scoreDetails["OWN_CLAIMED"] + $scoreDetails["OWN_GONE"]; ?></h3>
+                    <?php echo $scoreDetails["OWN"]; ?> for posting items <br>
+                    <?php echo $scoreDetails["OWN_CLAIMED"]; ?> for posting items that have been claimed<br>
+                    <?php echo $scoreDetails["OWN_GONE"]; ?> for posting items that have been collected<br>
+                </div>
+                <div class="card-footer">
+                    <a href="posthistory.php">View post history</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-block">
+                    <h3>From collecting items: <?php echo $scoreDetails["PICKEDUP"]; ?></h3>
+                    <?php echo $scoreDetails["PICKEDUP"]; ?> for collecting items<br>
+                </div>
+                <div class="card-footer">
+                    <a href="claimhistory.php">View claim history</a>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-block">
+                    <h3>From filling in profile: <?php echo $scoreDetails["PROFILE"]; ?></h3>
+                    Fill in your location, profile picture, and verify your email to get a 1 time bonus of 25 points each!
+                </div>
+                <div class="card-footer">
+                    <a href="editprofile.php">Edit profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php
+    $p->buildFooter();
+?>

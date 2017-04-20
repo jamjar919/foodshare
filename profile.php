@@ -5,6 +5,7 @@
     $p->buildHead();
     $p->buildHeader();
     $profile = $p->user->getPrivateProfile();
+    $p->user->updateScore();
 ?>
     <div class="row">
         <div class="col-sm-3">
@@ -17,6 +18,9 @@
                     <p class="card-text">Location: <?php echo $profile['postcode']; ?> (<?php echo $profile['latitude']; ?>, <?php echo $profile['longitude']; ?>)</p>
                     <a href="editprofile.php" class="btn btn-primary">Edit Details</a>
                 </div>
+                <div class="card-footer">
+                <?php echo $profile['score'];?> points
+                </div>
             </div>
             <div class="card user-profile-links">
                 <ul class="list-group list-group-flush">
@@ -25,6 +29,7 @@
                     <li class="list-group-item"><a href="messages.php">Messages</a></li>
                     <li class="list-group-item"><a href="claimhistory.php">Claim History</a></li>
                     <li class="list-group-item"><a href="posthistory.php">Post History</a></li>
+                    <li class="list-group-item"><a href="score.php">Score Breakdown</a></li>
                 </ul>
             </div>
         </div>

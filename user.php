@@ -18,6 +18,7 @@
         $p->buildFooter();
         return;
     }
+    $u->updateScore();
     $p->name = $profile["username"];
     $p->buildHead();
     $p->buildHeader();
