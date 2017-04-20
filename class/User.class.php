@@ -1,4 +1,7 @@
 <?php
+/**
+ * TODO Description of the class goes here
+ */
 
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
@@ -10,7 +13,13 @@ class User
         public $authtoken;
         private $isLoggedIn = false;
 
-        function __construct($user, $auth="") {
+    /**
+     * User constructor.
+     * @param string $user Username
+     * @param string $auth Auth token, empty by default
+     */
+
+    function __construct($user, $auth="") {
 		$this->username = $user;
 		if ($auth !== "") {
 			// User is trying to auth
@@ -18,14 +27,22 @@ class User
 			$this->isLoggedIn = $this->checkLoginToken($auth);
 		}
 	}
-	
+
+    /**
+     * Checks to see if the user is logged in
+     *
+     * @return bool True if the user is logged in, false if they are not
+     */
 	public function isLoggedIn() {
 		return $this->isLoggedIn;
 	}
-	
-	/**
-	* Sets the auth token as a cookie if password is correct
-	**/
+
+    /**
+     * Sets the auth token as a cookie if password is correct
+     *
+     * @param $password Password of the user
+     * @return bool     false if login unsuccessful
+     */
         public function login($password) {
         $token = $this->generateLoginToken($password);
 		if ($token === false) {
@@ -37,7 +54,7 @@ class User
 			$this->setUserCookie();
 		}
         }
-	
+
 	public function setUserCookie() {
 		setcookie("token", $this->authtoken);
 		setcookie("username", $this->username);
@@ -46,9 +63,9 @@ class User
 	/**
 	* Generate a login token string, given a valid username and password. Checks against the database to make sure the password matches the one on record. Returns false otherwise
 	*
-	* @param string $password Password of user to generate a hash for
+	* @param string $password   Password of user to generate a hash for
 	*
-	* @return string The valid login token. Returns false if the data was invalid.
+	* @return string            The valid login token. Returns false if the data was invalid.
 	*/
 	public function generateLoginToken($password) {
 		$username = $this->username;
@@ -83,7 +100,7 @@ class User
 	/**
 	* Makes a new token, based on random data
 	*
-	* @returns string A random login token
+	* @returns string   A random login token
 	**/
 	public function makeNewToken() {
 		return md5((string)rand(0,100000));
@@ -92,9 +109,9 @@ class User
 	/**
 	* Check the login token to make sure it is in date, correct for the user, and still valid.
 	*
-	* @param string $token Token you want to check if it is valid or not
+	* @param string $token  Token you want to check if it is valid or not
 	*
-	* @return boolean True if the token is valid, False if the token is valid, or does not match the UID supplied
+	* @return boolean       True if the token is valid, False if the token is valid, or does not match the UID supplied
 	**/
 	public function checkLoginToken($token) {
 		$db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
@@ -118,10 +135,14 @@ class User
 		}
 		return false;
 	}
-	
-	/**
-	* Updates the users postcode to the specified value. Returns FALSE on failure.
-	**/
+
+    /**
+     * Updates the users postcode to the specified value. Returns FALSE on failure.
+     *
+     * @param string $newPostcode   New postcode
+     * @return bool                 True if the postcode was successfully updated, false if the user is not logged in or
+     *                              the update failed
+     */
 	public function updatePostcode($newPostcode) {
 		if ($this->isLoggedIn()) {
 			try {
@@ -140,11 +161,14 @@ class User
 		}
 		return false;
 	}
-	
-	
-	/**
-	* Updates the user location to the specified lat/long. Returns FALSE on failure.
-	**/
+
+    /**
+     * Updates the user location to the specified lat/long. Returns FALSE on failure.
+     *
+     * @param $latitude     Latidude of the user
+     * @param $longitude    Longitude of the user
+     * @return bool         True if the update is successful, false if the user is not logged in or on update failure
+     */
 	public function updateLocation($latitude, $longitude) {
 		if ($this->isLoggedIn()) {
 			if (($latitude <= 90) && ($latitude >= -90) &&	($longitude <= 180) && ($longitude >= -180)
@@ -167,10 +191,12 @@ class User
 		}
 		return false;
 	}
-	
-	/**
-	* Resend the verification email to the email address listed in the user profile, and generate new keys and that.
-	**/
+
+    /**
+     * Resend the verification email to the email address listed in the user profile, and generate new keys and that.
+     *
+     * @return bool True on successful verification, false on failure
+     */
 	private function reverifyEmail() {
                 try {
                         $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
@@ -193,54 +219,63 @@ class User
                         return false;
                 }
 	}
-	
-	
-	/**
-	* Update the listed email address. Returns FALSE on failure. Also triggers a verification update.
-	**/
-        public function updateEmail($email) {
-                if ($this->isLoggedIn()) {
-                        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                                try {
-                                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                                        $stmt = $db->prepare("UPDATE user SET verified = 0, email = :email WHERE username = :username");
-                                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                                        $stmt->bindValue(":email", htmlspecialchars($email, ENT_QUOTES), PDO::PARAM_STR);
-                                        $stmt->execute();
-                                        if ($stmt->rowCount()) {
-                                                $this->reverifyEmail();
-                                                return true;
-                                        }
-                                        return false;
-                                } catch(PDOException $ex) {
-                                        return false;
-                                }
-                        }
-                }
-                return false;
-        }
-	
-	/**
-	* Expires all login tokens for the user! This will effectively log them out everywhere.
-	**/
-        public function expireLoginTokens() {
-                if ($this->isLoggedIn()) {
+
+    /**
+     * Update the listed email address. Returns FALSE on failure. Also triggers a verification update.
+     *
+     * @param $email    User email address
+     * @return bool     True if email is successfully updated, false if the user is not logged in or on failure
+     */
+    public function updateEmail($email) {
+        if ($this->isLoggedIn()) {
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                         try {
                                 $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                                $stmt = $db->prepare("DELETE FROM auth WHERE username = :username");
+                                $stmt = $db->prepare("UPDATE user SET verified = 0, email = :email WHERE username = :username");
                                 $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                                $stmt->bindValue(":email", htmlspecialchars($email, ENT_QUOTES), PDO::PARAM_STR);
                                 $stmt->execute();
-                                return true;
+                                if ($stmt->rowCount()) {
+                                        $this->reverifyEmail();
+                                        return true;
+                                }
+                                return false;
                         } catch(PDOException $ex) {
                                 return false;
                         }
                 }
-                return false;
         }
-	
-        /**
-        * Changes the user password. Returns FALSE on failure. Will also expire all user tokens!
-        **/
+        return false;
+    }
+
+    /**
+     * Expires all login tokens for the user! This will effectively log them out everywhere.
+     *
+     * @return bool True on success, false if the user is not logged in or on failure
+     */
+    public function expireLoginTokens() {
+            if ($this->isLoggedIn()) {
+                    try {
+                            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                            $stmt = $db->prepare("DELETE FROM auth WHERE username = :username");
+                            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                            $stmt->execute();
+                            return true;
+                    } catch(PDOException $ex) {
+                            return false;
+                    }
+            }
+            return false;
+    }
+
+
+    /**
+     * Changes the user password. Returns FALSE on failure. Will also expire all user tokens!
+     *
+     * @param $password User password
+     * @return bool     True if the user password was changed successfully, false if the password is empty or less than
+     *                  3 characters or the user is not logged in or on failure
+     */
 	public function updatePassword($password) {
                 if ($this->isLoggedIn()) {
                         // Check for dumb cases
@@ -270,113 +305,129 @@ class User
                 }
                 return false;
         }
-        
-        
-        /**
-        * Returns the location stored in the database. Returns FALSE if not stored, or could not be retrieved.
-        **/
-        public function getLocation() {
-                if ($this->isLoggedIn()) {
-                        try {
-                                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                                $stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
-                                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                                $stmt->execute();
-                                $row = $stmt->fetch();
-                                // Check if lat/long are nonzero
-                                // if long/lat are NULL then this is also evaluated due to type juggling
-                                if (
-                                        !(
-                                                ($row["latitude"] == 0) &&
-                                                ($row["longitude"] == 0)
-                                        )
-                                ) {
-                                        return array((float)$row["latitude"],(float)$row["longitude"]);
-                                }
-                                return false;
-                        } catch(PDOException $ex) {
-                                return false;
-                        }
-                }
-                return false;
-        }
-        
-        /**
-        * Returns the URL stored in the database.
-        **/
-        public function getProfilePicture() {
-                try {
-                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                        $stmt = $db->prepare("SELECT profile_picture_url FROM user WHERE username = :username");
-                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                        $stmt->execute();
-                        $row = $stmt->fetch();
-                        return $row["profile_picture_url"];
-                } catch(PDOException $ex) {
-                        return false;
-                }
-        }
-        
-        /**
-        * Update the stored url to that of the parameter passed. Returns FALSE on failure.
-        **/
-        public function updateProfilePictureURL($url) {
-                if ($this->isLoggedIn()) {
-                        // only accept imgur images
-                        if (substr($url,0,19) === "http://i.imgur.com/") {
-                                try {
-                                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                                        $stmt = $db->prepare("UPDATE user SET profile_picture_url = :url WHERE username = :username");
-                                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                                        $stmt->bindValue(":url", htmlspecialchars($url, ENT_QUOTES), PDO::PARAM_STR);
-                                        $stmt->execute();
-                                        if ($stmt->rowCount()) {
-                                                return true;
-                                        }
-                                        return false;
-                                } catch(PDOException $ex) {
-                                        return false;
-                                }
-                        }
-                }
-                return false;
-        }
-        
-        /**
-        * Get the public profile of the user - username, profile URL, score
-        **/
-        public function getPublicProfile() {
-                try {
-                        $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                        $stmt = $db->prepare("SELECT username, score, profile_picture_url FROM user WHERE username = :username");
-                        $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                        $stmt->execute();
-                        $row = $stmt->fetch();
-                        return $row;
-                } catch(PDOException $ex) {
-                        return false;
-                }
-        }
-        
-        /**
-        * Get the private profile of the user. They need to be logged in for this.
-        **/
-        public function getPrivateProfile() {
-                if ($this->isLoggedIn()) {
-                        try {
-                                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                                $stmt = $db->prepare("SELECT username, email, postcode, latitude, longitude, score, profile_picture_url FROM user WHERE username = :username");
-                                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                                $stmt->execute();
-                                $row = $stmt->fetch();
-                                return $row;
-                        } catch(PDOException $ex) {
-                                return false;
-                        }
-                }
-                return false;
-        }
-	
+
+    /**
+     * Returns the location stored in the database. Returns FALSE if not stored, or could not be retrieved.
+     *
+     * @return array|bool   Array containing the latitude and longitude of the location. Returns false if the user is
+     *                      not logged in or on failure
+     */
+    public function getLocation() {
+            if ($this->isLoggedIn()) {
+                    try {
+                            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                            $stmt = $db->prepare("SELECT * FROM user WHERE username = :username");
+                            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                            $stmt->execute();
+                            $row = $stmt->fetch();
+                            // Check if lat/long are nonzero
+                            // if long/lat are NULL then this is also evaluated due to type juggling
+                            if (
+                                    !(
+                                            ($row["latitude"] == 0) &&
+                                            ($row["longitude"] == 0)
+                                    )
+                            ) {
+                                    return array((float)$row["latitude"],(float)$row["longitude"]);
+                            }
+                            return false;
+                    } catch(PDOException $ex) {
+                            return false;
+                    }
+            }
+            return false;
+    }
+
+    /**
+     * Returns the URL stored in the database.
+     *
+     * @return string|bool Profile picture url. Returns false on failure.
+     */
+    public function getProfilePicture() {
+            try {
+                    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                    $stmt = $db->prepare("SELECT profile_picture_url FROM user WHERE username = :username");
+                    $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                    $stmt->execute();
+                    $row = $stmt->fetch();
+                    return $row["profile_picture_url"];
+            } catch(PDOException $ex) {
+                    return false;
+            }
+    }
+
+    /**
+     * Update the stored url to that of the parameter passed. Returns FALSE on failure.
+     *
+     * @param $url  URL of the picture
+     * @return bool True if $url is successfully set, false if the user is not logged in or on failure.
+     */
+    public function updateProfilePictureURL($url) {
+            if ($this->isLoggedIn()) {
+                    // only accept imgur images
+                    if (substr($url,0,19) === "http://i.imgur.com/") {
+                            try {
+                                    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                                    $stmt = $db->prepare("UPDATE user SET profile_picture_url = :url WHERE username = :username");
+                                    $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                                    $stmt->bindValue(":url", htmlspecialchars($url, ENT_QUOTES), PDO::PARAM_STR);
+                                    $stmt->execute();
+                                    if ($stmt->rowCount()) {
+                                            return true;
+                                    }
+                                    return false;
+                            } catch(PDOException $ex) {
+                                    return false;
+                            }
+                    }
+            }
+            return false;
+    }
+
+    /**
+     * Get the public profile of the user - username, profile URL, score
+     *
+     * @return bool|mixed   Public profile information. Returns false on failure
+     */
+    public function getPublicProfile() {
+            try {
+                    $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                    $stmt = $db->prepare("SELECT username, score, profile_picture_url FROM user WHERE username = :username");
+                    $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                    $stmt->execute();
+                    $row = $stmt->fetch();
+                    return $row;
+            } catch(PDOException $ex) {
+                    return false;
+            }
+    }
+
+    /**
+     * Get the private profile of the user. They need to be logged in for this.
+     *
+     * @return bool|mixed Private profile information. Returns false if the user is not logged in or on failure.
+     */
+    public function getPrivateProfile() {
+            if ($this->isLoggedIn()) {
+                    try {
+                            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+                            $stmt = $db->prepare("SELECT username, email, postcode, latitude, longitude, score, profile_picture_url FROM user WHERE username = :username");
+                            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+                            $stmt->execute();
+                            $row = $stmt->fetch();
+                            return $row;
+                    } catch(PDOException $ex) {
+                            return false;
+                    }
+            }
+            return false;
+    }
+
+    /**
+     * Checks to see if the user's profile has missing data
+     *
+     * @return bool|null    True if incomplete, null on failure
+     */
 	public function hasIncompleteProfile() {
             try {
                 $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
@@ -389,7 +440,12 @@ class User
                     return null;
             }
 	}
-	
+
+    /**
+     * Checks to see if the user is verified
+     *
+     * @return null|int 1 if the user is verified, 0 if the user is not. Returns null on failure
+     */
 	public function isVerified() {
             try {
                 $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
@@ -420,58 +476,78 @@ class User
                 } 
                 return json_encode((object) null);
         }
-        
-        public function getOwnedClaimedFoods() {
-            try {
-                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username AND claimer_username != '' AND item_gone = b'0'");
-                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                $stmt->execute();
-                $results = $stmt->fetchAll();
-                return $results;
-            } catch(PDOException $ex) {
-                    return null;
-            }
-        }
-        
-        public function getClaimedFoods() {
-            try {
-                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username AND item_gone = b'0'");
-                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                $stmt->execute();
-                $results = $stmt->fetchAll();
-                return $results;
-            } catch(PDOException $ex) {
+
+    /**
+     * Get the user's own food items that have been claimed
+     *
+     * @return array|null   Array of food items. Returns null on failure
+     */
+    public function getOwnedClaimedFoods() {
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username AND claimer_username != '' AND item_gone = b'0'");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+            return $results;
+        } catch(PDOException $ex) {
                 return null;
-            }
         }
-        
-        public function getClaimHistory() {
-            try {
-                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username");
-                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                $stmt->execute();
-                $results = $stmt->fetchAll();
-                return $results;
-            } catch(PDOException $ex) {
-                    return null;
-            }
+    }
+
+    /**
+     * Get the user's claimed food items
+     *
+     * @return array|null   Array of food items. Returns null on failure
+     */
+    public function getClaimedFoods() {
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username AND item_gone = b'0'");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+            return $results;
+        } catch(PDOException $ex) {
+            return null;
         }
-        
-        public function getPostHistory() {
-            try {
-                $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
-                $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username");
-                $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
-                $stmt->execute();
-                $results = $stmt->fetchAll();
-                return $results;
-            } catch(PDOException $ex) {
-                    return null;
-            }
+    }
+
+    /**
+     * Get the user's claim history
+     *
+     * @return array|null   Array of food items. Returns null on failure
+     */
+    public function getClaimHistory() {
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("SELECT * FROM food WHERE claimer_username = :username");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+            return $results;
+        } catch(PDOException $ex) {
+                return null;
         }
+    }
+
+    /**
+     * Get the user's post history
+     *
+     * @return array|null   Array of food items. Returns null on failure
+     */
+    public function getPostHistory() {
+        try {
+            $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);
+            $stmt = $db->prepare("SELECT * FROM food WHERE user_username = :username");
+            $stmt->bindValue(":username", $this->username, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+            return $results;
+        } catch(PDOException $ex) {
+                return null;
+        }
+    }
         
         /**
         * Calculate the new user score based on items posted and collected. A item posted gets 10 points. A item posted that has been claimed gets an additional 10 points. 

@@ -1,10 +1,18 @@
 <?php
+/**
+ * TODO Description of the class goes here
+ */
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/lib/password.php'; // Password hashing library
 
 class UserTools {
-    
+
+    /**
+     * Prints error alert
+     *
+     * @param array $errors   Errors
+     */
     public static function printErrors($errors) {
         if (gettype($errors) == "array") {
             foreach($errors as $error) {
@@ -19,7 +27,14 @@ class UserTools {
             }
         }
     }
-    
+
+    /**
+     * Checks if the username and key match. On failure, returns an array of errors
+     *
+     * @param $username     Username of user
+     * @param $key          Key for the user
+     * @return array|bool   True on successful user email validation. Returns array of errors on failure
+     */
     public static function validateUserEmail($username,$key) {
         $errors = array();
         try {
@@ -52,10 +67,14 @@ class UserTools {
             return $errors;
         }
     }
-    
+
+
     /**
-    *   Utility function for getting a user's email from their username. If unverified, returns FALSE.
-    **/
+     * Utility function for getting a user's email from their username. If unverified, returns FALSE.
+     *
+     * @param $username Username of user
+     * @return bool     True if the user is verified, false on failure
+     */
     public static function getEmail($username) {
         try {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS);

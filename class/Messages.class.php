@@ -1,4 +1,7 @@
 <?php
+/**
+ *  TODO Description of the class goes here
+ */
 
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
@@ -7,13 +10,21 @@ require_once __ROOT__.'/class/User.class.php';
 class Messages {
 
     public $user = null;
-    
+
+    /**
+     * Messages constructor.
+     */
     function __construct() {
         $username = isset($_COOKIE["username"])? $_COOKIE["username"] : null;
         $token = isset($_COOKIE["token"])? $_COOKIE["token"] : null;
         $this->user = new User($username,$token);
     }
 
+    /**
+     * Get all of the user's conversations
+     *
+     * @return array|bool Array of conversations. Returns false on failure
+     */
     public function getConversations() {
         if ($this->user->isLoggedIn()) {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 
@@ -25,10 +36,22 @@ class Messages {
         }
         return false;
     }
-    
+
+    /**
+     * Send text to another user
+     *
+     * @param string $text  Message text
+     * @param string $to    Recipient username
+     */
     public function send($text,$to) {
     }
 
+    /**
+     * Get the messages with another user
+     *
+     * @param $to           Recipient username
+     * @return array|bool   Array of messages. Returns false on failure
+     */
     public function getMessagesWith($to) {
         if ($this->user->isLoggedIn()) {
             $db = new PDO('mysql:host='.DBSERV.';dbname='.DBNAME.';charset=utf8', DBUSER, DBPASS); 

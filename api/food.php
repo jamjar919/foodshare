@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
 }
 
 /**
- * Return json object containing food items sorted and filtered based on the user's search
+ * Return json object containing food items filtered then sorted based on the user's search
  *
  * @param string $query Keywords entered by user
  * @param array $location Central location

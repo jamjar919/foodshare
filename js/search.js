@@ -87,6 +87,7 @@ $('document').ready(function() {
 
 });
 
+//load the search button click event
 function loadSearch() {
     //basic search
     $('#search').click(function() {
@@ -127,7 +128,7 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
 ];
 
 
-
+//advanced search button click event
 $('#advanced').click(function() {
     $('.content').html(addSideSearchbar(6));
     configureBootstrap();
@@ -231,6 +232,7 @@ $(document.body).on('click', '#prev', function(e) {
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
 });
 
+//add the containers for the search results
 function addContainers() {
     if(!$(".page-content")[0]) {
         var container = $('<div>')
@@ -255,7 +257,7 @@ function addContainers() {
     }
 }
 
-//create search bar
+//create search bar with specified column width
 function addSideSearchbar(colwidth) {
     var sidebar = $("<div>")
         .addClass("col-md-" + colwidth + " advancedSearchbar")
@@ -371,6 +373,7 @@ function addSideSearchbar(colwidth) {
         return sidebar;
 }
 
+//update sidebar search with specified search values
 function updateSideBar(q, location, distance, expiry, time, sort, resultsPerPage) {
     $('#q2').val(q);
     $('#loc').val(location);
@@ -381,6 +384,7 @@ function updateSideBar(q, location, distance, expiry, time, sort, resultsPerPage
     $('#resultsPerPage').val(resultsPerPage);
 }
 
+//Setup bootstrap and autocomplete
 function configureBootstrap() {
     $("#radius").bootstrapSlider({
         formatter: function (value) {
@@ -483,9 +487,6 @@ function setPageLinks(page) {
 
 //dynamically add pagination links
 function addLinks() {
-    //make map button visible
-
-
     var totalLinks = Math.ceil(totalResults / resultsPerPage);
     var paginationList = "";
 
@@ -507,8 +508,6 @@ function addLinks() {
         }
         paginationList += '<li class="page-item btn-custom" id="next"><a class="page-link " href="#">Next</a></li>';
     }
-
-
     $('.pagination').html(paginationList);
 }
 
@@ -522,7 +521,6 @@ function addLinks() {
  * @param sort Sort method
  * @param resultsPerPage Number of results per page
  * @param pageNumber Page number
- * @param firstSearch Boolean
  */
 function search(q, location, distance, expiry, time, sort, resultsPerPage, offset, pageNumber) {
     //reset the markers list
@@ -667,7 +665,7 @@ function geocode(position, callback) {
 
 }
 
-//autocomplete for searching keywords
+//autocomplete for searching keywords in main searchbar
 $(function() {
     $( "#q1" ).autocomplete({
         source: function( request, response ) {
@@ -798,7 +796,6 @@ function setMapBounds(location, radius) {
 /**Scroll to the specified food
  *
  * @param id ID of food
- * @param button Button linked to specified food
  */
 function loadFullFood(id) {
     $('html, body').animate({
@@ -817,6 +814,7 @@ $( '.page-content' ).click(function(e) {
     return false;
 });
 
+//get the user private data
 function getUser() {
     return new Promise(function(resolve,reject) {
         $.getJSON('api/profile/private.php')
@@ -836,9 +834,6 @@ function getUser() {
 
 
 //history stuff
-
-var pushed = false;
-
 //save the state containing the ajax content
 function saveState(q, location, distance, expiry, time, sort, resultsPerPage, offset, address) {
     var url = "#q=" + q.replace(/\s+/g, '+') + "&location=" +  location + "&distance="
@@ -856,13 +851,10 @@ function saveState(q, location, distance, expiry, time, sort, resultsPerPage, of
         address: address
     };
     history.pushState(parameters, '', url);
-
-
 }
 
-
+//customize history events
 $(window).bind('popstate', function(event) {
-
     var parameters = event.originalEvent.state;
     //if state exists then reload page with search
     if(parameters === "advancedSearch") {
@@ -878,17 +870,16 @@ $(window).bind('popstate', function(event) {
             parameters['sort'], parameters['num']);
         search(parameters['q'], parameters['location'], parameters['distance'], parameters['expiry'], parameters['time'],
             parameters['sort'], parameters['num'], parameters['offset'], pageNumber)
-
     }
     else {
         location.reload();
     }
-
 });
-
 
 history.replaceState(null, '', window.location.href);
 
+//Source: https://www.sitepoint.com/get-url-parameters-with-javascript/
+//changed to fit needs
 function getAllUrlParams(url) {
 
     // get query string from url (optional) or window
