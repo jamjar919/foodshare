@@ -3,3 +3,4 @@ phpmyadmin
 *.xml
 .idea/workspace.xml
 .idea/foodshare.iml
+vendor
