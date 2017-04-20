@@ -1,41 +1,40 @@
 <?php
-/**
- * TODO Description of the class goes here
- */
-
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/lib/password.php'; // Password hashing library
 
+/**
+ * This class represents a user. It can be initialised with just a username, in which case public data and read only access is permitted, or with a username/token combination that
+ * will authorise the user, allowing access to functions able to modify data in the database about the user.
+ */
 class User
 {
-        public $username;
-        public $authtoken;
-        private $isLoggedIn = false;
+    public $username;
+    public $authtoken;
+    private $isLoggedIn = false;
 
     /**
      * User constructor.
      * @param string $user Username
      * @param string $auth Auth token, empty by default
      */
-
     function __construct($user, $auth="") {
-		$this->username = $user;
-		if ($auth !== "") {
-			// User is trying to auth
-			$this->authtoken = $auth;
-			$this->isLoggedIn = $this->checkLoginToken($auth);
-		}
-	}
+        $this->username = $user;
+        if ($auth !== "") {
+            // User is trying to auth
+            $this->authtoken = $auth;
+            $this->isLoggedIn = $this->checkLoginToken($auth);
+        }
+    }
 
     /**
      * Checks to see if the user is logged in
      *
      * @return bool True if the user is logged in, false if they are not
      */
-	public function isLoggedIn() {
-		return $this->isLoggedIn;
-	}
+    public function isLoggedIn() {
+        return $this->isLoggedIn;
+    }
 
     /**
      * Sets the auth token as a cookie if password is correct

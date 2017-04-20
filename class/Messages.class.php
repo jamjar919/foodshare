@@ -1,12 +1,12 @@
 <?php
-/**
- *  TODO Description of the class goes here
- */
 
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/class/User.class.php';
 
+/**
+ *  This class is used to add and retrieve a set of messages between two users.
+ */
 class Messages {
 
     public $user = null;

@@ -1,12 +1,14 @@
 <?php
-/**
- *  TODO Description of the class goes here
- */
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/class/User.class.php';
 require_once __ROOT__.'/class/UserTools.class.php';
 
+/**
+*  This class represents a food object.
+*  This class represents a food object. It can be loaded by any user - However it must be loaded by the owner with the correct cookie set in order to access methods that
+*  modify database data. Constructing the object with a null reference will create a new food item and you must be logged in for this.
+*/
 class Food
 {
     private $id;
@@ -16,7 +18,7 @@ class Food
     /**
      * Food constructor. If the id is null, create a new food item
      *
-     * @param null $id id of the food item
+     * @param $id id of the food item
      */
     function __construct($id=null) {
         if ($id===null) {
@@ -80,19 +82,18 @@ class Food
     /**
      * Update the user's specified food item details
      *
-     * @param string $username  Username of the user who wishes to update their food item
-     * @param string $token     User token
-     * @param int $id           id of the food item
-     * @param string $name      Name of the food item
-     * @param string $desc      Description of the food item
-     * @param string $expiry    Expiry date of the food item
-     * @param double $lat       Latitude of the food item
-     * @param double $long      Longitude of the food item
-     * @param string $imageurl  Image URL of the food item
-     * @return bool             True if food item successfully updated with new details, false if the user is not logged
-     *                          in, the user is not the owner or on failure
+     * @param $username  Username of the user who wishes to update their food item
+     * @param $token     User token
+     * @param $id        id of the food item
+     * @param $name      Name of the food item
+     * @param $desc      Description of the food item
+     * @param $expiry    Expiry date of the food item
+     * @param $lat       Latitude of the food item
+     * @param $long      Longitude of the food item
+     * @param $imageurl  Image URL of the food item
+     * @return bool      True if food item successfully updated with new details, false if the user is not logged in, the user is not the owner or on failure
      */
-   public function update($username, $token, $id, $name, $desc, $expiry, $lat, $long,$imageurl) {
+    public function update($username, $token, $id, $name, $desc, $expiry, $lat, $long,$imageurl) {
         $user = new User($username,$token);
         if ( ! $user->isLoggedIn()) {
             return false;
@@ -137,7 +138,7 @@ class Food
 
     /**
      * Create a new tag record, and return the ID of the new tag
-     * @param string $tag   Name of the tag
+     * @param $tag   Name of the tag
      * @return bool|int     Tag's id. Returns false on failure
      */
     private function createNewTag($tag) {
@@ -159,7 +160,7 @@ class Food
 
     /**
      * Looks up the value of $tag, and if it does not exist, creates it. Returns the new tag id.
-     * @param string $tag   Name of the tag
+     * @param $tag   Name of the tag
      * @return bool|int     The tag's id. Returns false on failure
      */
     private function lookupTag($tag) {
@@ -185,7 +186,7 @@ class Food
     /**
      * Inserts the tag connection into the list, if it does not already exist;
      *
-     * @param string $tag   Name of the tag
+     * @param $tag   Name of the tag
      * @return bool         true if the tag is successfully inserted otherwise false
      */
     private function insertTag($tag) {
@@ -221,7 +222,7 @@ class Food
     /**
      * Remove the tag connection from the food item
      *
-     * @param string $tag   Name of the tag
+     * @param $tag   Name of the tag
      * @return bool         True if successfully removed or didn't exist, false on failure.
      */
     private function removeTag($tag) {

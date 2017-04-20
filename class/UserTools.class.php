@@ -1,11 +1,11 @@
 <?php
-/**
- * TODO Description of the class goes here
- */
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/lib/password.php'; // Password hashing library
 
+/**
+ * Contains methods for users that are used while not referring to an existing user. For example, registration.
+ */
 class UserTools {
 
     /**

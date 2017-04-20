@@ -1,11 +1,12 @@
 <?php
-/**
- *  TODO Description of the class goes here
- */
 define('__ROOT__',dirname(dirname(__FILE__)));
 require_once __ROOT__.'/db.php';
 require_once __ROOT__.'/class/User.class.php';
 
+/**
+ * This class makes up the base of the templating engine. It contains a wrapper for generating common page elements, like headers and footers, and allows easy specification of whether a 
+ * user should be logged in to prevent duplication of code. The templating engine also dynamically generates menus and title tags according to parameters set. 
+ */
 class Page
 {
     public $name;
@@ -14,9 +15,10 @@ class Page
     private $isLoggedIn;
 
     /**
-     * Page constructor.
+     * Page constructor that sets the name of the page and attempts to log in a user, if it is present
+     *
      * @param $name                 Name of the page
-     * @param bool $requiresLogin   Determines whether the page needs login. false by default
+     * @param $requiresLogin   Determines whether the page needs login. false by default
      */
     function __construct($name,$requiresLogin=false) {
         $this->name = $name;
