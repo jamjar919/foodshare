@@ -2,8 +2,9 @@ var messageSettings = {
     sentTo: null,
     from: null,
     container: '#message-container',
-    conversationContainer: '#conversations'
+    conversationContainer: '#conversations',
 }
+var loadedConversations = [];
 var endpoint = "api/messages.php";
 function sendMessage(message) {
 	
@@ -46,19 +47,35 @@ function loadConversations() {
     .then(function(data) {
         for (var i = 0; i < data.conversations.length; i++) {
             var conversation = data.conversations[i];
-            console.log(conversation);
             if (conversation.sender_username == messageSettings.from) { 
-                $(messageSettings.conversationContainer).append(
-                    $("<li>")
-                    .addClass("list-group-item")
-                    .append(
-                        $("<a>")
-                        .attr("href","messages.php?user="+conversation.receiver_username)
-                        .addClass(messageSettings.sentTo == conversation.receiver_username ? "current-message-receiver" : "")
-                        .text(conversation.receiver_username)
-                    )
-                )
-            }
+				if(loadedConversations.indexOf(conversation.receiver_username) == -1 ){
+					loadedConversations.push(conversation.receiver_username);
+					$(messageSettings.conversationContainer).append(
+						$("<li>")
+						.addClass("list-group-item")
+						.append(
+							$("<a>")
+							.attr("href","messages.php?user="+conversation.receiver_username)
+							.addClass(messageSettings.sentTo == conversation.receiver_username ? "current-message-receiver" : "")
+							.text(conversation.receiver_username)
+						)
+					)
+				}
+            }else if(conversation.receiver_username == messageSettings.from) {
+				if(loadedConversations.indexOf(conversation.sender_username) == -1 ){
+					loadedConversations.push(conversation.sender_username);
+					$(messageSettings.conversationContainer).append(
+						$("<li>")
+						.addClass("list-group-item")
+						.append(
+							$("<a>")
+							.attr("href","messages.php?user="+conversation.sender_username)
+							.addClass(messageSettings.sentTo == conversation.sender_username ? "current-message-receiver" : "")
+							.text(conversation.sender_username)
+						)
+					)
+				}
+			}
         }
     });
 }
