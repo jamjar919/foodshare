@@ -55,6 +55,11 @@
             loadConversations();
             // Load messages
             loadMessages();
+			setInterval(function(){
+				loadConversations();
+			loadMessages();}
+				,1000);
+			
         })
     </script>
     <script src="js/messages.js"></script>
