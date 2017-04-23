@@ -1,6 +1,6 @@
 <?php
 
-define('__ROOT__',dirname(__FILE__));
+define('__ROOT__',dirname(dirname(__FILE__)));
 require __ROOT__.'/db.php';
 header('Content-Type: application/json');
 
