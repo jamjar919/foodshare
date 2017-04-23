@@ -74,12 +74,13 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         $query .= "WHERE (f.claimer_username = NULL OR f.claimer_username = '') ";
     }
 
-    if(!$expiry == "Any time") {
+    if($expiry != "Any time") {
         $query .= "AND f.expiry BETWEEN '$expiry[0]' AND '$expiry[1]'";
     }
-    if(!$time == "Any time") {
+    if($time != "Any time") {
         $query .= "AND f.time BETWEEN '$time[0]' AND '$time[1]'";
     }
+
     $query .= "HAVING distance < :distance ";
     $countQuery = "SELECT COUNT(*) AS resultsCount FROM (" . $query . ") countTable";
 
@@ -93,7 +94,7 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
             }
             break;
         //location
-        case 'Closest':
+        case 'Distance: closest first':
             try {
                 $query .= "ORDER BY distance ASC LIMIT :offset , :num;";
             } catch (PDOException $e) {
