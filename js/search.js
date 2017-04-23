@@ -1,10 +1,10 @@
 var q, storedLocation, radius, expiry, time, sort, resultsPerPage, pageNumber, totalResults, address;
 window.storedLocation= [];
-window.radius = 20;
+window.radius = 10;
 window.expiry = "Any time";
 window.time = "Any time";
-window.sort = "Best match";
-window.resultsPerPage = 15;
+window.sort = "Closest";
+window.resultsPerPage = 8;
 window.pageNumber = 0;
 window.totalResults = 0;
 window.address = "";
@@ -63,10 +63,10 @@ $('document').ready(function() {
                 function(position){
                     initialPosition = String(position.coords.latitude + "," +position.coords.longitude);
                     console.log("Got initial position as: "+initialPosition);
-                    var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
-                    var p = Promise.resolve(address);
-                    p.then(function(address) {
-                        initialAddress = address;
+                    var initialAddress = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
+                    var p = Promise.resolve(initialAddress);
+                    p.then(function(initialAddress) {
+                        address = initialAddress;
                         loadSearch();
                     });
                 },
@@ -74,10 +74,10 @@ $('document').ready(function() {
                     // If we don't find the initial position just go L O N D O N
                     initialPosition = "51.5 , -0.09";
                     console.log("Error getting pos: "+error);
-                    var address = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
-                    var p = Promise.resolve(address);
-                    p.then(function(address) {
-                        initialAddress = address;
+                    var initialAddress = convertGeocode(initialPosition.split(',')[0], initialPosition.split(',')[1]);
+                    var p = Promise.resolve(initialAddress);
+                    p.then(function(initialAddress) {
+                        address = initialAddress;
                         loadSearch();
                     });
                 }
@@ -101,7 +101,6 @@ function loadSearch() {
         }
         else {
             storedLocation = initialPosition;
-            address = initialAddress;
         }
         q = $('#q1').val();
         expiry = "Any time";
@@ -120,6 +119,27 @@ function loadSearch() {
 
 
     });
+    //advanced search button click event
+    $('#advanced').click(function() {
+        $('.content').html(addSideSearchbar(6));
+        configureBootstrap();
+        $('.advancedSearchbar').addClass('col-centered');
+        if(memberSearch) {
+            storedLocation = user['latitude'] + "," +  user['longitude'];
+            address = user['postcode'];
+        }
+        else {
+            storedLocation = initialPosition;
+            address = initialAddress;
+        }
+        if($('#q1').val() !== "") {
+            q = $('#q1').val();
+        }
+
+        updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
+        history.pushState('advancedSearch', "", '');
+
+    });
 }
 
 var today = new Date();
@@ -128,35 +148,11 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
 ];
 
 
-//advanced search button click event
-$('#advanced').click(function() {
-    $('.content').html(addSideSearchbar(6));
-    configureBootstrap();
-    $('.advancedSearchbar').addClass('col-centered');
-    if(memberSearch) {
-        storedLocation = user['latitude'] + "," +  user['longitude'];
-        address = user['postcode'];
-    }
-    else {
-        storedLocation = initialPosition;
-        address = initialAddress;
-    }
-    q = $('#q1').val();
-    expiry = "Any time";
-    time = "Any time";
-    radius = 15;
-    sort = "Best match";
-    resultsPerPage = 4;
-    pageNumber = 0;
-    updateSideBar(q, address, radius, expiry, time, sort, resultsPerPage);
-    history.pushState('advancedSearch', "", '');
 
-});
 
 //advanced search
 $(document.body).on('click', '#advancedSearch', function(e) {
     e.preventDefault();
-    var address;
     if($('#loc').val() === "") {
         address = "-"
     }
@@ -860,6 +856,8 @@ $(window).bind('popstate', function(event) {
     //if state exists then reload page with search
     if(parameters === "advancedSearch") {
         $('.content').html(addSideSearchbar(6));
+        updateSideBar(q, address , radius, expiry, time,
+            sort, resultsPerPage);
         $('.advancedSearchbar').addClass('col-centered');
         configureBootstrap();
     }
@@ -877,7 +875,7 @@ $(window).bind('popstate', function(event) {
     }
 });
 
-history.replaceState(null, '', window.location.href);
+
 
 //Source: https://www.sitepoint.com/get-url-parameters-with-javascript/
 //changed to fit needs
