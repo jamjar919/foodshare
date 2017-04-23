@@ -399,7 +399,12 @@ class Food
         }
         // Send email!
         mail(UserTools::getEmail($this->owner), "Item claimed!", "Hey! \n \n An item you put up, titled \"".$this->item["name"]."\" has been claimed by the user ".$claimer."! They should be in contact via the messaging system soon to arrange a pickup time. \n\n Thanks, \n FlavourTown");
-        return $result;
+        // Send message
+		require_once __ROOT__.'/api/messages.php';
+		$claimMessage = $claimer . " has claimed your item: " . $this->item["name"];
+		addMessage($claimer, $this->owner, $claimMessage, 0, 1);
+		
+		return $result;
    }
 
     /**
