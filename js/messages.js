@@ -5,6 +5,7 @@ var messageSettings = {
     conversationContainer: '#conversations',
 }
 var loadedConversations = [];
+var loadedMessages = [];
 var endpoint = "api/messages.php";
 function sendMessage(message) {
 	
@@ -15,7 +16,6 @@ function sendMessage(message) {
 	console.log(messageSettings.sentTo);
     if (messageSettings.sentTo != null) {
 		$.post(endpoint, {from: messageSettings.from, sendTo: messageSettings.sentTo, text: message, read: 0, message_type: 1})
-        addMessage(message, new Date(), true);
     }
 }
 function addMessage(text,timestamp,isOwnMessage = false) {
@@ -87,7 +87,10 @@ function loadMessages() {
     .then(function(data) {
         for (var i = 0; i < data.messages.length; i++) {
             var message = data.messages[i];
-            addMessage(message.text, message.time, message.sender_username == messageSettings.from);
+			if (loadedMessages.indexOf(message.id) == -1){
+				addMessage(message.text, message.time, message.sender_username == messageSettings.from);
+				loadedMessages.push(message.id);
+			}
         }
         scrollToBottom();
     });
