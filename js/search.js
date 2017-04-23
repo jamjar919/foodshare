@@ -197,6 +197,7 @@ $(document.body).on('click', '#next', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#link1', function(e) {
     e.preventDefault();
@@ -204,6 +205,7 @@ $(document.body).on('click', '#link1', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#link2', function(e) {
     e.preventDefault();
@@ -211,6 +213,7 @@ $(document.body).on('click', '#link2', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#link3', function(e) {
     e.preventDefault();
@@ -218,6 +221,7 @@ $(document.body).on('click', '#link3', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#prev', function(e) {
     e.preventDefault();
@@ -225,6 +229,7 @@ $(document.body).on('click', '#prev', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset,address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 
 //add the containers for the search results
