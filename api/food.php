@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Food search API
+ */
+
 define('__ROOT__',dirname(dirname(__FILE__)));
 require __ROOT__.'/db.php';
 header('Content-Type: application/json');
@@ -100,9 +104,10 @@ function getFoodListing($q, $location, $distance, $expiry, $time, $sort, $num, $
         case 'Best match':
             //need to include search by tags some how rather than just name and description
             try {
-                $query = str_replace("SELECT DISTINCT", "SELECT DISTINCT MATCH(t.name) 
-        AGAINST ('$q') AS score1, MATCH(f.name) AGAINST ('$q') AS score2, MATCH(f.description) AGAINST ('$q') AS score3, ", $query);
-                $query .= "ORDER BY score1 + score2 + score3 DESC LIMIT :offset, :num;";
+                $query = str_replace("SELECT DISTINCT", "SELECT DISTINCT id, name, description, image_url,
+                expiry, time, latitude, longitude, user_username, claimer_username FROM (SELECT MATCH(t.name) 
+        AGAINST ('$q') AS score1, MATCH(f.name) AGAINST ('$q') AS score2, MATCH(f.description) AGAINST ('$q') AS score3,", $query);
+                $query .= " ORDER BY score1 + score2 + score3 DESC LIMIT :offset, :num) bestMatch";
             } catch (PDOException $e) {
                 echo $e->getMessage();
             }

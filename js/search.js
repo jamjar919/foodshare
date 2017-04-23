@@ -520,6 +520,7 @@ function addLinks() {
  * @param time Array Time posted range
  * @param sort Sort method
  * @param resultsPerPage Number of results per page
+ * * @param offset Search offset
  * @param pageNumber Page number
  */
 function search(q, location, distance, expiry, time, sort, resultsPerPage, offset, pageNumber) {
