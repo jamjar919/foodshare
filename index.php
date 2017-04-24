@@ -19,7 +19,7 @@
     </div>
     <script>
         $(document).ready(function () {
-            $.get("api/food.php?q=&location=54.7786523%2C-1.5614863&distance=30&expiry=Any%20time&time=Any%20time&sort=Closest&num=10&offset=0")
+            $.get("api/food.php?q=&location=54.7786523%2C-1.5614863&distance=30&expiry=Any%20time&time=Any%20time&sort=Distance:%20closest%20first&num=10&offset=0")
             .then(function(data) {
                 printFoodItems(data["food"],"#frontpageitems")
             }) 
