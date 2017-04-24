@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
     }
 } else if($_SERVER['REQUEST_METHOD'] == "POST"){
     if (!isset($_POST["from"]) ||!isset($_POST["sendTo"]) || !isset($_POST["text"])  || !isset($_POST["read"]) || !isset($_POST["message_type"])) {
-        echo "Missing parameter(s)";
+        //echo "Missing parameter(s)";
     } else {
         addMessage($_POST["from"],$_POST["sendTo"],$_POST["text"],$_POST["read"],$_POST["message_type"]);
     }
