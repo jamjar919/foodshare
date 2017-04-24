@@ -90,9 +90,9 @@ function loadMessages() {
 			if (loadedMessages.indexOf(message.id) == -1){
 				addMessage(message.text, message.time, message.sender_username == messageSettings.from);
 				loadedMessages.push(message.id);
+				scrollToBottom();
 			}
         }
-        scrollToBottom();
     });
 }
 function scrollToBottom() {
