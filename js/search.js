@@ -3,7 +3,7 @@ window.storedLocation= [];
 window.radius = 10;
 window.expiry = "Any time";
 window.time = "Any time";
-window.sort = "Closest";
+window.sort = "Distance: closest first";
 window.resultsPerPage = 8;
 window.pageNumber = 0;
 window.totalResults = 0;
@@ -106,7 +106,7 @@ function loadSearch() {
         expiry = "Any time";
         time = "Any time";
         radius = 10;
-        sort = "Closest";
+        sort = "Distance: closest first";
         resultsPerPage = 8;
         pageNumber = 0;
 
@@ -130,7 +130,6 @@ function loadSearch() {
         }
         else {
             storedLocation = initialPosition;
-            address = initialAddress;
         }
         if($('#q1').val() !== "") {
             q = $('#q1').val();
@@ -198,6 +197,7 @@ $(document.body).on('click', '#next', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#link1', function(e) {
     e.preventDefault();
@@ -205,6 +205,7 @@ $(document.body).on('click', '#link1', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#link2', function(e) {
     e.preventDefault();
@@ -212,6 +213,7 @@ $(document.body).on('click', '#link2', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#link3', function(e) {
     e.preventDefault();
@@ -219,6 +221,7 @@ $(document.body).on('click', '#link3', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 $(document.body).on('click', '#prev', function(e) {
     e.preventDefault();
@@ -226,6 +229,7 @@ $(document.body).on('click', '#prev', function(e) {
     offset = pageNumber * resultsPerPage;
     saveState(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset,address);
     search(q, storedLocation, radius, expiry, time, sort, resultsPerPage, offset, pageNumber);
+    window.scrollTo(0, 0)
 });
 
 //add the containers for the search results
@@ -294,7 +298,7 @@ function addSideSearchbar(colwidth) {
                                                 "<option>Time: oldest first</option>" +
                                                 "<option>Expiry: earliest</option>" +
                                                 "<option>Expiry: latest</option>" +
-                                                "<option>Closest</option>" +
+                                                "<option>Distance: closest first</option>" +
                                             "</select>"
                                         )
                                 )
@@ -343,7 +347,7 @@ function addSideSearchbar(colwidth) {
                                         )
                                         .append(
                                             "<div class='col-4'>" +
-                                            "<input class='form-control' id='time' name='daterange' type = 'text' value='Any time' style='width: 100%'>" +
+                                            "<input class='form-control' id='time' name='datetimerange' type = 'text' value='Any time' style='width: 100%'>" +
                                             "</div>"
                                         )
                                 )
@@ -374,8 +378,20 @@ function updateSideBar(q, location, distance, expiry, time, sort, resultsPerPage
     $('#q2').val(q);
     $('#loc').val(location);
     $('#radius').val(distance);
-    $('#expiry').val(expiry);
-    $('#time').val(time);
+    if(expiry !== "Any time") {
+        $("#expiry").data('daterangepicker').setStartDate(expiry.split(',')[0]);
+        $("#expiry").data('daterangepicker').setEndDate(expiry.split(',')[1]);
+    }
+    else {
+        $('#expiry').val(expiry);
+    }
+    if(time !== "Any time") {
+        $("#time").data('daterangepicker').setStartDate(time.split(',')[0]);
+        $("#time").data('daterangepicker').setEndDate(time.split(',')[1]);
+    }
+    else {
+        $('#time').val(time);
+    }
     $('#sort').val(sort);
     $('#resultsPerPage').val(resultsPerPage);
 }
@@ -397,7 +413,8 @@ function configureBootstrap() {
         $('input[name="daterange"]').daterangepicker({
             autoUpdateInput: false,
             locale: {
-                cancelLabel: 'Clear'
+                cancelLabel: 'Clear',
+                format: 'DD/MM/YYYY'
             },
             ranges: {
                 'Today': [moment(), moment()],
@@ -427,7 +444,8 @@ function configureBootstrap() {
             timePickerIncrement: 30,
             autoUpdateInput: false,
             locale: {
-                cancelLabel: 'Clear'
+                cancelLabel: 'Clear',
+                format: 'DD/MM/YYYY'
             },
             ranges: {
                 'Today': [moment().startOf('day'), moment().endOf('day')],
@@ -546,11 +564,10 @@ function search(q, location, distance, expiry, time, sort, resultsPerPage, offse
                     "<div class='row'>" +
                         "<div class='col-md-8 col-sm-8'>" +
                             "<div class='card-block'>" +
-                                "<h4 class='card-title'>" + element['name'] + "</h4>" +
+                                "<h4 class='card-title'><a href='item.php?item="+element['id']+"'>" + element['name'] + "</a></h4>" +
                                 "<p class='card-text card-time' style='font-style=italic '> Posted " +moment(element["time"]).fromNow() + "</p>" +
                                 "<p>" + ((moment(element["expiry"]).isAfter(currentDate)) ? "Expires ": "Expired ")+moment(element["expiry"]).fromNow()+"</p>" +
                                 "<div class='btn-group buttons'>" +
-                                "<a href='item.php?item="+element['id'] + "' class='btn btn-custom'>More</a>" +
                         "</div></div></div>");
                     if(memberSearch) {
                         var claimerButton = document.createElement('button');
